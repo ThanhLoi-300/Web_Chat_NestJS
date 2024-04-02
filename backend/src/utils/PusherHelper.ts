@@ -6,9 +6,9 @@ export class PusherHelper {
 
   constructor() {
     this.pusher = new Pusher({
-      appId: "1690487",
-      key: "00806514f90cf476dcd8",
-      secret: "89275b37335b71cf95c8",
+      appId: '1781089',
+      key: 'e9de4cb87ed812e6153c',
+      secret: 'b32a80caba025cc38499',
       cluster: 'ap1',
     });
   }

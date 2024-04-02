@@ -5999,7 +5999,7 @@ pusher-js@^8.4.0-rc2:
   dependencies:
     tweetnacl "^1.0.3"
 
-pusher@^5.2.0:
+pusher@5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/pusher/-/pusher-5.2.0.tgz#cc208d15000f8d4d8b485acb844d7557adb2cf20"
   integrity sha512-F6LNiZyJsIkoHLz+YurjKZ1HH8V1/cMggn4k97kihjP3uTvm0P4mZzSFeHOWIy+PlJ2VInJBhUFJBYLsFR5cjg==
