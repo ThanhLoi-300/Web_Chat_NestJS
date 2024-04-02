@@ -1,0 +1,21 @@
+body,
+html {
+  width: 100%;
+  height: 100%;
+  background-color: #131313;
+  font-family: "Inter";
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  position: relative;
+}
+
+#root {
+  height: 100%;
+}
+
+h1{
+  margin: 0;
+}
