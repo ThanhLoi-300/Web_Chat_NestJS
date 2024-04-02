@@ -30,7 +30,7 @@ export const GroupPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const pusher = new Pusher('00806514f90cf476dcd8', {
+  const pusher = new Pusher('e9de4cb87ed812e6153c', {
     cluster: 'ap1',
   });
 
@@ -49,8 +49,7 @@ export const GroupPage = () => {
 
   useEffect(() => {
     if (id) {
-      console.log(id)
-      const channel = pusher.subscribe(id);
+      const channel = pusher.subscribe("1");
       channel.bind('createGroupMessage', (payload: GroupMessageEventPayload) => {
         const { group } = payload;
         console.log("púher")
