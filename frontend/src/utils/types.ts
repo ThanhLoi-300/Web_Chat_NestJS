@@ -45,7 +45,6 @@ export type Conversation = {
 
 export type CreateConversationParams = {
   id: number;
-  message: string;
 };
 
 export type MessageAttachment = {

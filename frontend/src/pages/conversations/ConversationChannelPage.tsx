@@ -7,6 +7,9 @@ import { ConversationChannelPageStyle } from '../../utils/styles';
 import { AppDispatch } from '../../store';
 import { fetchMessagesThunk } from '../../store/Messages/messageThunk';
 import { editMessage } from '../../store/Messages/messageSlice';
+import Pusher from 'pusher-js';
+import { toast } from 'react-toastify';
+import { updateToken, typingText } from '../../utils/api';
 
 export const ConversationChannelPage = () => {
   const { id } = useParams();
@@ -16,57 +19,53 @@ export const ConversationChannelPage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isRecipientTyping, setIsRecipientTyping] = useState(false);
 
+  const pusher: Pusher = new Pusher('e9de4cb87ed812e6153c', {
+    cluster: 'ap1',
+  });
+
   useEffect(() => {
     const conversationId = parseInt(id!);
     dispatch(fetchMessagesThunk(conversationId));
   }, [id]);
 
   useEffect(() => {
-    const conversationId = id!;
-    socket.emit('onConversationJoin', { conversationId });
-    socket.on('userJoin', () => {
-      console.log('userJoin');
-    });
-    socket.on('userLeave', () => {
-      console.log('userLeave');
-    });
-    socket.on('onTypingStart', () => {
-      console.log('onTypingStart: User has started typing...');
+    const channel = pusher.subscribe(id!);
+    channel.bind('onTypingStart', () => {
+      toast.success('onTypingStart: User has started typing...');
       setIsRecipientTyping(true);
     });
-    socket.on('onTypingStop', () => {
-      console.log('onTypingStop: User has stopped typing...');
+    channel.bind('onTypingStop', () => {
+      toast.error('onTypingStop: User has stopped typing...');
       setIsRecipientTyping(false);
     });
-    socket.on('onMessageUpdate', (message) => {
-      console.log('onMessageUpdate received');
-      console.log(message);
-      dispatch(editMessage(message));
-    });
+    // channel.bind('onMessageUpdate', (message) => {
+    //   console.log('onMessageUpdate received');
+    //   console.log(message);
+    //   dispatch(editMessage(message));
+    // });
 
     return () => {
-      socket.emit('onConversationLeave', { conversationId });
-      socket.off('userJoin');
-      socket.off('userLeave');
-      socket.off('onTypingStart');
-      socket.off('onTypingStop');
-      socket.off('onMessageUpdate');
+      channel.unbind_all();
+      channel.unsubscribe();
+      pusher.disconnect();
+      // socket.off('onMessageUpdate');
     };
   }, [id]);
 
   const sendTypingStatus = () => {
+    updateToken()
     if (isTyping) {
       clearTimeout(timer);
       setTimer(
         setTimeout(() => {
           console.log('User stopped typing');
-          socket.emit('onTypingStop', { conversationId: id });
           setIsTyping(false);
+          typingText(id!, false );
         }, 2000)
       );
     } else {
       setIsTyping(true);
-      socket.emit('onTypingStart', { conversationId: id });
+      typingText(id!, true );
     }
   };
 

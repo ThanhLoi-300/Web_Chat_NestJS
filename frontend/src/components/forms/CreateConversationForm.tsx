@@ -25,7 +25,6 @@ export const CreateConversationForm: FC<Props> = ({ setShowModal }) => {
     const [userResults, setUserResults] = useState<User[]>([]);
     const [selectedUser, setSelectedUser] = useState<User>();
     const [searching, setSearching] = useState(false);
-    const [message, setMessage] = useState('');
     const debouncedQuery = useDebounce(query, 1000);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
@@ -45,9 +44,9 @@ export const CreateConversationForm: FC<Props> = ({ setShowModal }) => {
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!message || !selectedUser) return;
+        if ( !selectedUser) return;
         return dispatch(
-            createConversationThunk({ id: selectedUser.id, message })
+            createConversationThunk({ id: selectedUser.id })
         )
             .unwrap()
             .then(({ data }) => {
@@ -78,15 +77,6 @@ export const CreateConversationForm: FC<Props> = ({ setShowModal }) => {
                     handleUserSelect={handleUserSelect}
                 />
             )}
-            <section className={styles.message}>
-                <InputContainer backgroundColor="#161616">
-                    <InputLabel>Message (optional)</InputLabel>
-                    <TextField
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                    />
-                </InputContainer>
-            </section>
             <Button>Create Conversation</Button>
         </form>
     );

@@ -9,6 +9,7 @@ import {
     InputLabel,
 } from '../../utils/styles';
 import styles from './index.module.scss';
+import { toast } from 'react-toastify';
 
 type Props = {
     setShowModal: Dispatch<SetStateAction<boolean>>;
@@ -29,9 +30,9 @@ export const SendFriendRequestForm: FC<Props> = ({ setShowModal }) => {
                 setShowModal(false);
                 //success('Friend Request Sent!');
             })
-            .catch((err) => {
+            .catch((err: Error) => {
                 console.log(err);
-                //error('Error sending friend request');
+                toast.error(err.message);
             });
     };
 

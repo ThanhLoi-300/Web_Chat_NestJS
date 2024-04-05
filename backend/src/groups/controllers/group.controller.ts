@@ -11,11 +11,8 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { SkipThrottle } from '@nestjs/throttler';
 import { Routes, Services } from '../../utils/constants';
-import { AuthUser } from '../../utils/decorators';
 import { User } from '../../utils/typeorm';
 import { AuthenticatedRequest } from '../../utils/types';
 import { CreateGroupDto } from '../dtos/CreateGroupDto';
@@ -23,6 +20,8 @@ import { TransferOwnerDto } from '../dtos/TransferOwnerDto';
 import { UpdateGroupDetailsDto } from '../dtos/UpdateGroupDetailsDto';
 import { IGroupService } from '../interfaces/group';
 import { IUserService } from 'src/users/interfaces/user';
+import { PusherHelper } from 'src/utils/PusherHelper';
+import Pusher from 'pusher';
 
 @SkipThrottle()
 @Controller(Routes.GROUPS)
@@ -30,7 +29,7 @@ export class GroupController {
   constructor(
     @Inject(Services.GROUPS) private readonly groupService: IGroupService,
     @Inject(Services.USERS) private readonly userService: IUserService,
-    private eventEmitter: EventEmitter2,
+    @Inject(PusherHelper) private pusherHelper: PusherHelper,
   ) {}
 
   @Post()
@@ -43,7 +42,9 @@ export class GroupController {
       ...payload,
       creator: user,
     });
-    this.eventEmitter.emit('group.create', group);
+
+    const pusher: Pusher = this.pusherHelper.getPusherInstance();
+    pusher.trigger('group', 'group.create', group);
     return group;
   }
 
@@ -59,23 +60,24 @@ export class GroupController {
 
   @Patch(':id/owner')
   async updateGroupOwner(
-    @AuthUser() { id: userId }: User,
+    @Req() req: AuthenticatedRequest,
     @Param('id') groupId: number,
     @Body() { newOwnerId }: TransferOwnerDto,
   ) {
-    const params = { userId, groupId, newOwnerId };
+    const params = { userId: req.userId, groupId, newOwnerId };
     const group = await this.groupService.transferGroupOwner(params);
-    this.eventEmitter.emit('group.owner.update', group);
+
+    const pusher: Pusher = this.pusherHelper.getPusherInstance();
+    pusher.trigger('group', 'group.owner.update', group);
     return group;
   }
 
   @Patch(':id/details')
-  @UseInterceptors(FileInterceptor('avatar'))
   async updateGroupDetails(
-    @Body() { title }: UpdateGroupDetailsDto,
+    @Body() { title, avatar }: UpdateGroupDetailsDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
     console.log(title);
-    // return this.groupService.updateDetails({ id, avatar, title });
+    return this.groupService.updateDetails({ id, avatar, title });
   }
 }

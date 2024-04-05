@@ -8,18 +8,22 @@ import { UsersModule } from 'src/users/users.module';
 import { isAuthorized } from 'src/utils/helpers';
 import { ConversationMiddleware } from './middlewares/conversation.middleware';
 import { JwtMiddleware } from 'src/auth/JwtMiddleware';
+import { PusherHelper } from 'src/utils/PusherHelper';
+import { FriendsModule } from 'src/friends/friends.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Conversation, Message]),
     UsersModule,
+    FriendsModule,
   ],
   controllers: [ConversationsController],
   providers: [
     {
       provide: Services.CONVERSATIONS,
-      useClass: ConversationsService
-    }
+      useClass: ConversationsService,
+    },
+    PusherHelper,
   ],
   exports: [
     {

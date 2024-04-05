@@ -9,8 +9,6 @@ import {
 } from '@nestjs/common';
 import { Routes, Services } from '../../utils/constants';
 import { IUserService } from '../interfaces/user';
-import { AuthUser } from 'src/utils/decorators';
-import { User } from 'src/utils/typeorm';
 import { AuthenticatedRequest } from 'src/utils/types';
 
 @Controller(Routes.USERS)

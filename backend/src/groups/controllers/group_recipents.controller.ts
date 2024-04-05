@@ -3,68 +3,67 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Body,
   Inject,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { SkipThrottle } from '@nestjs/throttler';
 import { Routes, Services } from '../../utils/constants';
-import { AuthUser } from '../../utils/decorators';
-import { User } from '../../utils/typeorm';
-import { AddGroupRecipientDto } from '../dtos/AddGroupRecipientDto';
 import { IGroupRecipientService } from '../interfaces/group-recipents';
+import { PusherHelper } from 'src/utils/PusherHelper';
+import Pusher from 'pusher';
+import { AuthenticatedRequest } from 'src/utils/types';
 
-@SkipThrottle()
 @Controller(Routes.GROUP_RECIPIENTS)
 export class GroupRecipientsController {
   constructor(
     @Inject(Services.GROUP_RECIPIENTS)
     private readonly groupRecipientService: IGroupRecipientService,
-    private eventEmitter: EventEmitter2,
+    @Inject(PusherHelper) private pusherHelper: PusherHelper,
   ) {}
 
   @Post()
   async addGroupRecipient(
-    @AuthUser() { id: userId }: User,
+    @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    const params = { id, userId };
+    const params = { id, userId: req.userId };
     const response = await this.groupRecipientService.addGroupRecipient(params);
-    this.eventEmitter.emit('group.user.add', response);
+
+    const pusher: Pusher = this.pusherHelper.getPusherInstance();
+    pusher.trigger(id.toString(), 'group.user.add', response);//recipentId
     return response;
   }
 
-  /**
-   * Leaves a Group
-   * @param user the authenticated User
-   * @param groupId the id of the group
-   * @returns the updated Group that the user had left
-   */
   @Delete('leave')
   async leaveGroup(
-    @AuthUser() user: User,
+    @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) groupId: number,
   ) {
     const group = await this.groupRecipientService.leaveGroup({
       id: groupId,
-      userId: user.id,
+      userId: req.userId,
     });
-    this.eventEmitter.emit('group.user.leave', { group, userId: user.id });
+
+    const pusher: Pusher = this.pusherHelper.getPusherInstance();
+    pusher.trigger(groupId.toString(), 'group.user.leave', {
+      group,
+      userId: req.userId,
+    }); 
     return group;
   }
 
   @Delete(':userId')
   async removeGroupRecipient(
-    @AuthUser() { id: issuerId }: User,
+    @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) id: number,
     @Param('userId', ParseIntPipe) removeUserId: number,
   ) {
-    const params = { issuerId, id, removeUserId };
-    const response = await this.groupRecipientService.removeGroupRecipient(
-      params,
-    );
-    this.eventEmitter.emit('group.user.remove', response);
+    const params = { issuerId: req.userId, id, removeUserId };
+    const response = await this.groupRecipientService.removeGroupRecipient(params);
+
+    const pusher: Pusher = this.pusherHelper.getPusherInstance();
+    pusher.trigger(id.toString(), 'group.user.remove', response);
     return response.group;
   }
 }

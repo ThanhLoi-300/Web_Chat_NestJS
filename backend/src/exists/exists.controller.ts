@@ -41,7 +41,6 @@ export class ExistsController {
       user,
       {
         id: recipient.id,
-        message: 'hello',
       },
     );
     this.events.emit('conversation.create', newConversation);

@@ -10,8 +10,6 @@ import {
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SkipThrottle } from '@nestjs/throttler';
 import { Routes, ServerEvents, Services } from '../utils/constants';
-import { AuthUser } from '../utils/decorators';
-import { User } from '../utils/typeorm';
 import { IFriendsService } from './friends';
 import { AuthenticatedRequest } from 'src/utils/types';
 

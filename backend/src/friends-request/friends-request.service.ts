@@ -46,23 +46,26 @@ export class FriendRequestService implements IFriendRequestService {
   }
 
   async create({ user: sender, name }: CreateFriendParams) {
-    const receiver = await this.userService.findUser({ name });
-    if (!receiver) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    const exists = await this.isPending(sender.id, receiver.id);
-    if (exists) throw new HttpException('Friend Requesting Pending', HttpStatus.BAD_REQUEST);
-    if (receiver.id === sender.id)
-      throw new HttpException('Friend Request Exception: Cannot Add Yourself',HttpStatus.BAD_REQUEST);
-    const isFriends = await this.friendsService.isFriends(
-      sender.id,
-      receiver.id,
-    );
-    if (isFriends) throw new HttpException('Friend Already Exists', HttpStatus.CONFLICT);
-    const friend = this.friendRequestRepository.create({
-      sender,
-      receiver,
-      status: 'pending',
-    });
-    return this.friendRequestRepository.save(friend);
+    const receiver = await this.userService.findUserByEmail(name);
+    console.log(name)
+    console.log(JSON.stringify(receiver));
+    // if (!receiver) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    // const exists = await this.isPending(sender.id, receiver.id);
+    // if (exists) throw new HttpException('Friend Requesting Pending', HttpStatus.BAD_REQUEST);
+    // if (receiver.id === sender.id)
+    //   throw new HttpException('Friend Request Exception: Cannot Add Yourself',HttpStatus.BAD_REQUEST);
+    // const isFriends = await this.friendsService.isFriends(
+    //   sender.id,
+    //   receiver.id,
+    // );
+    // if (isFriends) throw new HttpException('Friend Already Exists', HttpStatus.CONFLICT);
+    // const friend = this.friendRequestRepository.create({
+    //   sender,
+    //   receiver,
+    //   status: 'pending',
+    // });
+    // return this.friendRequestRepository.save(friend);
+    return null
   }
 
   async accept({ id, userId }: FriendRequestParams) {

@@ -9,6 +9,14 @@ import { IUserService } from '../interfaces/user';
 @Injectable()
 export class UserService implements IUserService{
     constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) { }
+    findUserByEmail(email: string): Promise<User> {
+        return this.userRepository
+          .createQueryBuilder('user')
+          .where('user.email = :email', { email })
+          .select(['user.name', 'user.email', 'user.id', 'user.profile'])
+          .getOne();
+        // return this.userRepository.findOne({ email });
+    }
     
     saveUser(user: User): Promise<User> {
         return this.userRepository.save(user);
@@ -41,7 +49,7 @@ export class UserService implements IUserService{
     }
 
     async findUser(findUserParams: FindUserParams): Promise<User>{
-        return this.userRepository.findOne(findUserParams)
+        return this.userRepository.findOne(findUserParams);
     }
     
 }

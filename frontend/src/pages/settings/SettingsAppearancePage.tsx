@@ -16,7 +16,13 @@ export const SettingsAppearancePage = () => {
 
     return (
         <Page>
-            <div>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                height: '100%'
+            }}>
                 <span>Theme</span>
                 <form>
                     <input

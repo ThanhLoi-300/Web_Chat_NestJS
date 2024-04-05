@@ -160,8 +160,8 @@ export const fetchFriends = () => axiosClient.get<Friend[]>("/friends", config);
 export const fetchFriendRequests = () =>
   axiosClient.get<FriendRequest[]>("/friends/requests", config);
 
-export const createFriendRequest = (username: string) =>
-  axiosClient.post<FriendRequest>("/friends/requests", { username }, config);
+export const createFriendRequest = (name: string) =>
+  axiosClient.post<FriendRequest>("/friends/requests", { name }, config);
 
 export const cancelFriendRequest = (id: number) =>
   axiosClient.delete<CancelFriendRequestResponse>(
@@ -204,3 +204,9 @@ export const updateUserProfile = (data: FormData) =>
     ...config,
     headers: { "Content-Type": "multipart/form-data" },
   });
+
+export const typingText = (conversationId: string, isTyping: boolean) =>
+  axiosClient.get(
+    `/conversations/${conversationId}/messages/typingText?typingStatus=${isTyping}`,
+    config
+  );

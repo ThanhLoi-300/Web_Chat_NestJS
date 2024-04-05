@@ -1,60 +1,104 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post, UploadedFiles } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Query,
+  Patch,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { Routes, Services } from 'src/utils/constants';
 import { IMessageService } from './message';
-import { CreateConversationDto } from 'src/conversations/dtos/CreateConversation';
 import { AuthUser } from 'src/utils/decorators';
 import { User } from 'src/utils/typeorm';
 import { CreateMessageDto } from './dtos/CreateMessageDto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EditMessageDto } from './dtos/EditMessageDto';
+import { PusherHelper } from 'src/utils/PusherHelper';
+import { AuthenticatedRequest } from 'src/utils/types';
+import { IUserService } from 'src/users/interfaces/user';
+import Pusher from 'pusher';
 
 @Controller(Routes.MESSAGES)
 export class MessageController {
-    constructor(
-        @Inject(Services.MESSAGES) private readonly messageService: IMessageService,
-        private eventEmitter: EventEmitter2
-    ) { }
-    
-    @Post("/:id") async createMessage(@AuthUser() user: User,
-        @Param('id', ParseIntPipe) id: number,
-        //@UploadedFiles() { attachments }: { attachments: Attachment[] },
-        @Body() { content }: CreateMessageDto) {
-        //if (!attachments && !content) throw new EmptyMessageException();
-        const params = { user, id, content, attachments: null };
-        const response = await this.messageService.createMessage(params);
-        this.eventEmitter.emit('message.create', response);
-        return;
-    }
+  constructor(
+    @Inject(Services.MESSAGES) private readonly messageService: IMessageService,
+    private eventEmitter: EventEmitter2,
+    @Inject(PusherHelper) private pusherHelper: PusherHelper,
+    @Inject(Services.USERS) private readonly userService: IUserService,
+  ) {}
 
-    @Get()
-    //@SkipThrottle()
-    async getMessagesFromConversation( @AuthUser() user: User, @Param('id', ParseIntPipe) id: number, ) {
-        const messages = await this.messageService.getMessages(id);
-        return { id, messages };
-    }
+  @Post() async createMessage(
+    @Req() req: AuthenticatedRequest,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() { content, attachments }: CreateMessageDto,
+  ) {
+    const user: User = await this.userService.findUser({ id: req.userId });
+    const params = { user, id, content, attachments };
+    const response = await this.messageService.createMessage(params);
 
-    @Delete(':messageId')
-    async deleteMessageFromConversation(
-        @AuthUser() user: User,
-        @Param('id', ParseIntPipe) conversationId: number,
-        @Param('messageId', ParseIntPipe) messageId: number,
-    ) {
-        const params = { userId: user.id, conversationId, messageId };
-        await this.messageService.deleteMessage(params);
-        this.eventEmitter.emit('message.delete', params);
-        return { conversationId, messageId };
+    const pusher: Pusher = this.pusherHelper.getPusherInstance();
+    pusher.trigger(req.userId.toString(), 'onMessage', response);
+    pusher.trigger(
+      response.conversation.recipient.id.toString(),
+      'onMessage',
+      response,
+    );
+    return;
+  }
+
+  @Get()
+  async getMessagesFromConversation(@Param('id', ParseIntPipe) id: number) {
+    const messages = await this.messageService.getMessages(id);
+    return { id, messages };
+  }
+
+  @Get('/typingText')
+  async typingText(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('typingStatus') typingStatus: string,
+  ) {
+    const isTyping = typingStatus === 'true';
+    const pusher: Pusher = this.pusherHelper.getPusherInstance();
+    if (isTyping) {
+      pusher.trigger(id.toString(), 'onTypingStart', typingStatus);
+      console.log(`onTypingStart: ${id} - ` + typingStatus);
+    } else {
+      pusher.trigger(id.toString(), 'onTypingStop', typingStatus);
+      console.log(`onTypingStop: ${id} - ` + typingStatus);
     }
-    // api/conversations/:conversationId/messages/:messageId
-    @Patch(':messageId')
-    async editMessage(
-        @AuthUser() { id: userId }: User,
-        @Param('id') conversationId: number,
-        @Param('messageId') messageId: number,
-        @Body() { content }: EditMessageDto,
-    ) {
-        const params = { userId, content, conversationId, messageId };
-        const message = await this.messageService.editMessage(params);
-        this.eventEmitter.emit('message.update', message);
-        return message;
-    }
+  }
+
+  @Delete(':messageId')
+  async deleteMessageFromConversation(
+    @Req() req: AuthenticatedRequest,
+    @Param('id', ParseIntPipe) conversationId: number,
+    @Param('messageId', ParseIntPipe) messageId: number,
+  ) {
+    const params = { userId: req.userId, conversationId, messageId };
+    await this.messageService.deleteMessage(params);
+
+    const pusher: Pusher = this.pusherHelper.getPusherInstance();
+    pusher.trigger(conversationId.toString(), 'onMessageDelete', params);
+    return { conversationId, messageId };
+  }
+
+  @Patch(':messageId')
+  async editMessage(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') conversationId: number,
+    @Param('messageId') messageId: number,
+    @Body() { content }: EditMessageDto,
+  ) {
+    const params = { userId: req.userId, content, conversationId, messageId };
+    const message = await this.messageService.editMessage(params);
+
+    const pusher: Pusher = this.pusherHelper.getPusherInstance();
+    pusher.trigger(conversationId.toString(), 'message.update', message);
+    return message;
+  }
 }

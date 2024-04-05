@@ -22,7 +22,6 @@ import {
   GroupParticipantLeftPayload,
 } from '../../utils/types';
 import Pusher from 'pusher-js';
-import { toast } from 'react-toastify';
 export const GroupPage = () => {
   const { id } = useParams();
   const { user } = useContext(AuthContext);
@@ -49,12 +48,55 @@ export const GroupPage = () => {
 
   useEffect(() => {
     if (id) {
-      const channel = pusher.subscribe("1");
+      const channel = pusher.subscribe(id);
       channel.bind('createGroupMessage', (payload: GroupMessageEventPayload) => {
         const { group } = payload;
-        console.log("púher")
         dispatch(addGroupMessage(payload));
         dispatch(updateGroup({ type: UpdateGroupAction.NEW_MESSAGE, group }));
+      });
+
+      channel.bind('onGroupCreate', (payload: Group) => {
+        console.log('Group Created...');
+        dispatch(addGroup(payload));
+      });
+
+      channel.bind('onGroupUserAdd', (payload: AddGroupUserMessagePayload) => {
+        console.log('onGroupUserAdd');
+        console.log(payload);
+        dispatch(addGroup(payload.group));
+      });
+
+      channel.bind('onGroupReceivedNewUser', ({ group }: AddGroupUserMessagePayload) => {
+        console.log('Received onGroupReceivedNewUser');
+        dispatch(updateGroup({ group }));
+      });
+
+      channel.bind('onGroupRecipientRemoved', ({ group }: RemoveGroupUserMessagePayload) => {
+        console.log('onGroupRecipientRemoved');
+        dispatch(updateGroup({ group }));
+      });
+
+      channel.bind('onGroupRemoved', (payload: RemoveGroupUserMessagePayload) => {
+        dispatch(removeGroup(payload.group));
+        if (id && parseInt(id) === payload.group.id) {
+          console.log('Navigating User to /groups');
+          navigate('/groups');
+        }
+      });
+
+      channel.bind('onGroupParticipantLeft', ({ group, userId }: GroupParticipantLeftPayload) => {
+        console.log('onGroupParticipantLeft received');
+        dispatch(updateGroup({ group }));
+        if (userId === user?.id) {
+          console.log('payload.userId matches user.id...');
+          dispatch(removeGroup(group));
+          navigate('/groups');
+        }
+      });
+
+      channel.bind('onGroupOwnerUpdate', (group: Group) => {
+        console.log('received onGroupOwnerUpdate');
+        dispatch(updateGroup({ group }));
       });
 
       return () => {
@@ -62,61 +104,7 @@ export const GroupPage = () => {
         channel.unsubscribe();
         pusher.disconnect();
       };
-
     }
-
-    // socket.on('onGroupCreate', (payload: Group) => {
-    //   console.log('Group Created...');
-    //   dispatch(addGroup(payload));
-    // });
-
-    // socket.on('onGroupUserAdd', (payload: AddGroupUserMessagePayload) => {
-    //   console.log('onGroupUserAdd');
-    //   console.log(payload);
-    //   dispatch(addGroup(payload.group));
-    // });
-
-    // socket.on(
-    //   'onGroupReceivedNewUser',
-    //   ({ group }: AddGroupUserMessagePayload) => {
-    //     console.log('Received onGroupReceivedNewUser');
-    //     dispatch(updateGroup({ group }));
-    //   }
-    // );
-
-    // socket.on(
-    //   'onGroupRecipientRemoved',
-    //   ({ group }: RemoveGroupUserMessagePayload) => {
-    //     console.log('onGroupRecipientRemoved');
-    //     dispatch(updateGroup({ group }));
-    //   }
-    // );
-
-    // socket.on('onGroupRemoved', (payload: RemoveGroupUserMessagePayload) => {
-    //   dispatch(removeGroup(payload.group));
-    //   if (id && parseInt(id) === payload.group.id) {
-    //     console.log('Navigating User to /groups');
-    //     navigate('/groups');
-    //   }
-    // });
-
-    // socket.on(
-    //   'onGroupParticipantLeft',
-    //   ({ group, userId }: GroupParticipantLeftPayload) => {
-    //     console.log('onGroupParticipantLeft received');
-    //     dispatch(updateGroup({ group }));
-    //     if (userId === user?.id) {
-    //       console.log('payload.userId matches user.id...');
-    //       dispatch(removeGroup(group));
-    //       navigate('/groups');
-    //     }
-    //   }
-    // );
-
-    // socket.on('onGroupOwnerUpdate', (group: Group) => {
-    //   console.log('received onGroupOwnerUpdate');
-    //   dispatch(updateGroup({ group }));
-    // });
   }, [id]);
 
   return (

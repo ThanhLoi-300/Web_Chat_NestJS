@@ -17,6 +17,8 @@ import { AuthUser } from '../utils/decorators';
 import { User } from '../utils/typeorm';
 import { IFriendRequestService } from '../friends-request/friends-request';
 import { AuthenticatedRequest } from 'src/utils/types';
+import { IUserService } from 'src/users/interfaces/user';
+import { PusherHelper } from 'src/utils/PusherHelper';
 
 @Controller(Routes.FRIEND_REQUESTS)
 export class FriendRequestController {
@@ -24,6 +26,8 @@ export class FriendRequestController {
     @Inject(Services.FRIENDS_REQUESTS_SERVICE)
     private readonly friendRequestService: IFriendRequestService,
     private event: EventEmitter2,
+    @Inject(Services.USERS) private readonly userService: IUserService,
+    @Inject(PusherHelper) private pusherHelper: PusherHelper,
   ) {}
 
   @Get()
@@ -34,9 +38,10 @@ export class FriendRequestController {
   @Throttle(3, 10)
   @Post()
   async createFriendRequest(
-    @AuthUser() user: User,
-    @Body() name : string,
+    @Req() req: AuthenticatedRequest,
+    @Body() name: string,
   ) {
+    const user: User = await this.userService.findUser({ id: req.userId });
     const params = { user, name };
     const friendRequest = await this.friendRequestService.create(params);
     this.event.emit('friendrequest.create', friendRequest);
@@ -46,10 +51,13 @@ export class FriendRequestController {
   @Throttle(3, 10)
   @Patch(':id/accept')
   async acceptFriendRequest(
-    @AuthUser() { id: userId }: User,
+    @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    const response = await this.friendRequestService.accept({ id, userId });
+    const response = await this.friendRequestService.accept({
+      id,
+      userId: req.userId,
+    });
     this.event.emit(ServerEvents.FRIEND_REQUEST_ACCEPTED, response);
     return response;
   }
@@ -57,10 +65,13 @@ export class FriendRequestController {
   @Throttle(3, 10)
   @Delete(':id/cancel')
   async cancelFriendRequest(
-    @AuthUser() { id: userId }: User,
+    @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    const response = await this.friendRequestService.cancel({ id, userId });
+    const response = await this.friendRequestService.cancel({
+      id,
+      userId: req.userId,
+    });
     this.event.emit('friendrequest.cancel', response);
     return response;
   }
@@ -68,10 +79,13 @@ export class FriendRequestController {
   @Throttle(3, 10)
   @Patch(':id/reject')
   async rejectFriendRequest(
-    @AuthUser() { id: userId }: User,
+    @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    const response = await this.friendRequestService.reject({ id, userId });
+    const response = await this.friendRequestService.reject({
+      id,
+      userId: req.userId,
+    });
     this.event.emit(ServerEvents.FRIEND_REQUEST_REJECTED, response);
     return response;
   }

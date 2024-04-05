@@ -7,6 +7,7 @@ import { Friend } from '../utils/typeorm/entities/Friend';
 import { FriendRequest } from '../utils/typeorm/entities/FriendRequest';
 import { FriendRequestController } from './friends-request.controller';
 import { FriendRequestService } from './friends-request.service';
+import { PusherHelper } from 'src/utils/PusherHelper';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { FriendRequestService } from './friends-request.service';
       provide: Services.FRIENDS_REQUESTS_SERVICE,
       useClass: FriendRequestService,
     },
+    PusherHelper,
   ],
 })
 export class FriendRequestsModule {}
