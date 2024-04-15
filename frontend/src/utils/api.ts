@@ -160,8 +160,8 @@ export const fetchFriends = () => axiosClient.get<Friend[]>("/friends", config);
 export const fetchFriendRequests = () =>
   axiosClient.get<FriendRequest[]>("/friends/requests", config);
 
-export const createFriendRequest = (name: string) =>
-  axiosClient.post<FriendRequest>("/friends/requests", { name }, config);
+export const createFriendRequest = (id: number) =>
+  axiosClient.post<FriendRequest>("/friends/requests", { id }, config);
 
 export const cancelFriendRequest = (id: number) =>
   axiosClient.delete<CancelFriendRequestResponse>(

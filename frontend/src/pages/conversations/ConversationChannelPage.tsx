@@ -48,7 +48,6 @@ export const ConversationChannelPage = () => {
       channel.unbind_all();
       channel.unsubscribe();
       pusher.disconnect();
-      // socket.off('onMessageUpdate');
     };
   }, [id]);
 

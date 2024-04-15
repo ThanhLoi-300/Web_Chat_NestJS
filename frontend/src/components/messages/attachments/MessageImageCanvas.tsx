@@ -40,8 +40,8 @@ export const MessageImageCanvas: FC<Props> = ({ file }) => {
         <canvas
             ref={canvasRef}
             style={{
-                width: '300px',
-                height: '150px',
+                width: '250px',
+                height: '100px',
             }}
         ></canvas>
     );

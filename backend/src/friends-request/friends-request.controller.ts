@@ -11,14 +11,13 @@ import {
   Req,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { Routes, ServerEvents, Services } from '../utils/constants';
-import { AuthUser } from '../utils/decorators';
 import { User } from '../utils/typeorm';
 import { IFriendRequestService } from '../friends-request/friends-request';
 import { AuthenticatedRequest } from 'src/utils/types';
 import { IUserService } from 'src/users/interfaces/user';
 import { PusherHelper } from 'src/utils/PusherHelper';
+import Pusher from 'pusher';
 
 @Controller(Routes.FRIEND_REQUESTS)
 export class FriendRequestController {
@@ -35,20 +34,24 @@ export class FriendRequestController {
     return this.friendRequestService.getFriendRequests(req.userId);
   }
 
-  @Throttle(3, 10)
   @Post()
   async createFriendRequest(
     @Req() req: AuthenticatedRequest,
-    @Body() name: string,
+    @Body('id') id: string,
   ) {
     const user: User = await this.userService.findUser({ id: req.userId });
-    const params = { user, name };
+    const params = { user, id: parseInt(id) };
     const friendRequest = await this.friendRequestService.create(params);
-    this.event.emit('friendrequest.create', friendRequest);
+
+    const pusher: Pusher = this.pusherHelper.getPusherInstance();
+    pusher.trigger(
+      req.userId.toString(),
+      'friendrequest.create',
+      friendRequest,
+    );
     return friendRequest;
   }
 
-  @Throttle(3, 10)
   @Patch(':id/accept')
   async acceptFriendRequest(
     @Req() req: AuthenticatedRequest,
@@ -62,7 +65,6 @@ export class FriendRequestController {
     return response;
   }
 
-  @Throttle(3, 10)
   @Delete(':id/cancel')
   async cancelFriendRequest(
     @Req() req: AuthenticatedRequest,
@@ -76,7 +78,6 @@ export class FriendRequestController {
     return response;
   }
 
-  @Throttle(3, 10)
   @Patch(':id/reject')
   async rejectFriendRequest(
     @Req() req: AuthenticatedRequest,

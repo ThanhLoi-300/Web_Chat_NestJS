@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { IFriendsService } from '../friends/friends';
 import { IUserService } from '../users/interfaces/user';
 import { Services } from '../utils/constants';
-import { FriendRequest } from '../utils/typeorm';
+import { FriendRequest, User } from '../utils/typeorm';
 import { Friend } from '../utils/typeorm/entities/Friend';
 import {
   CancelFriendRequestParams,
@@ -45,27 +45,25 @@ export class FriendRequestService implements IFriendRequestService {
     return friendRequest;
   }
 
-  async create({ user: sender, name }: CreateFriendParams) {
-    const receiver = await this.userService.findUserByEmail(name);
-    console.log(name)
+  async create({ user: sender, id }: CreateFriendParams) {
+    const receiver= await this.userService.findUser({id});
     console.log(JSON.stringify(receiver));
-    // if (!receiver) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    // const exists = await this.isPending(sender.id, receiver.id);
-    // if (exists) throw new HttpException('Friend Requesting Pending', HttpStatus.BAD_REQUEST);
-    // if (receiver.id === sender.id)
-    //   throw new HttpException('Friend Request Exception: Cannot Add Yourself',HttpStatus.BAD_REQUEST);
-    // const isFriends = await this.friendsService.isFriends(
-    //   sender.id,
-    //   receiver.id,
-    // );
-    // if (isFriends) throw new HttpException('Friend Already Exists', HttpStatus.CONFLICT);
-    // const friend = this.friendRequestRepository.create({
-    //   sender,
-    //   receiver,
-    //   status: 'pending',
-    // });
-    // return this.friendRequestRepository.save(friend);
-    return null
+    if (!receiver) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    const exists = await this.isPending(sender.id, receiver.id);
+    if (exists) throw new HttpException('Friend Requesting Pending', HttpStatus.BAD_REQUEST);
+    if (receiver.id === sender.id)
+      throw new HttpException('Friend Request Exception: Cannot Add Yourself',HttpStatus.BAD_REQUEST);
+    const isFriends = await this.friendsService.isFriends(
+      sender.id,
+      receiver.id,
+    );
+    if (isFriends) throw new HttpException('Friend Already Exists', HttpStatus.CONFLICT);
+    const friend = this.friendRequestRepository.create({
+      sender,
+      receiver,
+      status: 'pending',
+    });
+    return this.friendRequestRepository.save(friend);
   }
 
   async accept({ id, userId }: FriendRequestParams) {

@@ -358,7 +358,7 @@ export const MessageInput = styled.input`
 export const MessageItemContainer = styled.div<MessageOwnerProps>`
   display: flex;
   gap: 20px;
-  align-items: center;
+
   padding: 5px 0;
   word-break: break-word;
   width: 55%;
@@ -896,7 +896,7 @@ export const MessageAttachmentStyle = styled.div`
   padding: 50px 0 0 0;
   position: relative;
   max-height: 300px;
-  height: 300px;
+  height: 200px;
   background-color: #161616;
   margin: 10px 0;
   border-radius: 10px;

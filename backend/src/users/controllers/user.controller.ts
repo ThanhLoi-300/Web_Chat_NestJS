@@ -1,15 +1,18 @@
 import {
+  Body,
   Controller,
   Get,
   HttpException,
   HttpStatus,
   Inject,
+  Post,
   Query,
   Req,
 } from '@nestjs/common';
 import { Routes, Services } from '../../utils/constants';
 import { IUserService } from '../interfaces/user';
 import { AuthenticatedRequest } from 'src/utils/types';
+import { User } from 'src/utils/typeorm';
 
 @Controller(Routes.USERS)
 export class UsersController {
@@ -18,10 +21,13 @@ export class UsersController {
   ) {}
 
   @Get('search')
-  async searchUsers(@Req() req: AuthenticatedRequest, @Query('query') query: string) {
+  async searchUsers(
+    @Req() req: AuthenticatedRequest,
+    @Query('query') query: string,
+  ) {
     if (!query)
       throw new HttpException('Provide a valid query', HttpStatus.BAD_REQUEST);
-    const user = await this.userService.findUser({id: req.userId})
+    const user = await this.userService.findUser({ id: req.userId });
     return this.userService.searchUsers(query, user);
   }
 
@@ -32,10 +38,10 @@ export class UsersController {
 
   @Get('check')
   async checkUsername(@Query('name') name: string) {
-    if (!name)
-      throw new HttpException('Invalid Query', HttpStatus.BAD_REQUEST);
+    if (!name) throw new HttpException('Invalid Query', HttpStatus.BAD_REQUEST);
     const user = await this.userService.findUser({ name });
-    if (user) throw new HttpException('User already exists', HttpStatus.CONFLICT);
+    if (user)
+      throw new HttpException('User already exists', HttpStatus.CONFLICT);
     return HttpStatus.OK;
   }
 }

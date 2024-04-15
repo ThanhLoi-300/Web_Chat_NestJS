@@ -159,7 +159,7 @@ export type CheckUserGroupParams = {
 
 export type CreateFriendParams = {
   user: User;
-  name: string;
+  id: number;
 };
 
 export type FriendRequestStatus = 'accepted' | 'pending' | 'rejected';
