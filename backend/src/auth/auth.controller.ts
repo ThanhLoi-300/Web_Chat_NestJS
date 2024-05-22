@@ -22,6 +22,8 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/utils/typeorm';
 import * as crypto from 'crypto';
 import { AuthenticatedRequest } from 'src/utils/types';
+import { request } from 'http';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Controller(Routes.AUTH)
 export class AuthController {
@@ -30,6 +32,7 @@ export class AuthController {
     @Inject(Services.PUSHER_SESSION) readonly sessions: ISessionManager,
     @Inject(Services.USERS) private userService: IUserService,
     private jwtService: JwtService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   @Post('register')
@@ -41,9 +44,10 @@ export class AuthController {
   async login(@Body() infoLogin: LoginUserDto) {
     try {
       const user: User = await this.authService.validateUser(infoLogin);
-      const accessToken = this.jwtService.sign({ id: user.id });
-      this.sessions.setUserPusher(user)
-      console.log(this.sessions.getPushers.length)
+      const accessToken = this.jwtService.sign({ id: user._id });
+      this.sessions.setUserPusher(user);
+      // console.log(this.sessions.getPushers.length);
+      // this.eventEmitter.emit('createMessage', 'hello');
       return { access_token: accessToken };
     } catch (error) {
       throw new Error('Invalid credentials');
@@ -53,12 +57,11 @@ export class AuthController {
   @Get('status')
   @UseGuards(AuthenticatedGuard)
   async status(@Req() req: Request, @Res() res: Response) {
-    res.send(req.user);
+    // res.send(req.user);
   }
 
   @Post('logout')
-  logout(@Req() req: AuthenticatedRequest,) {
-    this.sessions.removeUserPusher(req.userId)
-    console.log(this.sessions.getPushers.length)
+  logout(@Req() req: AuthenticatedRequest) {
+    this.sessions.removeUserPusher(req.userId);
   }
 }

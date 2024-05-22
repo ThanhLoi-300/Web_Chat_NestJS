@@ -9,15 +9,15 @@ import { IUserProfile } from '../interfaces/user-profile';
 @Injectable()
 export class UserProfileService implements IUserProfile {
   constructor(
-    @InjectRepository(Profile)
-    private readonly profileRepository: Repository<Profile>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    // @InjectRepository(Profile)
+    // private readonly profileRepository: Repository<Profile>,
+    // @InjectRepository(User)
+    // private readonly userRepository: Repository<User>,
   ) {}
 
   createProfile() {
-    const newProfile = this.profileRepository.create();
-    return this.profileRepository.save(newProfile);
+    // const newProfile = this.profileRepository.create();
+    // return this.profileRepository.save(newProfile);
   }
 
   async createProfileOrUpdate(user: User, params: any) {

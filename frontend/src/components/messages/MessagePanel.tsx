@@ -24,8 +24,8 @@ import { MessagePanelHeader } from './MessagePanelHeader';
 import { MessageAttachmentContainer } from './attachments/MessageAttachmentContainer';
 import { MessageContainer } from './MessageContainer';
 import { MessageInputField } from './MessageInputField';
-import { uploadFile, uploadFiles } from '../../utils/uploadFile';
-import { CreateMessageParams1 } from '../../utils/types';
+import { uploadFiles } from '../../utils/uploadFile';
+import { CreateMessageParams } from '../../utils/types';
 
 type Props = {
     sendTypingStatus: () => void;
@@ -48,8 +48,9 @@ export const MessagePanel: FC<Props> = ({
     // const { error } = useToast({ theme: 'dark' });
     const { attachments } = useSelector((state: RootState) => state.messagePanel);
     const conversation = useSelector((state: RootState) =>
-        selectConversationById(state, parseInt(routeId!))
+        selectConversationById(state, routeId!)
     );
+
     const group = useSelector((state: RootState) =>
         selectGroupById(state, parseInt(routeId!))
     );
@@ -72,17 +73,20 @@ export const MessagePanel: FC<Props> = ({
         if (!trimmedContent && !attachments.length) return;
         const fb: string[] = await uploadFiles(attachments.map(attachment => attachment.file))
 
-        const data: CreateMessageParams1 = {
-            id: Number(routeId),
+        const data: CreateMessageParams = {
+            id: routeId,
             content: trimmedContent,
-            attachments: fb
+            attachments: fb,
+            user: user!
         }
+        console.log("data: "+JSON.stringify(data))
         try {
-            await createMessage(routeId, selectedType, data);
             setContent('');
             dispatch(removeAllAttachments());
             dispatch(clearAllMessages());
+            await createMessage(routeId, data);
         } catch (err) {
+            console.log("err"+ JSON.stringify(err))
             const axiosError = err as AxiosError;
             if (axiosError.response?.status === 429) {
                 // error('You are rate limited', { toastId });

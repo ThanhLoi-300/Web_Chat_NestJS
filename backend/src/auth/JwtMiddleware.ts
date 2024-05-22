@@ -1,6 +1,4 @@
 import {
-  HttpException,
-  HttpStatus,
   Inject,
   NestMiddleware,
 } from '@nestjs/common';

@@ -21,7 +21,7 @@ import {
   UpdateGroupAction,
   GroupParticipantLeftPayload,
 } from '../../utils/types';
-import Pusher from 'pusher-js';
+import { SocketContext } from '../../utils/context/SocketContext';
 export const GroupPage = () => {
   const { id } = useParams();
   const { user } = useContext(AuthContext);
@@ -29,9 +29,7 @@ export const GroupPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const pusher = new Pusher('e9de4cb87ed812e6153c', {
-    cluster: 'ap1',
-  });
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
     dispatch(updateType('group'));
@@ -47,64 +45,84 @@ export const GroupPage = () => {
   }, []);
 
   useEffect(() => {
-    if (id) {
-      const channel = pusher.subscribe(id);
-      channel.bind('createGroupMessage', (payload: GroupMessageEventPayload) => {
-        const { group } = payload;
-        dispatch(addGroupMessage(payload));
-        dispatch(updateGroup({ type: UpdateGroupAction.NEW_MESSAGE, group }));
-      });
+    socket.on('onGroupMessage', (payload: GroupMessageEventPayload) => {
+      console.log('Group Message Received');
+      const { group } = payload;
+      dispatch(addGroupMessage(payload));
+      dispatch(updateGroup({ type: UpdateGroupAction.NEW_MESSAGE, group }));
+    });
 
-      channel.bind('onGroupCreate', (payload: Group) => {
-        console.log('Group Created...');
-        dispatch(addGroup(payload));
-      });
+    socket.on('onGroupCreate', (payload: Group) => {
+      console.log('Group Created...');
+      dispatch(addGroup(payload));
+    });
 
-      channel.bind('onGroupUserAdd', (payload: AddGroupUserMessagePayload) => {
-        console.log('onGroupUserAdd');
-        console.log(payload);
-        dispatch(addGroup(payload.group));
-      });
+    /**
+     * Adds the group for the user being added
+     * to the group.
+     */
+    socket.on('onGroupUserAdd', (payload: AddGroupUserMessagePayload) => {
+      console.log('onGroupUserAdd');
+      console.log(payload);
+      dispatch(addGroup(payload.group));
+    });
 
-      channel.bind('onGroupReceivedNewUser', ({ group }: AddGroupUserMessagePayload) => {
+    /**
+     * Update all other clients in the room
+     * so that they can also see the participant
+     */
+    socket.on(
+      'onGroupReceivedNewUser',
+      ({ group }: AddGroupUserMessagePayload) => {
         console.log('Received onGroupReceivedNewUser');
         dispatch(updateGroup({ group }));
-      });
+      }
+    );
 
-      channel.bind('onGroupRecipientRemoved', ({ group }: RemoveGroupUserMessagePayload) => {
+    socket.on(
+      'onGroupRecipientRemoved',
+      ({ group }: RemoveGroupUserMessagePayload) => {
         console.log('onGroupRecipientRemoved');
         dispatch(updateGroup({ group }));
-      });
+      }
+    );
 
-      channel.bind('onGroupRemoved', (payload: RemoveGroupUserMessagePayload) => {
-        dispatch(removeGroup(payload.group));
-        if (id && parseInt(id) === payload.group.id) {
-          console.log('Navigating User to /groups');
-          navigate('/groups');
-        }
-      });
+    socket.on('onGroupRemoved', (payload: RemoveGroupUserMessagePayload) => {
+      dispatch(removeGroup(payload.group));
+      if (id && parseInt(id) === payload.group.id) {
+        console.log('Navigating User to /groups');
+        navigate('/groups');
+      }
+    });
 
-      channel.bind('onGroupParticipantLeft', ({ group, userId }: GroupParticipantLeftPayload) => {
+    socket.on(
+      'onGroupParticipantLeft',
+      ({ group, userId }: GroupParticipantLeftPayload) => {
         console.log('onGroupParticipantLeft received');
         dispatch(updateGroup({ group }));
-        if (userId === user?.id) {
+        if (userId === user?._id) {
           console.log('payload.userId matches user.id...');
           dispatch(removeGroup(group));
           navigate('/groups');
         }
-      });
+      }
+    );
 
-      channel.bind('onGroupOwnerUpdate', (group: Group) => {
-        console.log('received onGroupOwnerUpdate');
-        dispatch(updateGroup({ group }));
-      });
+    socket.on('onGroupOwnerUpdate', (group: Group) => {
+      console.log('received onGroupOwnerUpdate');
+      dispatch(updateGroup({ group }));
+    });
 
-      return () => {
-        channel.unbind_all();
-        channel.unsubscribe();
-        pusher.disconnect();
-      };
-    }
+    return () => {
+      socket.off('onGroupMessage');
+      socket.off('onGroupCreate');
+      socket.off('onGroupUserAdd');
+      socket.off('onGroupReceivedNewUser');
+      socket.off('onGroupRecipientRemoved');
+      socket.off('onGroupRemoved');
+      socket.off('onGroupParticipantLeft');
+      socket.off('onGroupOwnerUpdate');
+    };
   }, [id]);
 
   return (

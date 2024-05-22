@@ -6,8 +6,6 @@ import { SocketContext } from '../../utils/context/SocketContext';
 import { ConversationChannelPageStyle } from '../../utils/styles';
 import { AppDispatch } from '../../store';
 import { fetchMessagesThunk } from '../../store/Messages/messageThunk';
-import { editMessage } from '../../store/Messages/messageSlice';
-import Pusher from 'pusher-js';
 import { toast } from 'react-toastify';
 import { updateToken, typingText } from '../../utils/api';
 
@@ -19,35 +17,41 @@ export const ConversationChannelPage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isRecipientTyping, setIsRecipientTyping] = useState(false);
 
-  const pusher: Pusher = new Pusher('e9de4cb87ed812e6153c', {
-    cluster: 'ap1',
-  });
-
   useEffect(() => {
-    const conversationId = parseInt(id!);
+    const conversationId = id!;
     dispatch(fetchMessagesThunk(conversationId));
   }, [id]);
 
   useEffect(() => {
-    const channel = pusher.subscribe(id!);
-    channel.bind('onTypingStart', () => {
-      toast.success('onTypingStart: User has started typing...');
+    const conversationId = id!;
+    socket.emit('onConversationJoin', { conversationId });
+    socket.on('userJoin', () => {
+      console.log('userJoin');
+    });
+    socket.on('userLeave', () => {
+      console.log('userLeave');
+    });
+    socket.on('onTypingStart', () => {
+      console.log('onTypingStart: User has started typing...');
       setIsRecipientTyping(true);
     });
-    channel.bind('onTypingStop', () => {
-      toast.error('onTypingStop: User has stopped typing...');
+    socket.on('onTypingStop', () => {
+      console.log('onTypingStop: User has stopped typing...');
       setIsRecipientTyping(false);
     });
-    // channel.bind('onMessageUpdate', (message) => {
+    // socket.on('onMessageUpdate', (message) => {
     //   console.log('onMessageUpdate received');
     //   console.log(message);
     //   dispatch(editMessage(message));
     // });
 
     return () => {
-      channel.unbind_all();
-      channel.unsubscribe();
-      pusher.disconnect();
+      socket.emit('onConversationLeave', { conversationId });
+      socket.off('userJoin');
+      socket.off('userLeave');
+      socket.off('onTypingStart');
+      socket.off('onTypingStop');
+      // socket.off('onMessageUpdate');
     };
   }, [id]);
 

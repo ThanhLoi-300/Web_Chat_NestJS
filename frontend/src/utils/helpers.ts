@@ -31,9 +31,9 @@ export const getRecipientFromConversation = (
   conversation?: Conversation,
   user?: User
 ) => {
-  return user?.id === conversation?.creator.id
-    ? conversation?.recipient
-    : conversation?.creator;
+  return user?._id !== conversation?.member[0]._id
+    ? conversation?.member[0]
+    : conversation?.member[1];
 };
 
 export const getUserContextMenuIcon = (type: UserContextMenuActionType) => {
@@ -48,7 +48,7 @@ export const getUserContextMenuIcon = (type: UserContextMenuActionType) => {
 };
 
 export const isGroupOwner = (user?: User, group?: Group) =>
-  user?.id === group?.owner.id;
+  user?._id === group?.owner._id;
 
 export const getUserSidebarIcon = (id: UserSidebarRouteType) => {
   switch (id) {
@@ -86,7 +86,7 @@ export const getFriendRequestDetails = (
   { receiver, sender }: FriendRequest,
   user?: User
 ): FriendRequestDetailsType =>
-  user?.id === receiver.id
+  user?._id === receiver._id
     ? {
         status: 'Incoming Friend Request',
         displayName: sender.name,
@@ -104,6 +104,6 @@ export const getUserFriendInstance = (
   authenticatedUser: User,
   selectedFriend: Friend
 ) =>
-  authenticatedUser?.id === selectedFriend?.sender.id
+  authenticatedUser?._id === selectedFriend?.sender._id
     ? selectedFriend?.receiver
     : selectedFriend?.sender;

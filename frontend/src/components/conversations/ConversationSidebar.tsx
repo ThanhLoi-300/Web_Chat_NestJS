@@ -26,6 +26,7 @@ import { getConversations } from '../../utils/api';
 
 const ConversationSidebar = () => {
     const [showModal, setShowModal] = useState(false);
+    const [search, setSearch] = useState('');
     const dispatch = useDispatch<AppDispatch>();
     const conversations = useSelector(
         (state: RootState) => state.conversation.conversations
@@ -35,6 +36,7 @@ const ConversationSidebar = () => {
         // setConversations([])
         console.log('state.conversations' + JSON.stringify(conversations))
     }, [conversations])
+
     const showGroupContextMenu = useSelector(
         (state: RootState) => state.groups.showGroupContextMenu
     );
@@ -45,7 +47,21 @@ const ConversationSidebar = () => {
         (state: RootState) => state.selectedConversationType.type
     );
 
-    const onGroupContextMenu = (event: ContextMenuEvent, group: Group) => {
+    const searchConversation = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        setSearch(value);
+
+        // try {
+        //     const response = await fetch(`/api/conversations?q=${value}`);
+        //     const data = await response.json();
+        //     // Xử lý dữ liệu trả về từ API ở đây
+        //     console.log(data);
+        // } catch (error) {
+        //     console.error('Error searching conversations:', error);
+        // }
+    };
+
+    const onGroupContextMenu = (event: ContextMenuEvent, group: Conversation) => {
         event.preventDefault();
         console.log('Group Context Menu');
         console.log(group);
@@ -55,7 +71,7 @@ const ConversationSidebar = () => {
     };
 
     useEffect(() => {
-        const handleResize = (e: UIEvent) => dispatch(toggleContextMenu(false));
+        const handleResize = () => dispatch(toggleContextMenu(false));
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -75,38 +91,32 @@ const ConversationSidebar = () => {
             )}
             <SidebarStyle>
                 <SidebarHeader>
-                    <ConversationSearchbar placeholder="Search for Conversations" />
-                    {conversationType === 'private' ? (
-                        <ChatAdd
-                            size={30}
-                            cursor="pointer"
-                            onClick={() => setShowModal(true)}
-                        />
-                    ) : (
-                        <AiOutlineUsergroupAdd
-                            size={30}
-                            cursor="pointer"
-                            onClick={() => setShowModal(true)}
-                        />
-                    )}
+                    <ConversationSearchbar placeholder="Search for Conversations" onChange={searchConversation}/>
+                    <ChatAdd
+                        size={30}
+                        cursor="pointer"
+                        onClick={() => setShowModal(true)}
+                    />
+                    <AiOutlineUsergroupAdd
+                        size={30}
+                        cursor="pointer"
+                        onClick={() => setShowModal(true)}
+                    />
                 </SidebarHeader>
                 <ConversationTab />
                 <ScrollableContainer>
                     <SidebarContainerStyle>
-                        {conversationType === 'private'
-                            ? conversations.map((conversation: Conversation) => (
-                                <ConversationSidebarItem
-                                    key={conversation.id}
-                                    conversation={conversation}
-                                />
-                            ))
-                            : groups.map((group: Group) => (
-                                <GroupSidebarItem
-                                    key={group.id}
-                                    group={group}
-                                    onContextMenu={onGroupContextMenu}
-                                />
-                            ))}
+                        {conversations.map((conversation: Conversation) => (
+                            conversation.type === 'private' ? 
+                            (
+                            <ConversationSidebarItem
+                                key={conversation._id}
+                                conversation={conversation}
+                                    />) : (<GroupSidebarItem
+                                    key={conversation._id}
+                                    group={conversation}
+                                        onContextMenu={onGroupContextMenu}
+                                    />)))}
                         {showGroupContextMenu && <GroupSidebarContextMenu />}
                     </SidebarContainerStyle>
                 </ScrollableContainer>

@@ -27,24 +27,36 @@ export type UserPeer = {
 };
 
 export type User = {
-  id: number;
+  _id: string;
   email: string;
   name: string;
-  profile?: Profile;
-  presence?: UserPresence;
-  peer: UserPeer;
+  avatar: string;
+  banner: string;
+  // profile?: Profile;
+  // presence?: UserPresence;
+  // peer: UserPeer;
 };
 
 export type Conversation = {
-  id: number;
-  creator: User;
-  recipient: User;
-  createdAt: string;
-  lastMessageSent: MessageType;
+  _id?: string;
+  type: string;
+  nameGroup?: string;
+  imgGroup?: string;
+  member: User[];
+  lastMessageId?: Message;
+  owner: User
+};
+
+export type Message = {
+  _id?: string;
+  content?: string;
+  conversationId?: string;
+  senderId?: User;
+  img?: string[];
 };
 
 export type CreateConversationParams = {
-  id: number;
+  id: string;
 };
 
 export type MessageAttachment = {
@@ -52,16 +64,18 @@ export type MessageAttachment = {
 };
 
 export type MessageType = {
-  id: number;
+  _id: string;
   content?: string;
   createdAt: string;
-  author: User;
+  senderId: User;
   conversation: Conversation;
-  attachments?: string[];
+  seen: User[],
+  img: string[],
+  isdeleted: boolean,
 };
 
 export type GroupMessageType = {
-  id: number;
+  id: string;
   content?: string;
   createdAt: string;
   author: User;
@@ -70,7 +84,7 @@ export type GroupMessageType = {
 };
 
 export type FetchMessagePayload = {
-  id: number;
+  _id: string;
   messages: MessageType[];
 };
 
@@ -85,18 +99,14 @@ export type MessageEventPayload = {
 };
 
 export type CreateMessageParams = {
-  id: number;
-  content: string;
-};
-
-export type CreateMessageParams1 = {
-  id: number;
+  id: string;
   content: string;
   attachments?: string[];
+  user: User;
 };
 
 export type ConversationMessage = {
-  id: number;
+  _id: string;
   messages: MessageType[];
 };
 
@@ -116,8 +126,8 @@ export type DeleteGroupMessageParams = {
 };
 
 export type DeleteMessageResponse = {
-  conversationId: number;
-  messageId: number;
+  conversationId: string;
+  messageId: string;
 };
 
 export type DeleteGroupMessageResponse = {
@@ -130,8 +140,8 @@ export type MessagePanelBodyProps = {
 };
 
 export type EditMessagePayload = {
-  id: number;
-  messageId: number;
+  id: string;
+  messageId: string;
   content: string;
 };
 
@@ -143,7 +153,7 @@ export type ConversationTypeData = {
 };
 
 export type Group = {
-  id: number;
+  id: string;
   title?: string;
   users: User[];
   creator: User;
@@ -333,7 +343,7 @@ export type CallInitiatePayload = {
 export type CallType = 'video' | 'audio';
 
 export type UpdateGroupDetailsPayload = {
-  id: number;
+  id: string;
   data: FormData;
 };
 
@@ -343,10 +353,10 @@ export enum UpdateGroupAction {
 
 export type UpdateGroupPayload = {
   type?: UpdateGroupAction;
-  group: Group;
+  group: Conversation;
 };
 
 export type GroupParticipantLeftPayload = {
   group: Group;
-  userId: number;
+  userId: string;
 };

@@ -1,34 +1,30 @@
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn, } from 'typeorm';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Message } from './Message';
 import { User } from './User';
+import mongoose, { Types } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
-@Entity({ name: 'conversations' })
-@Index(['creator.id', 'recipient.id'], { unique: true })
+@Schema({ collection: 'conversations' })
 export class Conversation {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @Prop({ type: String, default: uuidv4 })
+  _id: string;
 
-  @OneToOne(() => User, { createForeignKeyConstraints: false })
-  @JoinColumn()
-  creator: User;
+  @Prop([{ type: String, ref: 'User' }])
+  member: string[] | User[];
 
-  @OneToOne(() => User, { createForeignKeyConstraints: false })
-  @JoinColumn()
-  recipient: User;
+  @Prop()
+  type: string;
 
-  @OneToMany(() => Message, (message) => message.conversation, {
-    cascade: ['insert', 'remove', 'update'],
-  })
-  @JoinColumn()
-  messages: Message[];
+  @Prop()
+  nameGroup: string;
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: number;
+  @Prop()
+  imgGroup: string;
 
-  @OneToOne(() => Message)
-  @JoinColumn({ name: 'last_message_sent' })
-  lastMessageSent: Message;
+  @Prop({ type: String, ref: 'User' })
+  owner: string | User;
 
-  @UpdateDateColumn({ name: 'updated_at' })
-  lastMessageSentAt: Date;
+  @Prop({ type: String, ref: 'Message' })
+  lastMessageId: string | Message;
 }
+export const ConversationSchema = SchemaFactory.createForClass(Conversation);

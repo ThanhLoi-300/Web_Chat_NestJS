@@ -22,12 +22,15 @@ import { FriendRequestPage } from "./pages/friends/FriendRequestPage";
 import { SettingsPage } from './pages/settings/SettingsPage';
 import { SettingsProfilePage } from './pages/settings/SettingsProfilePage';
 import { SettingsAppearancePage } from './pages/settings/SettingsAppearancePage';
+import { Socket } from 'socket.io-client';
+import { socket, SocketContext } from './utils/context/SocketContext';
 
 enableMapSet()
 
 type Props = {
   user?: User;
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
+  socket: Socket;
 };
 
 function AppWithProviders({
@@ -38,7 +41,9 @@ function AppWithProviders({
   return (
     <ReduxProvider store={store}>
       <AuthContext.Provider value={{ user, updateAuthUser: setUser }}>
-        {children}
+        <SocketContext.Provider value={socket}>
+          {children}
+        </SocketContext.Provider>
       </AuthContext.Provider>
     </ReduxProvider>
   );
@@ -49,7 +54,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <AppWithProviders user={user} setUser={setUser}>
+        <AppWithProviders user={user} setUser={setUser} socket={socket}>
           <Routes>
             <Route path="/register" element={<RegisterPage />}></Route>
             <Route path="/login" element={<LoginPage />}></Route>

@@ -13,6 +13,7 @@ import { Routes, Services } from '../../utils/constants';
 import { IUserService } from '../interfaces/user';
 import { AuthenticatedRequest } from 'src/utils/types';
 import { User } from 'src/utils/typeorm';
+import { Types } from 'mongoose';
 
 @Controller(Routes.USERS)
 export class UsersController {
@@ -27,13 +28,13 @@ export class UsersController {
   ) {
     if (!query)
       throw new HttpException('Provide a valid query', HttpStatus.BAD_REQUEST);
-    const user = await this.userService.findUser({ id: req.userId });
+    const user = await this.userService.findUser({ _id: req.userId });
     return this.userService.searchUsers(query, user);
   }
 
   @Get()
-  getUser(@Req() req: AuthenticatedRequest) {
-    return this.userService.findUser({ id: req.userId });
+  async getUser(@Req() req: AuthenticatedRequest) {
+    return await this.userService.findUser({ _id: req.userId });
   }
 
   @Get('check')

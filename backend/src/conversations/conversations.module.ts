@@ -8,14 +8,21 @@ import { UsersModule } from 'src/users/users.module';
 import { isAuthorized } from 'src/utils/helpers';
 import { ConversationMiddleware } from './middlewares/conversation.middleware';
 import { JwtMiddleware } from 'src/auth/JwtMiddleware';
-import { PusherHelper } from 'src/utils/PusherHelper';
-import { FriendsModule } from 'src/friends/friends.module';
+// import { PusherHelper } from 'src/utils/PusherHelper';
+// import { FriendsModule } from 'src/friends/friends.module';
+import { ConversationSchema } from 'src/utils/typeorm/entities/Conversation';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MessageSchema } from 'src/utils/typeorm/entities/Message';
+import { SocketService } from 'src/utils/SocketService';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Conversation, Message]),
+    MongooseModule.forFeature([
+      { name: Conversation.name, schema: ConversationSchema },
+      { name: Message.name, schema: MessageSchema },
+    ]),
     UsersModule,
-    FriendsModule,
+    // FriendsModule,
   ],
   controllers: [ConversationsController],
   providers: [
@@ -23,7 +30,8 @@ import { FriendsModule } from 'src/friends/friends.module';
       provide: Services.CONVERSATIONS,
       useClass: ConversationsService,
     },
-    PusherHelper,
+    // PusherHelper,
+    SocketService,
   ],
   exports: [
     {

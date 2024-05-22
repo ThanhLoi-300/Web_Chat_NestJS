@@ -2,12 +2,12 @@ import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { MessageItemContent } from '../../utils/styles';
-import { GroupMessageType, MessageType } from '../../utils/types';
+import { MessageType } from '../../utils/types';
 import { MessageItemAttachmentContainer } from './attachments/MessageItemAttachmentContainer';
 import { EditMessageContainer } from './EditMessageContainer';
 
 type Props = {
-    message: MessageType | GroupMessageType;
+    message: MessageType;
     onEditMessageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     padding: string;
     owner: boolean;
@@ -25,19 +25,21 @@ export const MessageItemContainerBody: FC<Props> = ({
 
     return (
         <>
-            {isEditingMessage && message.id === messageBeingEdited?.id ? (
+            {isEditingMessage && message._id === messageBeingEdited?._id ? (
                 <MessageItemContent padding={padding} owner={owner}>
                     <EditMessageContainer onEditMessageChange={onEditMessageChange} />
                 </MessageItemContent>
             ) : (
                 <div style={{ marginRight: owner ? 0 : 'auto', marginLeft: owner ? 'auto' : 0 }}>
-                    <MessageItemContent padding={padding} owner={owner}>
-                        {message.content || null}
-                    </MessageItemContent>
-                    {message.attachments?.length === 0 ? null :
+                    {message.content && (
+                        <MessageItemContent padding={padding} owner={owner}>
+                            {message.content}
+                        </MessageItemContent>
+                    )}
+                    {message.img?.length === 0 ? null :
                         (
                             <MessageItemContent padding={padding} owner={owner}>
-                                <MessageItemAttachmentContainer message={message} />
+                                <MessageItemAttachmentContainer message={message} owner={owner} />
                             </MessageItemContent>
                         )
                     }

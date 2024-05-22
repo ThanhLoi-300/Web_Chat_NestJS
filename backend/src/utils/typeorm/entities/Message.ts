@@ -1,13 +1,33 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { BaseMessage } from './BaseMessage';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Conversation } from './Conversation';
-import { Transform } from 'class-transformer';
+import { User } from './User';
+import { v4 as uuidv4 } from 'uuid';
 
-@Entity({ name: 'messages' })
-export class Message extends BaseMessage {
-  @ManyToOne(() => Conversation, (conversation) => conversation.messages)
-  conversation: Conversation;
+@Schema({ collection: 'messages' })
+export class Message {
+  @Prop({ type: String, default: uuidv4 })
+  _id: string;
 
-  @Column({ type: 'simple-array', nullable: true })
-  attachments: string[];
+  @Prop()
+  content: string;
+
+  @Prop()
+  img: string[];
+
+  @Prop({ default: false })
+  isdeleted: boolean;
+
+  @Prop({ type: [{ type: String, ref: 'User' }] })
+  seen: string[] | User[];
+
+  @Prop({ type: String, ref: 'User' })
+  senderId: string | User;
+
+  @Prop({ type: String, ref: 'Conversation' })
+  conversationId: string | Conversation;
+
+  @Prop({ default: Date.now })
+  createdAt: Date;
 }
+
+export const MessageSchema = SchemaFactory.createForClass(Message);

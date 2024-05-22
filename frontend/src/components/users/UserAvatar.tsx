@@ -11,10 +11,8 @@ type Props = {
 
 export const UserAvatar: FC<Props> = ({ user, onClick }) => {
     const getProfilePicture = () => {
-        const { profile } = user;
-        return profile && profile.avatar
-            ? CDN_URL.BASE.concat(profile.avatar)
-            : defaultAvatar;
+        const { avatar } = user;
+        return avatar ? CDN_URL.BASE.concat(avatar) : defaultAvatar;
     };
 
     return (

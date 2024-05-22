@@ -1,45 +1,45 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { CDN_URL } from '../../utils/constants';
 import { ConversationSidebarItemStyle } from '../../utils/styles';
-import { ContextMenuEvent, Group } from '../../utils/types';
+import { ContextMenuEvent, Conversation, Group } from '../../utils/types';
 import { PeopleGroup } from 'akar-icons';
 
 import styles from './index.module.scss';
 
 type Props = {
-    group: Group;
-    onContextMenu: (event: ContextMenuEvent, group: Group) => void;
+    group: Conversation;
+    onContextMenu: (event: ContextMenuEvent, group: Conversation) => void;
 };
 
 export const GroupSidebarItem: React.FC<Props> = ({ group, onContextMenu }) => {
     const { id } = useParams();
     const MAX_TITLE_LENGTH = 20;
-    const MAX_MESSAGE_LENGTH = 50;
+    const MESSAGE_LENGTH_MAX = 10;
     const navigate = useNavigate();
 
     const getTransformedTitle = () => {
-        if (!group.title) {
-            const usersToString = group.users
-                .map((user) => user.firstName)
+        if (!group.nameGroup) {
+            const usersToString = group.member
+                .map((user) => user.name)
                 .join(', ');
             return usersToString.length > MAX_TITLE_LENGTH
                 ? usersToString.slice(0, MAX_TITLE_LENGTH).concat('...')
                 : usersToString;
         }
-        return group.title.length > MAX_TITLE_LENGTH
-            ? group.title.slice(0, MAX_TITLE_LENGTH).concat('...')
-            : group.title;
+        return group.nameGroup.length > MAX_TITLE_LENGTH
+            ? group.nameGroup.slice(0, MAX_TITLE_LENGTH).concat('...')
+            : group.nameGroup;
     };
 
     return (
         <ConversationSidebarItemStyle
-            onClick={() => navigate(`/groups/${group.id}`)}
+            onClick={() => navigate(`/groups/${group._id}`)}
             onContextMenu={(e) => onContextMenu(e, group)}
-            selected={parseInt(id!) === group.id}
+            selected={id! === group._id}
         >
-            {group.avatar ? (
+            {group.imgGroup ? (
                 <img
-                    src={CDN_URL.BASE.concat(group.avatar)}
+                    src={CDN_URL.BASE.concat(group.imgGroup)}
                     alt="avatar"
                     className={styles.groupAvatar}
                 />
@@ -51,7 +51,7 @@ export const GroupSidebarItem: React.FC<Props> = ({ group, onContextMenu }) => {
             <div>
                 <span className="title">{getTransformedTitle()}</span>
                 <span className={styles.groupLastMessage}>
-                    {group.lastMessageSent?.content}
+                    {group.lastMessageId?.content}
                 </span>
             </div>
         </ConversationSidebarItemStyle>

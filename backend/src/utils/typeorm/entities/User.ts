@@ -1,40 +1,26 @@
-import { Exclude } from 'class-transformer';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Group } from './Group';
-import { Message } from './Message';
-import { Profile } from './Profile';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Types } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
-@Entity({ name: 'users' })
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+@Schema({ collection: 'users' })
+export class User extends Document {
+  @Prop({ type: String, default: uuidv4 })
+  _id: string;
 
-  @Column({ nullable: true })
+  @Prop()
   email: string;
 
-  @Column()
+  @Prop()
   name: string;
 
-  @Column()
-  @Exclude()
+  @Prop()
   password: string;
 
-  @OneToMany(() => Message, (message) => message.author)
-  @JoinColumn()
-  messages: Message[];
+  @Prop()
+  avatar: string;
 
-  @ManyToMany(() => Group, (group) => group.users)
-  groups: Group[];
-
-  @OneToOne(() => Profile, { cascade: ['insert', 'update'] })
-  @JoinColumn()
-  profile: Profile;
+  @Prop()
+  banner: string;
 }
+
+export const UserSchema = SchemaFactory.createForClass(User);

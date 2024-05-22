@@ -1,118 +1,151 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IMessageService } from './message';
 import { Conversation, Message } from 'src/utils/typeorm';
-import { CreateMessageParams, CreateMessageResponse, DeleteMessageParams, EditMessageParams } from 'src/utils/types';
+import {
+  CreateMessageParams,
+  CreateMessageResponse,
+  DeleteMessageParams,
+  EditMessageParams,
+  deleteMessageResponse,
+} from 'src/utils/types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Services } from 'src/utils/constants';
 import { IConversationsService } from 'src/conversations/conversation';
 import { instanceToPlain } from 'class-transformer';
-import { IFriendsService } from 'src/friends/friends';
+import { InjectModel } from '@nestjs/mongoose';
+import mongoose, { Model } from 'mongoose';
+// import { IFriendsService } from 'src/friends/friends';
 
 @Injectable()
 export class MessageService implements IMessageService {
   constructor(
-    @InjectRepository(Message)
-    private readonly messageRepository: Repository<Message>,
+    @InjectModel(Message.name)
+    private readonly messageModel: Model<Message>,
     @Inject(Services.CONVERSATIONS)
     private readonly conversationService: IConversationsService,
-    @Inject(Services.FRIENDS_SERVICE)
-    private readonly friendsService: IFriendsService,
+    // @Inject(Services.FRIENDS_SERVICE)
+    // private readonly friendsService: IFriendsService,
   ) {}
 
   async createMessage(
     params: CreateMessageParams,
   ): Promise<CreateMessageResponse> {
     const { user, content, id } = params;
-    const conversation = await this.conversationService.findById(id);
+    const conversation = await this.conversationService.findById(id, user._id);
 
     // if (!conversation) throw new ConversationNotFoundException();
 
-    const { creator, recipient } = conversation;
-    const isFriends = await this.friendsService.isFriends(
-      creator.id,
-      recipient.id,
-    );
+    // const { creator, recipient } = conversation;
+    // const isFriends = await this.friendsService.isFriends(
+    //   creator.id,
+    //   recipient.id,
+    // );
 
     // if (!isFriends) throw new FriendNotFoundException();
 
     // if (creator.id !== user.id && recipient.id !== user.id) throw new CannotCreateMessageException();
 
-    const message = this.messageRepository.create({
+    const message = new this.messageModel({
       content,
-      conversation,
-      author: instanceToPlain(user),
-      attachments: params.attachments,
+      conversationId: conversation._id,
+      senderId: user._id,
+      img: params.attachments,
+      seen: [user._id],
     });
 
-    const savedMessage = await this.messageRepository.save(message);
+    const savedMessage = await message.save();
 
-    conversation.lastMessageSent = savedMessage;
+    conversation!.lastMessageId = savedMessage._id;
 
-    const updated = await this.conversationService.save(conversation);
+    const messageResponse = await this.messageModel
+      .findById(savedMessage._id)
+      .populate('seen')
+      .populate('senderId')
+      .populate('conversationId');
 
-    return { message: savedMessage, conversation: updated };
-  }
-
-  getMessages(conversationId: number): Promise<Message[]> {
-    return this.messageRepository.find({
-      relations: ['author', 'author.profile'],
-      where: { conversation: { id: conversationId } },
-      order: { createdAt: 'DESC' },
+    const updated = await this.conversationService.update({
+      id,
+      lastMessage: savedMessage._id,
     });
+
+    return { message: messageResponse, conversation: updated };
   }
 
-  async deleteMessage(params: DeleteMessageParams) {
-    const { conversationId } = params;
-    const msgParams = { id: conversationId, limit: 5 };
-    const conversation = await this.conversationService.getMessages(msgParams);
-    // if (!conversation) throw new ConversationNotFoundException();
-    // const findMessageParams = buildFindMessageParams(params);
-    // const message = await this.messageRepository.findOne(findMessageParams);
-    // if (!message) throw new CannotDeleteMessage();
-    // if (conversation.lastMessageSent.id !== message.id)
-    //     return this.messageRepository.delete({ id: message.id });
-    // return this.deleteLastMessage(conversation, message);
+  async getMessages(conversationId: string): Promise<Message[]> {
+    return this.messageModel
+      .find({ conversationId })
+      .sort({ createdAt: -1 })
+      .populate('seen')
+      .populate('senderId');
   }
 
-  async deleteLastMessage(conversation: Conversation, message: Message) {
-    const size = conversation.messages.length;
-    const SECOND_MESSAGE_INDEX = 1;
-    if (size <= 1) {
-      console.log('Last Message Sent is deleted');
-      await this.conversationService.update({
-        id: conversation.id,
-        lastMessageSent: null,
-      });
-      return this.messageRepository.delete({ id: message.id });
-    } else {
-      console.log('There are more than 1 message');
-      const newLastMessage = conversation.messages[SECOND_MESSAGE_INDEX];
-      await this.conversationService.update({
-        id: conversation.id,
-        lastMessageSent: newLastMessage,
-      });
-      return this.messageRepository.delete({ id: message.id });
+  async deleteMessage(
+    params: DeleteMessageParams,
+  ): Promise<deleteMessageResponse> {
+    const { conversationId, messageId, userId, img } = params;
+
+    let message = await this.messageModel.findById(messageId);
+
+    if (!img) message.isdeleted = true;
+    else {
+      message.img = message.img.filter((item: string) =>
+        item !== img ? item : '',
+      );
     }
+    const mesageUpdated = await message.save();
+    let conversation = await this.conversationService.findById(
+      conversationId,
+      userId,
+    );
+    if (conversation.lastMessageId === mesageUpdated._id) {
+      conversation.lastMessageId = mesageUpdated._id;
+      conversation = await this.conversationService.update({
+        id: conversationId,
+        lastMessage: mesageUpdated._id,
+      });
+    }
+    return { conversation, messageDelete: mesageUpdated };
   }
 
-  async editMessage(params: EditMessageParams) {
-    const messageDB = await this.messageRepository.findOne({
-      where: {
-        id: params.messageId,
-        author: { id: params.userId },
-      },
-      relations: [
-        'conversation',
-        'conversation.creator',
-        'conversation.recipient',
-        'author',
-        'author.profile',
-      ],
-    });
-    // if (!messageDB)
-    // throw new HttpException('Cannot Edit Message', HttpStatus.BAD_REQUEST);
-    messageDB.content = params.content;
-    return this.messageRepository.save(messageDB);
-  }
+  // async deleteLastMessage(conversation: Conversation, message: Message) {
+  //   const size = conversation.messages.length;
+  //   const SECOND_MESSAGE_INDEX = 1;
+  //   if (size <= 1) {
+  //     console.log('Last Message Sent is deleted');
+  //     await this.conversationService.update({
+  //       id: conversation.id,
+  //       lastMessageSent: null,
+  //     });
+  //     return this.messageRepository.delete({ id: message.id });
+  //   } else {
+  //     console.log('There are more than 1 message');
+  //     const newLastMessage = conversation.messages[SECOND_MESSAGE_INDEX];
+  //     await this.conversationService.update({
+  //       id: conversation.id,
+  //       lastMessageSent: newLastMessage,
+  //     });
+  //     return this.messageRepository.delete({ id: message.id });
+  //   }
+  // }
+
+  // async editMessage(params: EditMessageParams) {
+  //   const messageDB = await this.messageRepository.findOne({
+  //     where: {
+  //       id: params.messageId,
+  //       author: { id: params.userId },
+  //     },
+  //     relations: [
+  //       'conversation',
+  //       'conversation.creator',
+  //       'conversation.recipient',
+  //       'author',
+  //       'author.profile',
+  //     ],
+  //   });
+  //   // if (!messageDB)
+  //   // throw new HttpException('Cannot Edit Message', HttpStatus.BAD_REQUEST);
+  //   messageDB.content = params.content;
+  //   return this.messageRepository.save(messageDB);
+  // }
 }

@@ -3,7 +3,6 @@ import { AuthenticatedRequest } from './types';
 import { NextFunction } from 'express';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import sharp from 'sharp';
 
 export async function hashPassword(rawPassword: string){
     const salt = await bcrypt.genSalt()
@@ -19,7 +18,7 @@ export function isAuthorized(
   res: Response,
   next: NextFunction,
 ) {
-  console.log('isAuthorized');
+  // console.log('isAuthorized: ' + req.userId);
   if (req.userId) next();
   else throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
 }

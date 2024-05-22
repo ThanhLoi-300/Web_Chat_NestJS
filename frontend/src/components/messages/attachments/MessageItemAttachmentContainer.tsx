@@ -1,15 +1,15 @@
 import { FC, useState } from 'react';
 import { MdClose } from 'react-icons/md';
-import { CDN_URL } from '../../../utils/constants';
 import { useKeydown } from '../../../utils/hooks';
 import { OverlayStyle } from '../../../utils/styles';
-import { GroupMessageType, MessageType } from '../../../utils/types';
+import { MessageType } from '../../../utils/types';
 import styles from '../index.module.scss';
 
 type Props = {
-    message: MessageType | GroupMessageType;
+    message: MessageType;
+    owner: boolean;
 };
-export const MessageItemAttachmentContainer: FC<Props> = ({ message }) => {
+export const MessageItemAttachmentContainer: FC<Props> = ({ message, owner }) => {
     const [showOverlay, setShowOverlay] = useState(false);
     const [imageUrl, setImageUrl] = useState('');
 
@@ -33,15 +33,15 @@ export const MessageItemAttachmentContainer: FC<Props> = ({ message }) => {
                     <img src={imageUrl} alt="overlay" style={{ maxHeight: '90%' }} />
                 </OverlayStyle>
             )}
-            <div style={{ marginTop: '30px' }}>
-                {message.attachments?.map((attachment) => (
+            <div>
+                {message.img?.map((attachment) => (
                     <img
                         key={attachment}
                         src={attachment}
                         width={150}
                         alt={attachment}
                         onClick={() => onClick(attachment)}
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', marginLeft: '5px', float: owner ? 'right' : 'left'}}
                     />
                 ))}
             </div>

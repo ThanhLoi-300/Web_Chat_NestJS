@@ -10,9 +10,9 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { IConversationsService } from '../conversations/conversation';
+// import { IConversationsService } from '../conversations/conversation';
 // import { IFriendsService } from '../friends/friends';
-import { IGroupService } from '../groups/interfaces/group';
+// import { IGroupService } from '../groups/interfaces/group';
 import { Services, WebsocketEvents } from '../utils/constants';
 import { AuthenticatedSocket } from '../utils/interfaces';
 import {
@@ -34,30 +34,28 @@ import {
 import { CreateCallDto } from './dtos/CreateCallDto';
 import { IGatewaySessionManager } from './gateway.session';
 
-@WebSocketGateway({
-  cors: {
-    origin: '*',
-    credentials: true,
-  },
-  pingInterval: 10000,
-  pingTimeout: 15000,
-})
+@WebSocketGateway()
 export class MessagingGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
     @Inject(Services.GATEWAY_SESSION_MANAGER)
     readonly sessions: IGatewaySessionManager,
-    @Inject(Services.CONVERSATIONS)
-    private readonly conversationService: IConversationsService,
-    @Inject(Services.GROUPS)
-    private readonly groupsService: IGroupService,
+    // @Inject(Services.CONVERSATIONS)
+    // private readonly conversationService: IConversationsService,
+    // @Inject(Services.GROUPS)
+    // private readonly groupsService: IGroupService,
     // @Inject(Services.FRIENDS_SERVICE)
     // private readonly friendsService: IFriendsService,
   ) {}
 
   @WebSocketServer()
   server: Server;
+
+  @OnEvent('createMessage')
+  test(@MessageBody() data: string) {
+    console.log('data ' + data);
+  }
 
   handleConnection(socket: AuthenticatedSocket, ...args: any[]) {
     console.log('Incoming Connection');
@@ -79,8 +77,8 @@ export class MessagingGateway
     // const group = await this.groupsService.findGroupById(
     //   parseInt(data.groupId),
     // );
-      
-    const group = null
+
+    const group = null;
     if (!group) return;
     const onlineUsers = [];
     const offlineUsers = [];
@@ -167,53 +165,53 @@ export class MessagingGateway
   @OnEvent('message.create')
   handleMessageCreateEvent(payload: CreateMessageResponse) {
     console.log('Inside message.create');
-    const { author, conversation: { creator, recipient }, } = payload.message;
+    // const { author, conversation: { creator, recipient }, } = payload.message;
 
-    const authorSocket = this.sessions.getUserSocket(author.id);
-    const recipientSocket =
-      author.id === creator.id
-        ? this.sessions.getUserSocket(recipient.id)
-        : this.sessions.getUserSocket(creator.id);
+    // const authorSocket = this.sessions.getUserSocket(author.id);
+    // const recipientSocket =
+    //   author.id === creator.id
+    //     ? this.sessions.getUserSocket(recipient.id)
+    //     : this.sessions.getUserSocket(creator.id);
 
-    if (authorSocket) authorSocket.emit('onMessage', payload);
-    if (recipientSocket) recipientSocket.emit('onMessage', payload);
+    // if (authorSocket) authorSocket.emit('onMessage', payload);
+    // if (recipientSocket) recipientSocket.emit('onMessage', payload);
   }
 
-  @OnEvent('conversation.create')
-  handleConversationCreateEvent(payload: Conversation) {
-    console.log('Inside conversation.create');
-    const recipientSocket = this.sessions.getUserSocket(payload.recipient.id);
-    if (recipientSocket) recipientSocket.emit('onConversation', payload);
-  }
+  // @OnEvent('conversation.create')
+  // handleConversationCreateEvent(payload: Conversation) {
+  //   console.log('Inside conversation.create');
+  //   const recipientSocket = this.sessions.getUserSocket(payload.recipient.id);
+  //   if (recipientSocket) recipientSocket.emit('onConversation', payload);
+  // }
 
   @OnEvent('message.delete')
   async handleMessageDelete(payload) {
     console.log('Inside message.delete');
     console.log(payload);
-    const conversation = await this.conversationService.findById(
-      payload.conversationId,
-    );
-    if (!conversation) return;
-    const { creator, recipient } = conversation;
-    const recipientSocket =
-      creator.id === payload.userId
-        ? this.sessions.getUserSocket(recipient.id)
-        : this.sessions.getUserSocket(creator.id);
-    if (recipientSocket) recipientSocket.emit('onMessageDelete', payload);
+    // const conversation = await this.conversationService.findById(
+    //   payload.conversationId,
+    // );
+    // if (!conversation) return;
+    // const { creator, recipient } = conversation;
+    // const recipientSocket =
+    //   creator.id === payload.userId
+    //     ? this.sessions.getUserSocket(recipient.id)
+    //     : this.sessions.getUserSocket(creator.id);
+    // if (recipientSocket) recipientSocket.emit('onMessageDelete', payload);
   }
 
   @OnEvent('message.update')
   async handleMessageUpdate(message: Message) {
-    const {
-      author,
-      conversation: { creator, recipient },
-    } = message;
-    console.log(message);
-    const recipientSocket =
-      author.id === creator.id
-        ? this.sessions.getUserSocket(recipient.id)
-        : this.sessions.getUserSocket(creator.id);
-    if (recipientSocket) recipientSocket.emit('onMessageUpdate', message);
+    // const {
+    //   author,
+    //   conversation: { creator, recipient },
+    // } = message;
+    // console.log(message);
+    // const recipientSocket =
+    //   author.id === creator.id
+    //     ? this.sessions.getUserSocket(recipient.id)
+    //     : this.sessions.getUserSocket(creator.id);
+    // if (recipientSocket) recipientSocket.emit('onMessageUpdate', message);
   }
 
   @OnEvent('group.message.create')
@@ -226,10 +224,10 @@ export class MessagingGateway
   @OnEvent('group.create')
   handleGroupCreate(payload: Group) {
     console.log('group.create event');
-    payload.users.forEach((user) => {
-      const socket = this.sessions.getUserSocket(user.id);
-      socket && socket.emit('onGroupCreate', payload);
-    });
+    // payload.users.forEach((user) => {
+    //   const socket = this.sessions.getUserSocket(user.id);
+    //   socket && socket.emit('onGroupCreate', payload);
+    // });
   }
 
   @OnEvent('group.message.update')
@@ -263,9 +261,9 @@ export class MessagingGateway
       removedUserSocket.leave(ROOM_NAME);
     }
     this.server.to(ROOM_NAME).emit('onGroupRecipientRemoved', payload);
-    const onlineUsers = group.users
-      .map((user) => this.sessions.getUserSocket(user.id) && user)
-      .filter((user) => user);
+    // const onlineUsers = group.users
+    //   .map((user) => this.sessions.getUserSocket(user.id) && user)
+    //   .filter((user) => user);
     // this.server.to(ROOM_NAME).emit('onlineGroupUsersReceived', { onlineUsers });
   }
 
@@ -357,17 +355,17 @@ export class MessagingGateway
     @ConnectedSocket() socket: AuthenticatedSocket,
   ) {
     const callerSocket = this.sessions.getUserSocket(data.caller.id);
-    const conversation = await this.conversationService.isCreated(
-      data.caller.id,
-      socket.user.id,
-    );
-    if (!conversation) return console.log('No conversation found');
-    if (callerSocket) {
-      console.log('Emitting onVideoCallAccept event');
-      const payload = { ...data, conversation, acceptor: socket.user };
-      callerSocket.emit('onVideoCallAccept', payload);
-      socket.emit('onVideoCallAccept', payload);
-    }
+    // const conversation = await this.conversationService.isCreated(
+    //   data.caller.id,
+    //   socket.user.id,
+    // );
+    // if (!conversation) return console.log('No conversation found');
+    // if (callerSocket) {
+    //   console.log('Emitting onVideoCallAccept event');
+    //   const payload = { ...data, conversation, acceptor: socket.user };
+    //   callerSocket.emit('onVideoCallAccept', payload);
+    //   socket.emit('onVideoCallAccept', payload);
+    // }
   }
 
   @SubscribeMessage(WebsocketEvents.VIDEO_CALL_REJECTED)
@@ -417,17 +415,17 @@ export class MessagingGateway
   ) {
     console.log('Inside onVoiceCallAccepted event');
     const callerSocket = this.sessions.getUserSocket(payload.caller.id);
-    const conversation = await this.conversationService.isCreated(
-      payload.caller.id,
-      socket.user.id,
-    );
-    if (!conversation) return console.log('No conversation found');
-    if (callerSocket) {
-      console.log('Emitting onVoiceCallAccepted event');
-      const callPayload = { ...payload, conversation, acceptor: socket.user };
-      callerSocket.emit(WebsocketEvents.VOICE_CALL_ACCEPTED, callPayload);
-      socket.emit(WebsocketEvents.VOICE_CALL_ACCEPTED, callPayload);
-    }
+    // const conversation = await this.conversationService.isCreated(
+    //   payload.caller.id,
+    //   socket.user.id,
+    // );
+    // if (!conversation) return console.log('No conversation found');
+    // if (callerSocket) {
+    //   console.log('Emitting onVoiceCallAccepted event');
+    //   const callPayload = { ...payload, conversation, acceptor: socket.user };
+    //   callerSocket.emit(WebsocketEvents.VOICE_CALL_ACCEPTED, callPayload);
+    //   socket.emit(WebsocketEvents.VOICE_CALL_ACCEPTED, callPayload);
+    // }
   }
 
   @SubscribeMessage(WebsocketEvents.VOICE_CALL_HANG_UP)

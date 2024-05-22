@@ -1,12 +1,12 @@
 import { Crown } from 'akar-icons';
 import { FC } from 'react';
 import { GroupRecipientSidebarItem } from '../../../utils/styles';
-import { Group, User } from '../../../utils/types';
+import { Conversation, User } from '../../../utils/types';
 import { UserAvatar } from '../../users/UserAvatar';
 
 type Props = {
     onlineUsers: User[];
-    group?: Group;
+    group?: Conversation;
     onUserContextMenu: (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>,
         user: User
@@ -19,9 +19,9 @@ export const OfflineGroupRecipients: FC<Props> = ({
     onUserContextMenu,
 }) => (
     <>
-        {group?.users
+        {group?.member
             .filter(
-                (user) => !onlineUsers.find((onlineUser) => onlineUser.id === user.id)
+                (user) => !onlineUsers.find((onlineUser) => onlineUser._id === user._id)
             )
             .map((user) => (
                 <GroupRecipientSidebarItem
@@ -32,7 +32,7 @@ export const OfflineGroupRecipients: FC<Props> = ({
                         <UserAvatar user={user} />
                         <span>{user.name}</span>
                     </div>
-                    {user.id === group?.owner.id && <Crown color="#ffbf00" />}
+                    {user._id === group?.owner._id && <Crown color="#ffbf00" />}
                 </GroupRecipientSidebarItem>
             ))}
     </>

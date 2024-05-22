@@ -17,33 +17,40 @@ type Props = {
 };
 
 export const ConversationSidebarItem: React.FC<Props> = ({ conversation }) => {
-    const MESSAGE_LENGTH_MAX = 50;
+    const MESSAGE_LENGTH_MAX = 22;
     const { id } = useParams();
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
     const recipient = getRecipientFromConversation(conversation, user);
-    console.log('conversation' + JSON.stringify(conversation))
+
     const lastMessageContent = () => {
-        const { lastMessageSent } = conversation;
-        if (lastMessageSent && lastMessageSent.content)
-            return lastMessageSent.content?.length >= MESSAGE_LENGTH_MAX
-                ? lastMessageSent.content?.slice(0, MESSAGE_LENGTH_MAX).concat('...')
-                : lastMessageSent.content;
+        const { lastMessageId } = conversation;
+        if (lastMessageId && lastMessageId.content && lastMessageId.img && lastMessageId.img?.length == 0) {
+            const content = lastMessageId.senderId?.name+": " + lastMessageId.content
+            return content?.length >= MESSAGE_LENGTH_MAX
+                ? content?.slice(0, MESSAGE_LENGTH_MAX).concat('...')
+                : content;
+        } else if (lastMessageId && lastMessageId.img && lastMessageId.img?.length > 0) {
+            const content = lastMessageId.senderId?.name + ": sent photo" 
+            return content?.length >= MESSAGE_LENGTH_MAX
+                ? content?.slice(0, MESSAGE_LENGTH_MAX).concat('...')
+                : content;
+        }
         return null;
     };
 
-    const hasProfilePicture = () => recipient?.profile?.avatar;
+    const hasProfilePicture = () => recipient?.avatar;
 
     return (
         <>
             <ConversationSidebarItemStyle
-                onClick={() => navigate(`/conversations/${conversation.id}`)}
-                selected={parseInt(id!) === conversation.id}
+                onClick={() => navigate(`/conversations/${conversation._id}`)}
+                selected={id! === conversation._id}
             >
                 <img
                     src={
                         hasProfilePicture()
-                            ? CDN_URL.BASE.concat(recipient?.profile?.avatar!)
+                            ? CDN_URL.BASE.concat(recipient?.avatar!)
                             : defaultAvatar
                     }
                     alt="avatar"

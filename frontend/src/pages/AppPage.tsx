@@ -17,6 +17,7 @@ import { ThemeProvider } from 'styled-components';
 import { DarkTheme, LightTheme } from '../utils/themes';
 // import Peer from 'peerjs';
 import { AuthContext } from '../utils/context/AuthContext';
+import { SocketContext } from '../utils/context/SocketContext';
 // import {
 //     setCall,
 //     setLocalStream,
@@ -38,6 +39,7 @@ export const AppPage = () => {
     const { user } = useContext(AuthContext);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+    const socket = useContext(SocketContext);
     // const { peer, call, isReceivingCall, caller, connection, callType } =
     //     useSelector((state: RootState) => state.call);
     // const { info } = useToast({ theme: 'dark' });
@@ -70,50 +72,41 @@ export const AppPage = () => {
 
     useEffect(() => {
         console.log('Registering all events for AppPage');
-        //const channel = pusher!.subscribe('channel-name');
-        //channel.bind('event-name', (data: any) => {
-            // Xử lý dữ liệu khi sự kiện được phát ra
-            //console.log(data)
-        //});
-        // socket.on('onFriendRequestCancelled', (payload: FriendRequest) => {
-        //     console.log('onFriendRequestCancelled');
-        //     console.log(payload);
-        //     //dispatch(removeFriendRequest(payload));
-        // });
-        // socket.on(
-        //     'onFriendRequestAccepted',
-        //     (payload: AcceptFriendRequestResponse) => {
-        //         console.log('onFriendRequestAccepted');
-        //         //dispatch(removeFriendRequest(payload.friendRequest));
-        //         socket.emit('getOnlineFriends');
-        //         // info(
-        //         //     `${payload.friendRequest.receiver.firstName} accepted your friend request`,
-        //         //     {
-        //         //         position: 'bottom-left',
-        //         //         icon: BsFillPersonCheckFill,
-        //         //         onClick: () => navigate('/friends'),
-        //         //     }
-        //         // );
-        //     }
-        // );
+        socket.emit('addUser', user!._id )
+        socket.on('onFriendRequestCancelled', (payload: FriendRequest) => {
+            console.log('onFriendRequestCancelled');
+            console.log(payload);
+            dispatch(removeFriendRequest(payload));
+        });
+        socket.on(
+            'onFriendRequestAccepted',
+            (payload: AcceptFriendRequestResponse) => {
+                console.log('onFriendRequestAccepted');
+                dispatch(removeFriendRequest(payload.friendRequest));
+                socket.emit('getOnlineFriends');
+                // info(
+                //     `${payload.friendRequest.receiver.firstName} accepted your friend request`,
+                //     {
+                //         position: 'bottom-left',
+                //         icon: BsFillPersonCheckFill,
+                //         onClick: () => navigate('/friends'),
+                //     }
+                // );
+            }
+        );
 
-        // socket.on('onFriendRequestRejected', (payload: FriendRequest) => {
-        //     console.log('onFriendRequestRejected');
-        //     //dispatch(removeFriendRequest(payload));
-        // });
+        socket.on('onFriendRequestRejected', (payload: FriendRequest) => {
+            console.log('onFriendRequestRejected');
+            dispatch(removeFriendRequest(payload));
+        });
 
-        // return () => {
-        //     socket.off('onFriendRequestCancelled');
-        //     socket.off('onFriendRequestRejected');
-        //     socket.off('onFriendRequestReceived');
-        //     socket.off('onFriendRequestAccepted');
-        // };
-        // return () => {
-        //     channel.unbind_all();
-        //     channel.unsubscribe();
-        //     pusher!.disconnect();
-        // };
-    }, [ ]);//isReceivingCall
+        return () => {
+            socket.off('onFriendRequestCancelled');
+            socket.off('onFriendRequestRejected');
+            socket.off('onFriendRequestReceived');
+            socket.off('onFriendRequestAccepted');
+        };
+    }, [socket,]);//isReceivingCall
 
     // useEffect(() => {
     //     if (!peer) return;

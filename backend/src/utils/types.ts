@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import {
   Conversation,
   Friend,
@@ -20,37 +21,42 @@ export type ValidateUserDetails = {
   password: string;
 };
 
-export type FindUserParams = Partial<{
-  id: number;
-  email: string;
-  name: string;
-}>;
+export type FindUserParams = {
+  _id?: string;
+  email?: string;
+  name?: string;
+};
 
 export type FindUserOptions = Partial<{
   selectAll: boolean;
 }>;
 
 export type CreateConversationParams = {
-  id: number;
+  _id?: string;
+  type: string;
+  nameGroup?: string;
+  imgGroup?: string;
+  member: User[];
+  lastMessage?: string;
 };
 
 export type ConversationIdentityType = 'author' | 'recipient';
 
 export type FindParticipantParams = Partial<{
-  id: number;
+  id: string;
 }>;
 
 export interface AuthenticatedRequest extends Request {
   user: User;
-  userId: number;
+  userId: string;
 }
 
 export type CreateParticipantParams = {
-  id: number;
+  id: string;
 };
 
 export type CreateMessageParams = {
-  id: number;
+  id: string;
   content?: string;
   attachments?: string[];
   user: User;
@@ -62,46 +68,47 @@ export type CreateMessageResponse = {
 };
 
 export type DeleteMessageParams = {
-  userId: number;
-  conversationId: number;
-  messageId: number;
+  userId: string;
+  conversationId: string;
+  messageId: string;
+  img: string
 };
 
 export type FindMessageParams = {
-  userId: number;
-  conversationId: number;
-  messageId: number;
+  userId: string;
+  conversationId: string;
+  messageId: string;
 };
 
 export type EditMessageParams = {
-  conversationId: number;
-  messageId: number;
-  userId: number;
+  conversationId: string;
+  messageId: string;
+  userId: string;
   content: string;
 };
 
 export type EditGroupMessageParams = {
-  groupId: number;
-  messageId: number;
-  userId: number;
+  groupId: string;
+  messageId: string;
+  userId: string;
   content: string;
 };
 
 export type CreateGroupParams = {
   creator: User;
   title?: string;
-  users: number[];
+  users: string[];
 };
 
 export type FetchGroupsParams = {
-  userId: number;
+  userId: string;
 };
 
 export type CreateGroupMessageParams = {
   author: User;
   attachments?: string[];
   content: string;
-  groupId: number;
+  groupId: string;
 };
 
 export type CreateGroupMessageResponse = {
@@ -110,20 +117,20 @@ export type CreateGroupMessageResponse = {
 };
 
 export type DeleteGroupMessageParams = {
-  userId: number;
-  groupId: number;
-  messageId: number;
+  userId: string;
+  groupId: string;
+  messageId: string;
 };
 
 export type AddGroupRecipientParams = {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
 };
 
 export type RemoveGroupRecipientParams = {
-  id: number;
-  removeUserId: number;
-  issuerId: number;
+  id: string;
+  removeUserId: string;
+  issuerId: string;
 };
 
 export type AddGroupUserResponse = {
@@ -137,46 +144,46 @@ export type RemoveGroupUserResponse = {
 };
 
 export type AccessParams = {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
 };
 
 export type TransferOwnerParams = {
-  userId: number;
-  groupId: number;
-  newOwnerId: number;
+  userId: string;
+  groupId: string;
+  newOwnerId: string;
 };
 
 export type LeaveGroupParams = {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
 };
 
 export type CheckUserGroupParams = {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
 };
 
 export type CreateFriendParams = {
   user: User;
-  id: number;
+  id: string;
 };
 
 export type FriendRequestStatus = 'accepted' | 'pending' | 'rejected';
 
 export type FriendRequestParams = {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
 };
 
 export type CancelFriendRequestParams = {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
 };
 
 export type DeleteFriendRequestParams = {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
 };
 
 export type AcceptFriendRequestResponse = {
@@ -190,13 +197,13 @@ export type RemoveFriendEventPayload = {
 };
 
 export type GetConversationMessagesParams = {
-  id: number;
+  id: string;
   limit: number;
 };
 
 export type UpdateConversationParams = Partial<{
-  id: number;
-  lastMessageSent: Message;
+  id: string;
+  lastMessage: string;
 }>;
 
 export type UpdateStatusMessageParams = {
@@ -210,8 +217,8 @@ export type CallHangUpPayload = {
 };
 
 export type VoiceCallPayload = {
-  conversationId: number;
-  recipientId: number;
+  conversationId: string;
+  recipientId: string;
 };
 
 export type CallAcceptedPayload = {
@@ -222,4 +229,19 @@ export type UpdateGroupDetailsParams = {
   id: number;
   title?: string;
   avatar?: string;
+};
+
+
+export type UserParams = {
+  id?: string;
+  email?: string;
+  password?: string;
+  name?: string;
+  banner?: string;
+  avatar?: string;
+};
+
+export type deleteMessageResponse = {
+  conversation: Conversation;
+  messageDelete: Message;
 };

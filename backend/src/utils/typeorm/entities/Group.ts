@@ -22,9 +22,9 @@ export class Group {
   @Column({ nullable: true })
   title?: string;
 
-  @ManyToMany(() => User, (user) => user.groups)
-  @JoinTable()
-  users: User[];
+  // @ManyToMany(() => User, (user) => user.groups)
+  // @JoinTable()
+  // users: User[];
 
   @OneToOne(() => User, { createForeignKeyConstraints: false })
   @JoinColumn()

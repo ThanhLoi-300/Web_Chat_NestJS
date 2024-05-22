@@ -19,8 +19,8 @@ export const fetchConversationsThunk = createAsyncThunk('conversations/fetch', a
 });
 
 export const createConversationThunk = createAsyncThunk(
-  'conversations/create',
-  async (data: CreateConversationParams) => {
+  "conversations/create",
+  async (data: Conversation) => {
     return postNewConversation(data);
   }
 );
@@ -36,7 +36,7 @@ export const conversationsSlice = createSlice({
     updateConversation: (state, action: PayloadAction<Conversation>) => {
       console.log('Inside updateConversation');
       const conversation = action.payload;
-      const index = state.conversations.findIndex((c) => c.id === conversation.id);
+      const index = state.conversations.findIndex((c) => c._id === conversation._id);
       state.conversations.splice(index, 1);
       state.conversations.unshift(conversation);
     },
@@ -59,11 +59,11 @@ export const conversationsSlice = createSlice({
 });
 
 const selectConversations = (state: RootState) => state.conversation.conversations;
-const selectConversationId = (state: RootState, id: number) => id;
+const selectConversationId = (state: RootState, id: string) => id;
 
 export const selectConversationById = createSelector(
   [selectConversations, selectConversationId],
-  (conversations, conversationId) => conversations.find((c) => c.id === conversationId)
+  (conversations, conversationId) => conversations.find((c) => c._id === conversationId)
 );
 
 // Action creators are generated for each case reducer function

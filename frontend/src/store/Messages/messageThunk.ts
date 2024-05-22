@@ -13,7 +13,8 @@ import {
 
 export const fetchMessagesThunk = createAsyncThunk(
   'messages/fetch',
-  (id: number) => {
+  (id: string) => {
+    console.log("data mess: " + JSON.stringify(getConversationMessages(id)));
     return getConversationMessages(id);
   }
 );

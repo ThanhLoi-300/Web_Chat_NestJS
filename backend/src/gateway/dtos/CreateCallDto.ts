@@ -1,4 +1,4 @@
 export class CreateCallDto {
-  recipientId: number;
-  conversationId: number;
+  recipientId: string;
+  conversationId: string;
 }

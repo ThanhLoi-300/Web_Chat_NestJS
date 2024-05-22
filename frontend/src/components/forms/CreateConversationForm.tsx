@@ -1,6 +1,7 @@
-import React, { Dispatch, FC, useEffect, useState } from 'react';
+import React, { Dispatch, FC, useContext, useEffect, useState } from 'react';
 import {
     Button,
+    ConversationSelectedStyle,
     InputContainer,
     InputLabel,
     TextField,
@@ -8,19 +9,21 @@ import {
 import styles from './index.module.scss';
 import { useDispatch } from 'react-redux';
 import { createConversationThunk } from '../../store/conversationsSlice';
-import { User } from '../../utils/types';
+import { Conversation, User } from '../../utils/types';
 import { AppDispatch } from '../../store';
 import { useNavigate } from 'react-router-dom';
 import { useDebounce } from '../../utils/hooks/useDebounce';
 import { searchUsers } from '../../utils/api';
 import { RecipientResultContainer } from '../recipients/RecipientResultContainer';
 import { RecipientField } from '../recipients/RecipientField';
+import { AuthContext } from '../../utils/context/AuthContext';
 
 type Props = {
     setShowModal: Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const CreateConversationForm: FC<Props> = ({ setShowModal }) => {
+    const { user } = useContext(AuthContext);
     const [query, setQuery] = useState('');
     const [userResults, setUserResults] = useState<User[]>([]);
     const [selectedUser, setSelectedUser] = useState<User>();
@@ -44,16 +47,19 @@ export const CreateConversationForm: FC<Props> = ({ setShowModal }) => {
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if ( !selectedUser) return;
+        if (!selectedUser || !user?._id) return;
+        const conversation: Conversation = {
+            type: 'private',
+            member: [selectedUser, user]
+        }
+
         return dispatch(
-            createConversationThunk({ id: selectedUser.id })
+            createConversationThunk(conversation!)
         )
             .unwrap()
             .then(({ data }) => {
-                console.log(data);
-                console.log('done');
                 setShowModal(false);
-                navigate(`/conversations/${data.id}`);
+                navigate(`/conversations/${data._id}`);
             })
             .catch((err) => console.log(err));
     };

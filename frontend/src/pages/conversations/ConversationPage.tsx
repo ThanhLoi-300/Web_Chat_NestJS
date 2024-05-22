@@ -12,9 +12,8 @@ import {
 import { addMessage, deleteMessage } from '../../store/Messages/messageSlice';
 import { updateType } from '../../store/selectedSlice';
 import { Conversation, DeleteMessageResponse, MessageEventPayload } from '../../utils/types';
-import Pusher from 'pusher-js';
 import { AuthContext } from '../../utils/context/AuthContext';
-import { toast } from 'react-toastify';
+import { SocketContext } from '../../utils/context/SocketContext';
 
 export const ConversationPage = () => {
     const { id } = useParams();
@@ -22,9 +21,7 @@ export const ConversationPage = () => {
     const [showSidebar, setShowSidebar] = useState(window.innerWidth > 800);
     const dispatch = useDispatch<AppDispatch>();
 
-    const pusher = new Pusher('e9de4cb87ed812e6153c', {
-        cluster: 'ap1',
-    });
+    const socket = useContext(SocketContext);
 
     useEffect(() => {
         const handleResize = () => setShowSidebar(window.innerWidth > 800);
@@ -40,34 +37,32 @@ export const ConversationPage = () => {
     }, []);
 
     useEffect(() => {
-        if (user) { 
-            const channel = pusher.subscribe(user.id.toString());
-            channel.bind('onConversation', (payload: any) => {
-                console.log('Received onConversation Event');
-                console.log(payload);
-                dispatch(addConversation(payload));
-            });
-
-            channel.bind('onMessage', (payload: MessageEventPayload) => {
-                console.log('Message Received');
-                const { conversation, message } = payload;
-                console.log(conversation, message);
-                dispatch(addMessage(payload));
-                dispatch(updateConversation(conversation));
-            });
-
-            channel.bind('onMessageDelete', (payload: DeleteMessageResponse) => {
-                console.log('Message Deleted');
-                console.log(payload);
-                dispatch(deleteMessage(payload));
-            });
-            
-            return () => {
-                channel.unbind_all();
-                channel.unsubscribe();
-                pusher.disconnect();
-            };
-        }
+        socket.on('connected', () => {
+            console.log('connected');
+        });
+        socket.on('onMessage', (payload: MessageEventPayload) => {
+            console.log('Message Received');
+            const { conversation, message } = payload;
+            console.log(conversation, message);
+            dispatch(addMessage(payload));
+            dispatch(updateConversation(conversation));
+        });
+        socket.on('onConversation', (payload: Conversation) => {
+            console.log('Received onConversation Event');
+            console.log(payload);
+            dispatch(addConversation(payload));
+        });
+        socket.on('onMessageDelete', (payload) => {
+            console.log('Message Deleted');
+            console.log(payload);
+            dispatch(deleteMessage(payload));
+        });
+        return () => {
+            socket.off('connected');
+            socket.off('onMessage');
+            socket.off('onConversation');
+            socket.off('onMessageDelete');
+        };
     }, [id]);
 
     return (

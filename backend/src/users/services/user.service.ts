@@ -1,45 +1,63 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { hashPassword } from 'src/utils/helpers';
 import { User } from 'src/utils/typeorm';
-import { CreateFriendParams, CreateUserDetails, FindUserParams } from 'src/utils/types';
-import { Repository } from 'typeorm';
+import { CreateFriendParams, CreateUserDetails, FindUserParams, UserParams } from 'src/utils/types';
 import { IUserService } from '../interfaces/user';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class UserService implements IUserService {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<User>,
   ) {}
 
-  saveUser(user: User): Promise<User> {
-    return this.userRepository.save(user);
+  async saveUser(user: UserParams): Promise<User> {
+    const { id, ...userDetail } = user;
+    const updatedUser = await this.userModel.findByIdAndUpdate(id, userDetail, {
+      new: true,
+    });
+
+    if (!updatedUser) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    return updatedUser;
   }
 
-  searchUsers(query: string, user: User): Promise<User[]> {
-    const statement =
-      '((user.name LIKE :query OR user.email LIKE :query) AND user.id != :userId)';
-    return this.userRepository
-      .createQueryBuilder('user')
-      .where(statement, { query: `%${query}%`, userId: user.id })
-      .limit(10)
-      .select(['user.name', 'user.email', 'user.id', 'user.profile'])
-      .getMany();
+  async searchUsers(query: string, user: UserParams): Promise<User[]> {
+    const users = await this.userModel.find({
+      $and: [
+        {
+          $or: [
+            { email: { $regex: new RegExp(`.*${query}.*`, 'i') } },
+            { name: { $regex: new RegExp(`.*${query}.*`, 'i') } },
+          ],
+        },
+        { _id: { $ne: user.id! } },
+      ],
+    });
+
+    return users;
   }
 
   async createUser(userDetails: CreateUserDetails) {
-    const existingUser = await this.userRepository.findOne({
+    const existingUser = await this.userModel.findOne({
       email: userDetails.email,
     });
 
     if (existingUser)
       throw new HttpException('User already exists', HttpStatus.CONFLICT);
     const password = await hashPassword(userDetails.password);
-    const newUser = this.userRepository.create({ ...userDetails, password });
-    return this.userRepository.save(newUser);
+    const newUser = new this.userModel({
+      ...userDetails,
+      password,
+    });
+    return await newUser.save();
   }
 
-  async findUser(findUserParams: FindUserParams): Promise<User> {
-    return this.userRepository.findOne(findUserParams);
+  async findUser(params: FindUserParams): Promise<User> {
+    return await this.userModel.findOne({ ...params });
   }
 }

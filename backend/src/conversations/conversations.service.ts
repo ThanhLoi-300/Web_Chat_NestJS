@@ -3,108 +3,152 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IUserService } from 'src/users/interfaces/user';
 import { Services } from 'src/utils/constants';
 import { Conversation, Message, User } from 'src/utils/typeorm';
-import { AccessParams, CreateConversationParams, GetConversationMessagesParams, UpdateConversationParams } from 'src/utils/types';
+import {
+  AccessParams,
+  CreateConversationParams,
+  GetConversationMessagesParams,
+  UpdateConversationParams,
+} from 'src/utils/types';
 import { Repository } from 'typeorm';
 import { IConversationsService } from './conversation';
-import { IFriendsService } from 'src/friends/friends';
+import { InjectModel } from '@nestjs/mongoose';
+import mongoose, { Model, Types } from 'mongoose';
+// import { IFriendsService } from 'src/friends/friends';
 
 @Injectable()
-export class ConversationsService implements IConversationsService{
-    constructor(
-        @InjectRepository(Conversation) private readonly conversationRepository: Repository<Conversation>,
-        @Inject(Services.USERS) private readonly userService: IUserService,
-        @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
-        @Inject(Services.FRIENDS_SERVICE) private readonly friendsService: IFriendsService,
-    ) { }
+export class ConversationsService implements IConversationsService {
+  constructor(
+    @InjectModel(Conversation.name)
+    private readonly conversationModel: Model<Conversation>,
+    @Inject(Services.USERS) private readonly userService: IUserService,
+    @InjectModel(Message.name)
+    private readonly messageModel: Model<Message>,
+    // @Inject(Services.FRIENDS_SERVICE)
+    // private readonly friendsService: IFriendsService,
+  ) {}
+  async findById(id: string, userId: string): Promise<Conversation> {
+    let lastMessage = await this.messageModel
+      .find({ conversationId: id })
+      .sort({ createdAt: -1 })[0];
+
+    // Kiểm tra xem user id có trong mảng seen của lastMessage chưa
+    if (lastMessage && !lastMessage?.seen?.includes(userId)) {
+      // Nếu chưa có, thêm user id vào mảng seen
+      lastMessage.seen.push(userId);
+      await lastMessage.save();
+    }
+
+    return await this.conversationModel
+      .findById(id)
+      .populate('member')
+      .populate('lastMessageId')
+      .populate('owner');
+  }
+
+  async createConversation(idUser: string, params: CreateConversationParams) {
+    const { _id, type, nameGroup, member } = params;
+    const array = member.map((user: User) => user._id.toString());
+
+    // Kiểm tra xem đã có cuộc trò chuyện tồn tại với cùng thành viên chưa
+    const existingConversation = await this.conversationModel
+      .findOne({
+        member: { $all: array }, type: 'private'
+      })
+      .populate('member')
+      .populate('lastMessageId')
+      .populate('owner');
+
+    if (existingConversation) {
+      return { existed: true, conversation: existingConversation };
+    }
+
+    let newConversation;
+    if (type === 'group') {
+      newConversation = new this.conversationModel({
+        type,
+        nameGroup,
+        member: array,
+        owner: idUser,
+      });
+    } else {
+      newConversation = new this.conversationModel({
+        type,
+        member: array,
+      });
+    }
+
+    let savedConversation = await newConversation.save();
+    const conversation = await this.conversationModel
+      .findById(savedConversation._id)
+      .populate('member')
+      .populate('lastMessageId')
+      .populate('owner');
     
-    async createConversation(creator: User, params: CreateConversationParams) {
-        const { id } = params;
-        const recipient = await this.userService.findUser({ id });
+    return { existed: false, conversation };
+  }
 
-        const exists = await this.isCreated(creator.id, recipient.id);
-        if (exists) throw new HttpException('Conversation Already Exists', HttpStatus.CONFLICT);
+  async getConversations(id: string): Promise<Conversation[]> {
+    return await this.conversationModel
+      .find({ member: { $in: [id] } })
+      .populate({
+        path: 'lastMessageId',
+        populate: {
+          path: 'senderId',
+        },
+      })
+      .populate('owner')
+      .populate('member');
+  }
 
-        const newConversation = this.conversationRepository.create({
-            creator,
-            recipient,
-        });
+  async hasAccess({ id, userId }: AccessParams) {
+    const conversation = await this.conversationModel
+      .findOne({
+        _id: id,
+      })
+      .exec();
 
-        const conversation = await this.conversationRepository.save(
-            newConversation,
-        );
+    const check = conversation?.member?.find(
+      (member: string) => member === userId,
+    );
+    return check ? true : false;
+  }
 
-        await this.conversationRepository.save(conversation)
-    
-        return conversation;
-    }
+  async save(id: string, conversation: Conversation): Promise<Conversation> {
+    return await this.conversationModel.findByIdAndUpdate(id, conversation, {
+      new: true,
+    });
+  }
 
-    async getConversations(id: number): Promise<Conversation[]> {
-        return this.conversationRepository
-        .createQueryBuilder('conversation')
-        .leftJoinAndSelect('conversation.lastMessageSent', 'lastMessageSent')
-        .leftJoinAndSelect('conversation.creator', 'creator')
-        .leftJoinAndSelect('conversation.recipient', 'recipient')
-        .leftJoinAndSelect('creator.profile', 'creatorProfile')
-        .leftJoinAndSelect('recipient.profile', 'recipientProfile')
-        .where('creator.id = :id', { id })
-        .orWhere('recipient.id = :id', { id })
-        .orderBy('conversation.lastMessageSentAt', 'DESC')
-        .getMany();
-    }
+  // getMessages({
+  //   id,
+  //   limit,
+  // }: GetConversationMessagesParams): Promise<Conversation> {
+  //   return this.conversationModel
+  //     .createQueryBuilder('conversation')
+  //     .where('id = :id', { id })
+  //     .leftJoinAndSelect('conversation.lastMessageSent', 'lastMessageSent')
+  //     .leftJoinAndSelect('conversation.messages', 'message')
+  //     .where('conversation.id = :id', { id })
+  //     .orderBy('message.createdAt', 'DESC')
+  //     .limit(limit)
+  //     .getOne();
+  // }
 
-    async findById(id: number) {
-        return this.conversationRepository.findOne({
-        where: { id },
-        relations: [
-            'creator',
-            'recipient',
-            'creator.profile',
-            'recipient.profile',
-            'lastMessageSent',
-        ],
-        });
-    }
+  async update({ id, lastMessage }: UpdateConversationParams) {
+    const updatedConversation = await this.conversationModel.findByIdAndUpdate(
+      id,
+      { lastMessageId: lastMessage },
+      { new: true },
+    );
 
-    async isCreated(userId: number, recipientId: number) {
-        return this.conversationRepository.findOne({
-            where: [
-                {
-                creator: { id: userId },
-                recipient: { id: recipientId },
-                },
-                {
-                creator: { id: recipientId },
-                recipient: { id: userId },
-                },
-            ],
-        });
-    }
-
-    async hasAccess({ id, userId }: AccessParams) {
-        const conversation = await this.findById(id);
-
-        //if (!conversation) throw new ConversationNotFoundException();
-
-        return ( conversation.creator.id === userId || conversation.recipient.id === userId );
-    }
-
-    save(conversation: Conversation): Promise<Conversation> {
-        return this.conversationRepository.save(conversation);
-    }
-
-    getMessages({ id, limit,}: GetConversationMessagesParams): Promise<Conversation> {
-        return this.conversationRepository
-        .createQueryBuilder('conversation')
-        .where('id = :id', { id })
-        .leftJoinAndSelect('conversation.lastMessageSent', 'lastMessageSent')
-        .leftJoinAndSelect('conversation.messages', 'message')
-        .where('conversation.id = :id', { id })
-        .orderBy('message.createdAt', 'DESC')
-        .limit(limit)
-        .getOne();
-    }
-
-    update({ id, lastMessageSent }: UpdateConversationParams) {
-        return this.conversationRepository.update(id, { lastMessageSent });
-    }
+    return this.conversationModel
+      .findById(updatedConversation._id)
+      .populate('owner')
+      .populate('member')
+      .populate({path: 'lastMessageId',
+        populate: {
+          path: 'senderId',
+        },
+      });
+  }
 }

@@ -5,13 +5,12 @@ import { AppDispatch, RootState } from '../../store';
 import { GroupMessageType, MessageType } from '../../utils/types';
 import { SelectedMessageContextMenu } from '../context-menus/SelectedMessageContextMenu';
 import { selectConversationMessage } from '../../store/Messages/messageSlice';
-import { selectGroupMessage } from '../../store/groupMessagesSlice';
-import { selectType } from '../../store/selectedSlice';
+// import { selectGroupMessage } from '../../store/groupMessagesSlice';
+// import { selectType } from '../../store/selectedSlice';
 import { MessageItemHeader } from './MessageItemHeader';
 import { MessageItemContainerBody } from './MessageItemContainerBody';
 import { useHandleClick, useKeydown } from '../../utils/hooks';
 import { UserAvatar } from '../users/UserAvatar';
-import { formatRelative } from 'date-fns';
 import {
     MessageContainerStyle,
     MessageItemContainer,
@@ -35,12 +34,12 @@ export const MessageContainer = () => {
     const { user } = useContext(AuthContext);
     const dispatch = useDispatch<AppDispatch>();
     const conversationMessages = useSelector((state: RootState) =>
-        selectConversationMessage(state, parseInt(id!))
+        selectConversationMessage(state, id!)
     );
-    const groupMessages = useSelector((state: RootState) =>
-        selectGroupMessage(state, parseInt(id!))
-    );
-    const selectedType = useSelector((state: RootState) => selectType(state));
+    // const groupMessages = useSelector((state: RootState) =>
+    //     selectGroupMessage(state, parseInt(id!))
+    // );
+    // const selectedType = useSelector((state: RootState) => selectType(state));
     const { showContextMenu } = useSelector(
         (state: RootState) => state.messageContainer
     );
@@ -71,24 +70,25 @@ export const MessageContainer = () => {
         dispatch(editMessageContent(e.target.value));
     }
 
-
     const mapMessages = (
-        message: MessageType | GroupMessageType,
+        message: MessageType,
         index: number,
-        messages: MessageType[] | GroupMessageType[]
+        messages: MessageType[]
     ) => {
         const currentMessage = messages[index];
         const nextMessage = messages[index + 1];
         const showMessageHeader =
             messages.length === index + 1 ||
-            currentMessage.author.id !== nextMessage.author.id;
-        const owner = currentMessage.author.id === user?.id
+            currentMessage.senderId._id !== nextMessage.senderId._id;
+        const owner = currentMessage.senderId._id === user?._id
+
         return (
             <MessageItemContainer owner={owner}
-                key={message.id}
+                key={message._id}
+                style={{ float: 'right'}}
                 onContextMenu={(e) => onContextMenu(e, message)}
             >
-                {showMessageHeader && !owner && <UserAvatar user={message.author} />}
+                {showMessageHeader && !owner && <UserAvatar user={message.senderId} />}
                 {showMessageHeader ? (
                     <MessageItemDetails>
                         <MessageItemHeader message={message} />
@@ -123,9 +123,10 @@ export const MessageContainer = () => {
         >
             <>
                 {/* <SystemMessageList /> */}
-                {selectedType === 'private'
+                {/* {selectedType === 'private'
                     ? conversationMessages?.messages.map(mapMessages)
-                    : groupMessages?.messages.map(mapMessages)}
+                    : groupMessages?.messages.map(mapMessages)} */}
+                {conversationMessages?.messages.map(mapMessages)}
             </>
             {showContextMenu && <SelectedMessageContextMenu />}
         </MessageContainerStyle>

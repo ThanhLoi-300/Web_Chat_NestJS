@@ -8,10 +8,12 @@ import { User } from 'src/utils/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { SessionManager } from './Session';
 import { JwtStrategy } from './jwt.strategy';
+import { MongooseModule } from '@nestjs/mongoose';
+import { UserSchema } from 'src/utils/typeorm/entities/User';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     UsersModule,
     JwtModule.register({
       secret: 'helloworld',
@@ -39,6 +41,6 @@ import { JwtStrategy } from './jwt.strategy';
       provide: Services.AUTH,
       useClass: AuthService,
     },
-  ]
+  ],
 })
 export class AuthModule {}

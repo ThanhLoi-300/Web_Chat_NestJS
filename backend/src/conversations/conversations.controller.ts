@@ -9,50 +9,48 @@ import {
 } from '@nestjs/common';
 import { Routes, Services } from 'src/utils/constants';
 import { IConversationsService } from './conversation';
-import { CreateConversationDto } from './dtos/CreateConversation';
-import { User } from 'src/utils/typeorm';
-import { AuthenticatedRequest } from 'src/utils/types';
-import { PusherHelper } from 'src/utils/PusherHelper';
-import { IUserService } from 'src/users/interfaces/user';
-import Pusher from 'pusher';
+import {
+  AuthenticatedRequest,
+  CreateConversationParams,
+} from 'src/utils/types';
+import { SocketService } from 'src/utils/SocketService';
 
 @Controller(Routes.CONVERSATIONS)
 export class ConversationsController {
   constructor(
     @Inject(Services.CONVERSATIONS)
     private readonly conversationsService: IConversationsService,
-    @Inject(PusherHelper) private pusherHelper: PusherHelper,
-    @Inject(Services.USERS) private readonly userService: IUserService,
+    private socketService: SocketService,
   ) {}
 
   @Post()
   async createConversation(
     @Req() req: AuthenticatedRequest,
-    @Body() createConversationPayload: CreateConversationDto,
+    @Body() createConversationPayload: CreateConversationParams,
   ) {
-    console.log(createConversationPayload.id);
-    const user: User = await this.userService.findUser({ id: req.userId });
-    const conversation = await this.conversationsService.createConversation(
-      user,
+    const { existed, conversation } = await this.conversationsService.createConversation(
+      req.userId,
       createConversationPayload,
     );
 
-    const pusher: Pusher = this.pusherHelper.getPusherInstance();
-    pusher.trigger(
-      conversation.recipient.id.toString(),
-      'onConversation',
-      conversation,
-    );
+    if (!existed) {
+      const socket = this.socketService.getSocket();
+      socket.emit('conversation.create', { idUser: req.userId, conversation });
+    } 
+
     return conversation;
   }
 
   @Get()
   async getConversations(@Req() req: AuthenticatedRequest) {
-    return this.conversationsService.getConversations(req.userId);
+    return await this.conversationsService.getConversations(req.userId);
   }
 
   @Get(':id')
-  async getConversationById(@Param('id') id: number) {
-    return this.conversationsService.findById(id);
+  async getConversationById(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+  ) {
+    return await this.conversationsService.findById(id, req.userId);
   }
 }

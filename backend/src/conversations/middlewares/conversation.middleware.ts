@@ -19,10 +19,11 @@ export class ConversationMiddleware implements NestMiddleware {
 
   async use(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     const userId = req.userId;
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) throw new HttpException('Invalid Conversation Id', HttpStatus.BAD_REQUEST);
+    const id = req.params.id;
+    if (!id) throw new HttpException('Invalid Conversation Id', HttpStatus.BAD_REQUEST);
     const isReadable = await this.conversationService.hasAccess({ id, userId });
- 
+
+    // console.log('isReadable ' + isReadable);
     if (isReadable) next();
     else throw new HttpException('Conversation was not found', HttpStatus.NOT_FOUND);
   }

@@ -1,5 +1,4 @@
 import styled, { css } from 'styled-components';
-import { Theme } from '../themes/index';
 import { fadeInUpwards } from './keyframes';
 import {
   CharacterLimitProps,
@@ -406,6 +405,8 @@ export const MessageItemContent = styled.div<MessageItemContentProps>`
   margin-left: auto;
   justify-content: ${({ owner }) => (owner ? 'flex-end' : 'flex-start')};
   color: ${({ theme }) => theme.messagePanel.body.content.color};
+  /* background-color: gray;
+  border-radius: 10px; */
 `;
 
 export const ContextMenu = styled.ul<ContextMenuProps>`

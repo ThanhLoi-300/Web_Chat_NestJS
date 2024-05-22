@@ -27,7 +27,7 @@ export const GroupRecipientsSidebar = () => {
     const dispatch = useDispatch<AppDispatch>();
     const socket = useContext(SocketContext);
     const group = useSelector((state: RootState) =>
-        selectGroupById(state, parseInt(groupId!))
+        selectGroupById(state, groupId!)
     );
     const groupSidebarState = useSelector(
         (state: RootState) => state.groupSidebar
@@ -80,7 +80,7 @@ export const GroupRecipientsSidebar = () => {
             </GroupRecipientsSidebarHeader>
             <GroupRecipientSidebarItemContainer>
                 <div>
-                    <span>Online Users</span> {onlineUsers.length} / {group?.users.length}
+                    <span>Online Users</span> {onlineUsers.length} / {group?.member.length}
                     <OnlineGroupRecipients
                         users={onlineUsers}
                         group={group}
@@ -89,7 +89,7 @@ export const GroupRecipientsSidebar = () => {
                 </div>
 
                 <div>
-                    <span>Offline Users</span> {onlineUsers.length} / {group?.users.length}
+                    <span>Offline Users</span> {onlineUsers.length} / {group?.member.length}
                     <OfflineGroupRecipients
                         onlineUsers={onlineUsers}
                         group={group}

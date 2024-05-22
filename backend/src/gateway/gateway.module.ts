@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ConversationsModule } from 'src/conversations/conversations.module';
+// import { ConversationsModule } from 'src/conversations/conversations.module';
 import { MessagingGateway } from './gateway';
 import { Services } from 'src/utils/constants';
 import { GatewaySessionManager } from './gateway.session';
-import { GroupModule } from 'src/groups/group.module';
+// import { GroupModule } from 'src/groups/group.module';
 
 @Module({
-    imports: [ConversationsModule, GroupModule,],// FriendsModule
+    // imports: [ConversationsModule, GroupModule,],// FriendsModule
   providers: [
     MessagingGateway,
     {
