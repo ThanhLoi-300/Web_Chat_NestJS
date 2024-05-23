@@ -23,6 +23,7 @@ export const GroupRecipientsSidebar = () => {
     const { id: groupId } = useParams();
 
     const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
+    const [offlineUsers, setOfflineUsers] = useState<User[]>([]);
 
     const dispatch = useDispatch<AppDispatch>();
     const socket = useContext(SocketContext);
@@ -42,11 +43,13 @@ export const GroupRecipientsSidebar = () => {
         socket.emit('getOnlineGroupUsers', { groupId });
         const interval = setInterval(() => {
             socket.emit('getOnlineGroupUsers', { groupId });
-        }, 5000);
+        }, 1000);
         socket.on('onlineGroupUsersReceived', (payload) => {
             console.log('received onlineGroupUsersReceived event');
-            console.log(payload);
-            setOnlineUsers(payload.onlineUsers);
+            console.log(payload.onlineUsers);
+
+            setOnlineUsers(conversation?.member.filter((user: User) => payload.onlineUsers.includes(user._id))!);
+            setOfflineUsers(conversation?.member.filter((user: User) => !payload.onlineUsers.includes(user._id))!);
         });
         return () => {
             console.log('Clearing Interval for GroupRecipientsSidebar');
@@ -89,9 +92,9 @@ export const GroupRecipientsSidebar = () => {
                 </div>
 
                 <div>
-                    <span>Offline Users</span> {onlineUsers.length} / {conversation?.member.length}
-                    <OfflineGroupRecipients
-                        onlineUsers={onlineUsers}
+                    <span>Offline Users</span> {offlineUsers.length} / {conversation?.member.length}
+                    <OnlineGroupRecipients
+                        users={offlineUsers}
                         group={conversation}
                         onUserContextMenu={onUserContextMenu}
                     />

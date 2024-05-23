@@ -72,6 +72,7 @@ export const AppPage = () => {
 
     useEffect(() => {
         console.log('Registering all events for AppPage');
+        socket.connect()
         socket.emit('addUser', user!._id )
         socket.on('onFriendRequestCancelled', (payload: FriendRequest) => {
             console.log('onFriendRequestCancelled');

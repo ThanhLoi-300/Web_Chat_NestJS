@@ -43,6 +43,13 @@ io.on("connection", (socket) => {
     io.emit("getUsers", users);
   });
 
+  //when disconnect
+  socket.on("disconnect", () => {
+    console.log(`a user disconnected!`);
+    removeUser(socket.id);
+    io.emit("getUsers", users);
+  });
+
   socket.on("onConversationJoin", (payload) => {
     socket.join(payload.conversationId);
     // console.log(socket.rooms);
@@ -72,12 +79,18 @@ io.on("connection", (socket) => {
     io.to(payload.conversationId).emit("userLeave");
   });
 
-  //when disconnect
-  socket.on("disconnect", () => {
-    console.log(`a user disconnected!`);
-    removeUser(socket.id);
-    io.emit("getUsers", users);
+  //check user online
+  socket.on("getOnlineGroupUsers", (payload) => {
+    const onlineUsers = users.map((user) => user.userId);
+    io.to(payload.groupId).emit("onlineGroupUsersReceived", {onlineUsers});
   });
+
+  socket.on("getOnlineUsers", (payload) => {
+    const result = getUser(payload.idUser);
+    console.log(result);
+    socket.emit("onlineUsersReceived", {result: result ? true : false});
+  });
+
 });
 
 server.listen(process.env.PORT || 4000, () => {

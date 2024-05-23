@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { FaPhoneAlt, FaVideo } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -24,13 +24,32 @@ export const MessagePanelConversationHeader = () => {
     const { id } = useParams();
     const socket = useContext(SocketContext);
     const [showModal, setShowModal] = useState(false);
+    const [checkOnline, setCheckOnline] = useState(false);
 
     const dispatch = useDispatch();
     const conversation = useSelector((state: RootState) =>
         selectConversationById(state, id!)
     );
 
-    const recipient = getRecipientFromConversation(conversation, user);
+    const recipient = getRecipientFromConversation(conversation, user)!;
+
+    useEffect(() => {
+        socket.emit('getOnlineUsers', { idUser: recipient._id });
+        const interval = setInterval(() => {
+            socket.emit('getOnlineUsers', { idUser: recipient._id });
+        }, 1000);
+        socket.on('onlineUsersReceived', (payload) => {
+            console.log('received onlineUsersReceived event');
+            console.log(payload.result);
+            setCheckOnline(payload.result);
+        });
+        return () => {
+            console.log('Clearing Interval for GroupRecipientsSidebar');
+            clearInterval(interval);
+            socket.off('onlineUsersReceived');
+        };
+    }, [conversation]);
+
     // const buildCallPayloadParams = (
     //     stream: MediaStream,
     //     type: CallType
@@ -77,7 +96,10 @@ export const MessagePanelConversationHeader = () => {
                 <UserAvatar user={user!} onClick={() => setShowModal(true)} />
                 <div>
                     <span>{recipient?.name || 'User'}</span>
-                    <div style={{ height: 10, width: 10, backgroundColor: 'blue', borderRadius: '50%' }}></div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ marginRight: 5,marginTop: 5, height: 10, width: 10, backgroundColor: checkOnline ? 'blue' : "gray", borderRadius: '50%' }}></div>
+                        <span>{checkOnline ? "Online" : "Offline"}</span>
+                    </div>
                 </div>
             </UserAvatarAndName>
             <MessagePanelHeaderIcons>

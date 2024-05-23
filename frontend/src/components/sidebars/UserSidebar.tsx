@@ -13,17 +13,20 @@ import { RiLogoutCircleLine } from 'react-icons/ri';
 import { UserAvatar } from '../users/UserAvatar';
 import { updateToken, logoutUser as logoutUserAPI } from '../../utils/api';
 import { useNavigate } from 'react-router-dom';
+import { SocketContext } from '../../utils/context/SocketContext';
 
 export const UserSidebar = () => {
     const [showModal, setShowModal] = useState(false);
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
+    const socket = useContext(SocketContext);
 
     const logoutUser = () => {
         updateToken()
         logoutUserAPI()
         localStorage.removeItem('accessToken');
         navigate('/login', { replace: true })
+        socket.disconnect()
     };
 
     return (
