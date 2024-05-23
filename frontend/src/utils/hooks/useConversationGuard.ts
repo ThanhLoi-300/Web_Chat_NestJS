@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { fetchGroupById, getConversationById } from '../api';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { getConversationById } from "../api";
 
-export function useGroupGuard() {
+export function useConversationGuard() {
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
   const controller = new AbortController();
 
   useEffect(() => {
-    console.log('Fetching Group: '+id);
+    console.log("Fetching Conversation");
     setLoading(true);
-    fetchGroupById(id!)
+    getConversationById(id!)
       .catch((err) => {
         console.log(err);
         setError(err);

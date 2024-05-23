@@ -11,40 +11,43 @@ type Props = {
     onEditMessageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     padding: string;
     owner: boolean;
+    ml: boolean;
 };
 
 export const MessageItemContainerBody: FC<Props> = ({
     message,
     onEditMessageChange,
     padding,
-    owner
+    owner,
+    ml
 }) => {
-    const { isEditingMessage, messageBeingEdited } = useSelector(
-        (state: RootState) => state.messageContainer
-    );
+    // const { isEditingMessage, messageBeingEdited } = useSelector(
+    //     (state: RootState) => state.messageContainer
+    // );
 
     return (
-        <>
-            {isEditingMessage && message._id === messageBeingEdited?._id ? (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {/* {isEditingMessage && message._id === messageBeingEdited?._id ? (
                 <MessageItemContent padding={padding} owner={owner}>
                     <EditMessageContainer onEditMessageChange={onEditMessageChange} />
                 </MessageItemContent>
-            ) : (
-                <div style={{ marginRight: owner ? 0 : 'auto', marginLeft: owner ? 'auto' : 0 }}>
-                    {message.content && (
-                        <MessageItemContent padding={padding} owner={owner}>
-                            {message.content}
+            ) : ( */}
+            <div>
+                {message.content && (
+                    <MessageItemContent padding={padding} owner={owner} ml={ml} img={false}>
+                        {message.content}
+                    </MessageItemContent>
+                )}</div>
+            <div>
+                {message.img?.length === 0 ? null :
+                    (
+                        <MessageItemContent padding={padding} owner={owner} ml={ml} img={true}>
+                            <MessageItemAttachmentContainer message={message} owner={owner} />
                         </MessageItemContent>
-                    )}
-                    {message.img?.length === 0 ? null :
-                        (
-                            <MessageItemContent padding={padding} owner={owner}>
-                                <MessageItemAttachmentContainer message={message} owner={owner} />
-                            </MessageItemContent>
-                        )
-                    }
-                </div >
-            )}
-        </>
+                    )
+                }
+            </div >
+            {/* )} */}
+        </div>
     );
 };

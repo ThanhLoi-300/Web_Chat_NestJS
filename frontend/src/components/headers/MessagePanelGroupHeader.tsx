@@ -4,8 +4,10 @@ import { useParams } from 'react-router-dom';
 import { PersonAdd, PeopleGroup } from 'akar-icons';
 import { RootState, AppDispatch } from '../../store';
 import { toggleSidebar } from '../../store/groupRecipientsSidebarSlice';
-import { selectGroupById } from '../../store/groupSlice';
+import { selectConversationById } from '../../store/conversationsSlice';
 import { AuthContext } from '../../utils/context/AuthContext';
+import { CDN_URL } from '../../utils/constants';
+import styles from '../groups/index.module.scss';
 import {
     MessagePanelHeaderStyle,
     MessagePanelHeaderIcons,
@@ -16,10 +18,12 @@ export const MessagePanelGroupHeader = () => {
     const [showModal, setShowModal] = useState(false);
     const user = useContext(AuthContext).user!;
     const { id } = useParams();
+    
     const group = useSelector((state: RootState) =>
-        selectGroupById(state, parseInt(id!))
+        selectConversationById(state, id!)
     );
     const dispatch = useDispatch<AppDispatch>();
+
     return (
         <>
             {showModal && (
@@ -29,11 +33,22 @@ export const MessagePanelGroupHeader = () => {
                 />
             )}
             <MessagePanelHeaderStyle>
-                <div>
-                    <span>{group?.title || 'Group'}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {group?.imgGroup ? (
+                        <img
+                            src={CDN_URL.BASE.concat(group.imgGroup)}
+                            alt="avatar"
+                            className={styles.groupAvatar}
+                        />
+                    ) : (
+                        <div className={styles.defaultGroupAvatar}>
+                            <PeopleGroup size={28} />
+                        </div>
+                    )}
+                    <span>{group?.nameGroup}</span>
                 </div>
                 <MessagePanelHeaderIcons>
-                    {user?.id === group?.owner?.id && (
+                    {user?._id === group?.owner?._id && (
                         <PersonAdd
                             cursor="pointer"
                             size={30}

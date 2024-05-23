@@ -75,7 +75,10 @@ export const MessagePanelConversationHeader = () => {
             {/* {showModal && <UpdatePresenceStatusModal setShowModal={setShowModal} />} */}
             <UserAvatarAndName>
                 <UserAvatar user={user!} onClick={() => setShowModal(true)} />
-                <span>{recipient?.name || 'User'}</span>
+                <div>
+                    <span>{recipient?.name || 'User'}</span>
+                    <div style={{ height: 10, width: 10, backgroundColor: 'blue', borderRadius: '50%' }}></div>
+                </div>
             </UserAvatarAndName>
             <MessagePanelHeaderIcons>
                 <FaPhoneAlt size={24} cursor="pointer" onClick={voiceCallUser} />

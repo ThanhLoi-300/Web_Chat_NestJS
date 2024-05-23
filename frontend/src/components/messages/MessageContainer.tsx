@@ -85,7 +85,6 @@ export const MessageContainer = () => {
         return (
             <MessageItemContainer owner={owner}
                 key={message._id}
-                style={{ float: 'right'}}
                 onContextMenu={(e) => onContextMenu(e, message)}
             >
                 {showMessageHeader && !owner && <UserAvatar user={message.senderId} />}
@@ -97,6 +96,7 @@ export const MessageContainer = () => {
                             onEditMessageChange={onEditMessageChange}
                             padding="0"
                             owner={owner}
+                            ml={true}
                         />
                     </MessageItemDetails>
                 ) : (
@@ -104,7 +104,8 @@ export const MessageContainer = () => {
                         message={message}
                         onEditMessageChange={onEditMessageChange}
                         padding="0"
-                        owner={owner}
+                            owner={owner}
+                            ml={false}
                     />
                 )}
             </MessageItemContainer>

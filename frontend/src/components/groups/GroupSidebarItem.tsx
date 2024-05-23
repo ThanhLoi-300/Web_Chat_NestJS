@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { CDN_URL } from '../../utils/constants';
 import { ConversationSidebarItemStyle } from '../../utils/styles';
-import { ContextMenuEvent, Conversation, Group } from '../../utils/types';
+import { ContextMenuEvent, Conversation } from '../../utils/types';
 import { PeopleGroup } from 'akar-icons';
 
 import styles from './index.module.scss';
@@ -14,26 +14,34 @@ type Props = {
 export const GroupSidebarItem: React.FC<Props> = ({ group, onContextMenu }) => {
     const { id } = useParams();
     const MAX_TITLE_LENGTH = 20;
-    const MESSAGE_LENGTH_MAX = 10;
+    const MESSAGE_LENGTH_MAX = 22;
     const navigate = useNavigate();
 
     const getTransformedTitle = () => {
-        if (!group.nameGroup) {
-            const usersToString = group.member
-                .map((user) => user.name)
-                .join(', ');
-            return usersToString.length > MAX_TITLE_LENGTH
-                ? usersToString.slice(0, MAX_TITLE_LENGTH).concat('...')
-                : usersToString;
-        }
-        return group.nameGroup.length > MAX_TITLE_LENGTH
+        return group.nameGroup && group.nameGroup.length > MAX_TITLE_LENGTH
             ? group.nameGroup.slice(0, MAX_TITLE_LENGTH).concat('...')
             : group.nameGroup;
     };
 
+    const lastMessageContent = () => {
+        const { lastMessageId } = group;
+        if (lastMessageId && lastMessageId.content && lastMessageId.img && lastMessageId.img?.length == 0) {
+            const content = lastMessageId.senderId?.name + ": " + lastMessageId.content
+            return content?.length >= MESSAGE_LENGTH_MAX
+                ? content?.slice(0, MESSAGE_LENGTH_MAX).concat('...')
+                : content;
+        } else if (lastMessageId && lastMessageId.img && lastMessageId.img?.length > 0) {
+            const content = lastMessageId.senderId?.name + ": sent photo"
+            return content?.length >= MESSAGE_LENGTH_MAX
+                ? content?.slice(0, MESSAGE_LENGTH_MAX).concat('...')
+                : content;
+        }
+        return null;
+    };
+
     return (
         <ConversationSidebarItemStyle
-            onClick={() => navigate(`/groups/${group._id}`)}
+            onClick={() => navigate(`/conversations/${group._id}`)}
             onContextMenu={(e) => onContextMenu(e, group)}
             selected={id! === group._id}
         >
@@ -51,7 +59,7 @@ export const GroupSidebarItem: React.FC<Props> = ({ group, onContextMenu }) => {
             <div>
                 <span className="title">{getTransformedTitle()}</span>
                 <span className={styles.groupLastMessage}>
-                    {group.lastMessageId?.content}
+                    {lastMessageContent()}
                 </span>
             </div>
         </ConversationSidebarItemStyle>

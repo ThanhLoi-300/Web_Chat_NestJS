@@ -15,22 +15,25 @@ const initialState: GroupRecipientSidebarState = {
 };
 
 export const groupRecipientSidebarSlice = createSlice({
-    name: 'groupRecipientSidebarSlice',
-    initialState,
-    reducers: {
-        toggleSidebar: (state) => {
-            state.showSidebar = !state.showSidebar;
-        },
-        toggleContextMenu: (state, action: PayloadAction<boolean>) => {
-            state.showUserContextMenu = action.payload;
-        },
-        setSelectedUser: (state, action: PayloadAction<User>) => {
-            state.selectedUser = action.payload;
-        },
-        setContextMenuLocation: (state, action: PayloadAction<Points>) => {
-            state.points = action.payload;
-        },
+  name: "groupRecipientSidebarSlice",
+  initialState,
+  reducers: {
+    toggleSidebar: (state) => {
+      state.showSidebar = !state.showSidebar;
     },
+    toggleCloseSidebar: (state) => {
+      state.showSidebar = false;
+    },
+    toggleContextMenu: (state, action: PayloadAction<boolean>) => {
+      state.showUserContextMenu = action.payload;
+    },
+    setSelectedUser: (state, action: PayloadAction<User>) => {
+      state.selectedUser = action.payload;
+    },
+    setContextMenuLocation: (state, action: PayloadAction<Points>) => {
+      state.points = action.payload;
+    },
+  },
 });
 
 export const {
@@ -38,6 +41,7 @@ export const {
     setSelectedUser,
     toggleSidebar,
     toggleContextMenu,
+    toggleCloseSidebar
 } = groupRecipientSidebarSlice.actions;
 
 export default groupRecipientSidebarSlice.reducer;

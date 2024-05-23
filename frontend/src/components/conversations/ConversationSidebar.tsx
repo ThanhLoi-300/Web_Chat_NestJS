@@ -18,7 +18,6 @@ import {
 import { ContextMenuEvent, Conversation, Group } from '../../utils/types';
 import { GroupSidebarContextMenu } from '../context-menus/GroupSidebarContextMenu';
 import { ConversationSidebarItem } from '../conversations/ConversationSidebarItem';
-import { ConversationTab } from '../conversations/ConversationTab';
 import { GroupSidebarItem } from '../groups/GroupSidebarItem';
 import { CreateConversationModal } from '../modals/CreateConversationModal';
 import { CreateGroupModal } from '../modals/CreateGroupModal';
@@ -26,26 +25,27 @@ import { getConversations } from '../../utils/api';
 
 const ConversationSidebar = () => {
     const [showModal, setShowModal] = useState(false);
+    const [showModalGroup, setShowModalGroup] = useState(false);
     const [search, setSearch] = useState('');
     const dispatch = useDispatch<AppDispatch>();
     const conversations = useSelector(
         (state: RootState) => state.conversation.conversations
     );
 
-    useEffect(() => {
-        // setConversations([])
-        console.log('state.conversations' + JSON.stringify(conversations))
-    }, [conversations])
+    // useEffect(() => {
+    //     // setConversations([])
+    //     console.log('state.conversations' + JSON.stringify(conversations))
+    // }, [conversations])
 
     const showGroupContextMenu = useSelector(
         (state: RootState) => state.groups.showGroupContextMenu
     );
 
-    const groups = useSelector((state: RootState) => state.groups.groups);
+    // const groups = useSelector((state: RootState) => state.groups.groups);
 
-    const conversationType = useSelector(
-        (state: RootState) => state.selectedConversationType.type
-    );
+    // const conversationType = useSelector(
+    //     (state: RootState) => state.selectedConversationType.type
+    // );
 
     const searchConversation = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
@@ -83,15 +83,15 @@ const ConversationSidebar = () => {
     }, []);
     return (
         <>
-            {showModal && conversationType === 'private' && (
+            {showModal && (
                 <CreateConversationModal setShowModal={setShowModal} />
             )}
-            {showModal && conversationType === 'group' && (
-                <CreateGroupModal setShowModal={setShowModal} />
+            {showModalGroup && (
+                <CreateGroupModal setShowModal={setShowModalGroup} />
             )}
             <SidebarStyle>
                 <SidebarHeader>
-                    <ConversationSearchbar placeholder="Search for Conversations" onChange={searchConversation}/>
+                    <ConversationSearchbar placeholder="Search for Conversations" onChange={searchConversation} />
                     <ChatAdd
                         size={30}
                         cursor="pointer"
@@ -100,21 +100,20 @@ const ConversationSidebar = () => {
                     <AiOutlineUsergroupAdd
                         size={30}
                         cursor="pointer"
-                        onClick={() => setShowModal(true)}
+                        onClick={() => setShowModalGroup(true)}
                     />
                 </SidebarHeader>
-                <ConversationTab />
                 <ScrollableContainer>
                     <SidebarContainerStyle>
                         {conversations.map((conversation: Conversation) => (
-                            conversation.type === 'private' ? 
-                            (
-                            <ConversationSidebarItem
-                                key={conversation._id}
-                                conversation={conversation}
+                            conversation.type === 'private' ?
+                                (
+                                    <ConversationSidebarItem
+                                        key={conversation._id}
+                                        conversation={conversation}
                                     />) : (<GroupSidebarItem
-                                    key={conversation._id}
-                                    group={conversation}
+                                        key={conversation._id}
+                                        group={conversation}
                                         onContextMenu={onGroupContextMenu}
                                     />)))}
                         {showGroupContextMenu && <GroupSidebarContextMenu />}

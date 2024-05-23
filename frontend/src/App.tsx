@@ -13,7 +13,6 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { enableMapSet } from 'immer'
 import { GroupChannelPage } from './pages/group/GroupChannelPage';
 import { GroupPage } from './pages/group/GroupPage';
-import { GroupPageGuard } from './guards/GroupPageGuard';
 import { AppPage } from './pages/AppPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -24,6 +23,7 @@ import { SettingsProfilePage } from './pages/settings/SettingsProfilePage';
 import { SettingsAppearancePage } from './pages/settings/SettingsAppearancePage';
 import { Socket } from 'socket.io-client';
 import { socket, SocketContext } from './utils/context/SocketContext';
+import { ConversationPageGuard } from "./guards/ConversationPageGuard";
 
 enableMapSet()
 
@@ -61,14 +61,14 @@ function App() {
             <Route element={<AuthenticatedRoute children={<AppPage />} />}>
               <Route path="/" element={<ConversationPage />} />
               <Route path="/conversations" element={ <ConversationPage /> } >
-                <Route path=":id" element={<ConversationChannelPage />}></Route>
+                <Route path=":id" element={<ConversationPageGuard children={<ConversationChannelPage />} />}></Route>
               </Route>
 
-              <Route path="/groups" element={<GroupPage />}>
+              {/* <Route path="/groups" element={<GroupPage />}>
                 <Route path=":id"
-                  element={<GroupPageGuard children={<GroupChannelPage />} />}
+                  element={<ConversationPageGuard children={<GroupChannelPage />} />}
                 />
-              </Route>
+              </Route> */}
 
               <Route path="friends" element={<FriendsLayoutPage />}>
                 <Route path="requests" element={<FriendRequestPage />} />

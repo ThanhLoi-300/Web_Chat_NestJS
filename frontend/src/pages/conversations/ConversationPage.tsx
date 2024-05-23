@@ -10,7 +10,6 @@ import {
     updateConversation,
 } from '../../store/conversationsSlice';
 import { addMessage, deleteMessage } from '../../store/Messages/messageSlice';
-import { updateType } from '../../store/selectedSlice';
 import { Conversation, DeleteMessageResponse, MessageEventPayload } from '../../utils/types';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { SocketContext } from '../../utils/context/SocketContext';
@@ -32,7 +31,6 @@ export const ConversationPage = () => {
     }, []);
 
     useEffect(() => {
-        dispatch(updateType('private'));
         dispatch(fetchConversationsThunk());
     }, []);
 

@@ -1,7 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import conversationReducer from './conversationsSlice'
 import messageReducer from './Messages/messageSlice'
-import selectedTypeReducer from './selectedSlice';
 import groupsReducer from './groupSlice';
 import groupMessagesReducer from './groupMessagesSlice';
 import messageContainerReducer from './messageContainerSlice';
@@ -16,7 +15,6 @@ export const store = configureStore({
     reducer: {
         conversation: conversationReducer,
         messages: messageReducer,
-        selectedConversationType: selectedTypeReducer,
         groups: groupsReducer,
         groupMessages: groupMessagesReducer,
         messageContainer: messageContainerReducer,

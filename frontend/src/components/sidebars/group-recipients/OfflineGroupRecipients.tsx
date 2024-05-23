@@ -32,7 +32,7 @@ export const OfflineGroupRecipients: FC<Props> = ({
                         <UserAvatar user={user} />
                         <span>{user.name}</span>
                     </div>
-                    {user._id === group?.owner._id && <Crown color="#ffbf00" />}
+                    {user._id === group?.owner!._id && <Crown color="#ffbf00" />}
                 </GroupRecipientSidebarItem>
             ))}
     </>

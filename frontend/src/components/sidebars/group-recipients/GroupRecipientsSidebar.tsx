@@ -5,7 +5,7 @@ import {
 } from '../../../utils/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import { selectGroupById } from '../../../store/groupSlice';
+import { selectConversationById } from '../../../store/conversationsSlice';
 import { useParams } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { SocketContext } from '../../../utils/context/SocketContext';
@@ -26,8 +26,8 @@ export const GroupRecipientsSidebar = () => {
 
     const dispatch = useDispatch<AppDispatch>();
     const socket = useContext(SocketContext);
-    const group = useSelector((state: RootState) =>
-        selectGroupById(state, groupId!)
+    const conversation = useSelector((state: RootState) =>
+        selectConversationById(state, groupId!)
     );
     const groupSidebarState = useSelector(
         (state: RootState) => state.groupSidebar
@@ -53,7 +53,7 @@ export const GroupRecipientsSidebar = () => {
             clearInterval(interval);
             socket.off('onlineGroupUsersReceived');
         };
-    }, [group, groupId]);
+    }, [conversation, groupId]);
 
     useEffect(() => {
         const handleResize = (e: UIEvent) => dispatch(toggleContextMenu(false));
@@ -80,19 +80,19 @@ export const GroupRecipientsSidebar = () => {
             </GroupRecipientsSidebarHeader>
             <GroupRecipientSidebarItemContainer>
                 <div>
-                    <span>Online Users</span> {onlineUsers.length} / {group?.member.length}
+                    <span>Online Users</span> {onlineUsers.length} / {conversation?.member.length}
                     <OnlineGroupRecipients
                         users={onlineUsers}
-                        group={group}
+                        group={conversation}
                         onUserContextMenu={onUserContextMenu}
                     />
                 </div>
 
                 <div>
-                    <span>Offline Users</span> {onlineUsers.length} / {group?.member.length}
+                    <span>Offline Users</span> {onlineUsers.length} / {conversation?.member.length}
                     <OfflineGroupRecipients
                         onlineUsers={onlineUsers}
-                        group={group}
+                        group={conversation}
                         onUserContextMenu={onUserContextMenu}
                     />
                 </div>

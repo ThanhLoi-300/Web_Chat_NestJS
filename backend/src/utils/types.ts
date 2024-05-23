@@ -37,6 +37,7 @@ export type CreateConversationParams = {
   nameGroup?: string;
   imgGroup?: string;
   member: User[];
+  owner?: User;
   lastMessage?: string;
 };
 

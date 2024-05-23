@@ -8,14 +8,12 @@ import { MessageAttachmentActionIcon } from './MessageAttachmentActionIcon';
 type Props = {
     content: string;
     setContent: Dispatch<SetStateAction<string>>;
-    placeholderName: string;
     sendMessage: () => void;
     sendTypingStatus: () => void;
 };
 
 export const MessageInputField: FC<Props> = ({
     content,
-    placeholderName,
     setContent,
     sendMessage,
     sendTypingStatus,

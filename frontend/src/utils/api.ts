@@ -121,7 +121,7 @@ export const removeGroupRecipient = ({ id, userId }: RemoveGroupRecipientParams)
 export const updateGroupOwner = ({ id, newOwnerId }: UpdateGroupOwnerParams) =>
   axiosClient.patch(`/groups/${id}/owner`, { newOwnerId }, config);
 
-export const leaveGroup = (id: number) =>
+export const leaveGroup = (id: string) =>
   axiosClient.delete(`/groups/${id}/recipients/leave`, config);
 
 export const updateGroupDetails = ({ id, data }: UpdateGroupDetailsPayload) =>
@@ -130,7 +130,7 @@ export const updateGroupDetails = ({ id, data }: UpdateGroupDetailsPayload) =>
 export const fetchGroupById = (id: string) =>
   axiosClient.get<Conversation>(`/groups/${id}`, config);
 
-export const fetchGroupMessages = (id: number) =>
+export const fetchGroupMessages = (id: string) =>
   axiosClient.get<FetchGroupMessagePayload>(`/groups/${id}/messages`, config);
 
 export const deleteGroupMessage = ({

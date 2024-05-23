@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { RootState } from '../../store';
 import { selectConversationById } from '../../store/conversationsSlice';
-import { selectGroupById } from '../../store/groupSlice';
+// import { selectGroupById } from '../../store/groupSlice';
+import styles from './index.module.scss';
 import { removeAllAttachments } from '../../store/message-panel/messagePanelSlice';
 import {
     addSystemMessage,
@@ -15,6 +16,7 @@ import { AuthContext } from '../../utils/context/AuthContext';
 import { getRecipientFromConversation } from '../../utils/helpers';
 // import { useToast } from '../../utils/hooks/useToast';
 import {
+    MessageInputContainer,
     MessagePanelBody,
     MessagePanelFooter,
     MessagePanelStyle,
@@ -23,9 +25,11 @@ import {
 import { MessagePanelHeader } from './MessagePanelHeader';
 import { MessageAttachmentContainer } from './attachments/MessageAttachmentContainer';
 import { MessageContainer } from './MessageContainer';
-import { MessageInputField } from './MessageInputField';
 import { uploadFiles } from '../../utils/uploadFile';
 import { CreateMessageParams } from '../../utils/types';
+import { FaceVeryHappy } from 'akar-icons';
+import { MessageTextField } from '../inputs/MessageTextField';
+import { MessageAttachmentActionIcon } from './MessageAttachmentActionIcon';
 
 type Props = {
     sendTypingStatus: () => void;
@@ -36,7 +40,6 @@ export const MessagePanel: FC<Props> = ({
     sendTypingStatus,
     isRecipientTyping,
 }) => {
-    // const toastId = 'rateLimitToast';
     const dispatch = useDispatch();
     const { messageCounter } = useSelector(
         (state: RootState) => state.systemMessages
@@ -45,17 +48,11 @@ export const MessagePanel: FC<Props> = ({
     const { id: routeId } = useParams();
     const { user } = useContext(AuthContext);
 
-    // const { error } = useToast({ theme: 'dark' });
+    const ICON_SIZE = 36;
+    const [isMultiLine, setIsMultiLine] = useState(false);
     const { attachments } = useSelector((state: RootState) => state.messagePanel);
     const conversation = useSelector((state: RootState) =>
         selectConversationById(state, routeId!)
-    );
-
-    const group = useSelector((state: RootState) =>
-        selectGroupById(state, parseInt(routeId!))
-    );
-    const selectedType = useSelector(
-        (state: RootState) => state.selectedConversationType.type
     );
 
     const recipient = getRecipientFromConversation(conversation, user);
@@ -79,14 +76,14 @@ export const MessagePanel: FC<Props> = ({
             attachments: fb,
             user: user!
         }
-        console.log("data: "+JSON.stringify(data))
+        console.log("data: " + JSON.stringify(data))
         try {
             setContent('');
             dispatch(removeAllAttachments());
             dispatch(clearAllMessages());
             await createMessage(routeId, data);
         } catch (err) {
-            console.log("err"+ JSON.stringify(err))
+            console.log("err" + JSON.stringify(err))
             const axiosError = err as AxiosError;
             if (axiosError.response?.status === 429) {
                 // error('You are rate limited', { toastId });
@@ -113,23 +110,25 @@ export const MessagePanel: FC<Props> = ({
     return (
         <>
             <MessagePanelStyle>
-                <MessagePanelHeader/>
+                <MessagePanelHeader type={conversation?.type!} />
                 <MessagePanelBody>
                     <MessageContainer />
                 </MessagePanelBody>
                 <MessagePanelFooter>
                     {attachments.length > 0 && <MessageAttachmentContainer />}
-                    <MessageInputField
-                        content={content}
-                        setContent={setContent}
-                        sendMessage={sendMessage}
-                        sendTypingStatus={sendTypingStatus}
-                        placeholderName={
-                            selectedType === 'group'
-                                ? group?.title || 'Group'
-                                : recipient?.name || 'user'
-                        }
-                    />
+                    <MessageInputContainer isMultiLine={isMultiLine}>
+                        <MessageAttachmentActionIcon />
+                        <form onSubmit={sendMessage} className={styles.form}>
+                            <MessageTextField
+                                message={content}
+                                setMessage={setContent}
+                                setIsMultiLine={setIsMultiLine}
+                                sendTypingStatus={sendTypingStatus}
+                                sendMessage={sendMessage}
+                            />
+                        </form>
+                        <FaceVeryHappy className={styles.icon} size={ICON_SIZE} />
+                    </MessageInputContainer>
                     <MessageTypingStatus>
                         {isRecipientTyping ? `${recipient?.name} is typing...` : ''}
                     </MessageTypingStatus>

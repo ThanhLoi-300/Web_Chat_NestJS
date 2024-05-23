@@ -61,7 +61,7 @@ export const updateGroupOwnerThunk = createAsyncThunk(
   (params: UpdateGroupOwnerParams) => updateGroupOwnerAPI(params)
 );
 
-export const leaveGroupThunk = createAsyncThunk('groups/leave', (id: number) =>
+export const leaveGroupThunk = createAsyncThunk('groups/leave', (id: string) =>
   leaveGroupAPI(id)
 );
 

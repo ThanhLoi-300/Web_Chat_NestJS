@@ -1,13 +1,14 @@
 import { useContext, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { MessagePanel } from '../../components/messages/MessagePanel';
 import { SocketContext } from '../../utils/context/SocketContext';
 import { ConversationChannelPageStyle } from '../../utils/styles';
-import { AppDispatch } from '../../store';
+import { AppDispatch, RootState } from '../../store';
 import { fetchMessagesThunk } from '../../store/Messages/messageThunk';
 import { toast } from 'react-toastify';
 import { updateToken, typingText } from '../../utils/api';
+import { GroupRecipientsSidebar } from '../../components/sidebars/group-recipients/GroupRecipientsSidebar';
 
 export const ConversationChannelPage = () => {
   const { id } = useParams();
@@ -16,6 +17,9 @@ export const ConversationChannelPage = () => {
   const [timer, setTimer] = useState<ReturnType<typeof setTimeout>>();
   const [isTyping, setIsTyping] = useState(false);
   const [isRecipientTyping, setIsRecipientTyping] = useState(false);
+  const showSidebar = useSelector(
+    (state: RootState) => state.groupSidebar.showSidebar
+  );
 
   useEffect(() => {
     const conversationId = id!;
@@ -63,21 +67,24 @@ export const ConversationChannelPage = () => {
         setTimeout(() => {
           console.log('User stopped typing');
           setIsTyping(false);
-          typingText(id!, false );
+          typingText(id!, false);
         }, 2000)
       );
     } else {
       setIsTyping(true);
-      typingText(id!, true );
+      typingText(id!, true);
     }
   };
 
   return (
-    <ConversationChannelPageStyle>
-      <MessagePanel
-        sendTypingStatus={sendTypingStatus}
-        isRecipientTyping={isRecipientTyping}
-      ></MessagePanel>
-    </ConversationChannelPageStyle>
+    <>
+      <ConversationChannelPageStyle>
+        <MessagePanel
+          sendTypingStatus={sendTypingStatus}
+          isRecipientTyping={isRecipientTyping}
+        ></MessagePanel>
+      </ConversationChannelPageStyle>
+      {showSidebar && <GroupRecipientsSidebar />}
+    </>
   );
 };

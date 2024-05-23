@@ -6,7 +6,6 @@ import { SocketContext } from '../../utils/context/SocketContext';
 import { ConversationChannelPageStyle } from '../../utils/styles';
 import { AppDispatch, RootState } from '../../store';
 import {
-    editGroupMessage,
     fetchGroupMessagesThunk,
 } from '../../store/groupMessagesSlice';
 import { GroupMessageType } from '../../utils/types';
@@ -31,19 +30,14 @@ export const GroupChannelPage = () => {
     );
 
     useEffect(() => {
-        const groupId = parseInt(id!);
-        dispatch(fetchGroupMessagesThunk(groupId));
-    }, [id]);
-
-    useEffect(() => {
         const groupId = id!;
         console.log(groupId);
         socket.emit('onGroupJoin', { groupId });
-        socket.on('onGroupMessageUpdate', (message: GroupMessageType) => {
-            console.log('onGroupMessageUpdate received');
-            console.log(message);
-            dispatch(editGroupMessage(message));
-        });
+        // socket.on('onGroupMessageUpdate', (message: GroupMessageType) => {
+        //     console.log('onGroupMessageUpdate received');
+        //     console.log(message);
+        //     dispatch(editGroupMessage(message));
+        // });
         return () => {
             socket.emit('onGroupLeave', { groupId });
             socket.off('onGroupMessageUpdate');

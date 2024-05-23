@@ -11,6 +11,8 @@ export type InputContainerProps = Partial<{
 export type MessageItemContentProps = Partial<{
   padding: string;
   owner: boolean;
+  ml: boolean;
+  img: boolean;
 }>;
 
 export type ContextMenuProps = {

@@ -8,6 +8,10 @@ import {
     selectGroupById,
     updateGroupOwnerThunk,
 } from '../../store/groupSlice';
+selectConversationById
+import {
+    selectConversationById
+} from '../../store/conversationsSlice';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { getUserContextMenuIcon, isGroupOwner } from '../../utils/helpers';
 import { ContextMenu, ContextMenuItem } from '../../utils/styles';
@@ -34,31 +38,31 @@ export const SelectedParticipantContextMenu: FC<Props> = ({ points }) => {
     const selectedUser = useSelector(
         (state: RootState) => state.groupSidebar.selectedUser
     );
-    const group = useSelector((state: RootState) =>
-        selectGroupById(state, parseInt(id!))
+    const conversation = useSelector((state: RootState) =>
+        selectConversationById(state, id!)
     );
 
     const kickUser = () => {
-        console.log(`Kicking User: ${selectedUser?.id}`);
+        console.log(`Kicking User: ${selectedUser?._id}`);
         console.log(selectedUser);
         if (!selectedUser) return;
         dispatch(
             removeGroupRecipientThunk({
-                id: parseInt(id!),
-                userId: selectedUser.id,
+                id: id!,
+                userId: selectedUser._id,
             })
         );
     };
 
     const transferGroupOwner = () => {
-        console.log(`Transfering Group Owner to ${selectedUser?.id}`);
+        console.log(`Transfering Group Owner to ${selectedUser?._id}`);
         if (!selectedUser) return;
         dispatch(
-            updateGroupOwnerThunk({ id: parseInt(id!), newOwnerId: selectedUser.id })
+            updateGroupOwnerThunk({ id: id!, newOwnerId: selectedUser._id })
         );
     };
 
-    const isOwner = isGroupOwner(user, group);
+    const isOwner = isGroupOwner(user, conversation);
 
     return (
         <ContextMenu top={points.y} left={points.x}>
@@ -66,7 +70,7 @@ export const SelectedParticipantContextMenu: FC<Props> = ({ points }) => {
                 <Person size={20} color="#7c7c7c" />
                 <span style={{ color: '#7c7c7c' }}>Profile</span>
             </ContextMenuItem>
-            {isOwner && user?.id !== selectedUser?.id && (
+            {isOwner && user?._id !== selectedUser?._id && (
                 <>
                     <ContextMenuItem onClick={kickUser}>
                         <PersonCross size={20} color="#ff0000" />

@@ -11,7 +11,6 @@ import {
   removeGroup,
   updateGroup,
 } from '../../store/groupSlice';
-import { updateType } from '../../store/selectedSlice';
 import { AuthContext } from '../../utils/context/AuthContext';
 import {
   Group,
@@ -26,13 +25,12 @@ export const GroupPage = () => {
   const { id } = useParams();
   const { user } = useContext(AuthContext);
   const [showSidebar, setShowSidebar] = useState(window.innerWidth > 800);
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch: any = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   const socket = useContext(SocketContext);
 
   useEffect(() => {
-    dispatch(updateType('group'));
     dispatch(fetchGroupsThunk());
   }, []);
 
@@ -45,73 +43,73 @@ export const GroupPage = () => {
   }, []);
 
   useEffect(() => {
-    socket.on('onGroupMessage', (payload: GroupMessageEventPayload) => {
-      console.log('Group Message Received');
-      const { group } = payload;
-      dispatch(addGroupMessage(payload));
-      dispatch(updateGroup({ type: UpdateGroupAction.NEW_MESSAGE, group }));
-    });
+    // socket.on('onGroupMessage', (payload: GroupMessageEventPayload) => {
+    //   console.log('Group Message Received');
+    //   const { group } = payload;
+    //   dispatch(addGroupMessage(payload));
+    //   dispatch(updateGroup({ type: UpdateGroupAction.NEW_MESSAGE, group }));
+    // });
 
-    socket.on('onGroupCreate', (payload: Group) => {
-      console.log('Group Created...');
-      dispatch(addGroup(payload));
-    });
+    // socket.on('onGroupCreate', (payload: Group) => {
+    //   console.log('Group Created...');
+    //   dispatch(addGroup(payload));
+    // });
 
     /**
      * Adds the group for the user being added
      * to the group.
      */
-    socket.on('onGroupUserAdd', (payload: AddGroupUserMessagePayload) => {
-      console.log('onGroupUserAdd');
-      console.log(payload);
-      dispatch(addGroup(payload.group));
-    });
+    // socket.on('onGroupUserAdd', (payload: AddGroupUserMessagePayload) => {
+    //   console.log('onGroupUserAdd');
+    //   console.log(payload);
+    //   dispatch(addGroup(payload.group));
+    // });
 
     /**
      * Update all other clients in the room
      * so that they can also see the participant
      */
-    socket.on(
-      'onGroupReceivedNewUser',
-      ({ group }: AddGroupUserMessagePayload) => {
-        console.log('Received onGroupReceivedNewUser');
-        dispatch(updateGroup({ group }));
-      }
-    );
+    // socket.on(
+    //   'onGroupReceivedNewUser',
+    //   ({ group }: AddGroupUserMessagePayload) => {
+    //     console.log('Received onGroupReceivedNewUser');
+    //     dispatch(updateGroup({ group }));
+    //   }
+    // );
 
-    socket.on(
-      'onGroupRecipientRemoved',
-      ({ group }: RemoveGroupUserMessagePayload) => {
-        console.log('onGroupRecipientRemoved');
-        dispatch(updateGroup({ group }));
-      }
-    );
+    // socket.on(
+    //   'onGroupRecipientRemoved',
+    //   ({ group }: RemoveGroupUserMessagePayload) => {
+    //     console.log('onGroupRecipientRemoved');
+    //     dispatch(updateGroup({ group }));
+    //   }
+    // );
 
-    socket.on('onGroupRemoved', (payload: RemoveGroupUserMessagePayload) => {
-      dispatch(removeGroup(payload.group));
-      if (id && parseInt(id) === payload.group.id) {
-        console.log('Navigating User to /groups');
-        navigate('/groups');
-      }
-    });
+    // socket.on('onGroupRemoved', (payload: RemoveGroupUserMessagePayload) => {
+    //   dispatch(removeGroup(payload.group));
+    //   if (id && parseInt(id) === payload.group.id) {
+    //     console.log('Navigating User to /groups');
+    //     navigate('/groups');
+    //   }
+    // });
 
-    socket.on(
-      'onGroupParticipantLeft',
-      ({ group, userId }: GroupParticipantLeftPayload) => {
-        console.log('onGroupParticipantLeft received');
-        dispatch(updateGroup({ group }));
-        if (userId === user?._id) {
-          console.log('payload.userId matches user.id...');
-          dispatch(removeGroup(group));
-          navigate('/groups');
-        }
-      }
-    );
+    // socket.on(
+    //   'onGroupParticipantLeft',
+    //   ({ group, userId }: GroupParticipantLeftPayload) => {
+    //     console.log('onGroupParticipantLeft received');
+    //     dispatch(updateGroup({ group }));
+    //     if (userId === user?._id) {
+    //       console.log('payload.userId matches user.id...');
+    //       dispatch(removeGroup(group));
+    //       navigate('/groups');
+    //     }
+    //   }
+    // );
 
-    socket.on('onGroupOwnerUpdate', (group: Group) => {
-      console.log('received onGroupOwnerUpdate');
-      dispatch(updateGroup({ group }));
-    });
+    // socket.on('onGroupOwnerUpdate', (group: Group) => {
+    //   console.log('received onGroupOwnerUpdate');
+    //   dispatch(updateGroup({ group }));
+    // });
 
     return () => {
       socket.off('onGroupMessage');

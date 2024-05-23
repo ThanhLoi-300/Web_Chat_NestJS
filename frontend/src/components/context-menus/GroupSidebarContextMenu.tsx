@@ -8,6 +8,10 @@ import {
     setShowEditGroupModal,
     toggleContextMenu,
 } from '../../store/groupSlice';
+selectConversationById
+import {
+    selectConversationById
+} from '../../store/conversationsSlice';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { isGroupOwner } from '../../utils/helpers';
 import { ContextMenu, ContextMenuItem } from '../../utils/styles';
@@ -20,8 +24,8 @@ export const GroupSidebarContextMenu: FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const points = useSelector((state: RootState) => state.groups.points);
 
-    const group = useSelector((state: RootState) =>
-        selectGroupById(state, parseInt(id!))
+    const conversation = useSelector((state: RootState) =>
+        selectConversationById(state, id!)
     );
 
     const contextMenuGroup = useSelector(
@@ -30,7 +34,7 @@ export const GroupSidebarContextMenu: FC = () => {
 
     const leaveGroup = () => {
         if (!contextMenuGroup) return;
-        dispatch(leaveGroupThunk(contextMenuGroup.id)).finally(() =>
+        dispatch(leaveGroupThunk(contextMenuGroup?._id!)).finally(() =>
             dispatch(toggleContextMenu(false))
         );
     };
@@ -41,7 +45,7 @@ export const GroupSidebarContextMenu: FC = () => {
                 <IoMdExit size={20} color="#ff0000" />
                 <span style={{ color: '#ff0000' }}>Leave Group</span>
             </ContextMenuItem>
-            {user?.id === contextMenuGroup?.owner.id && (
+            {user?._id === contextMenuGroup?.owner?._id && (
                 <ContextMenuItem onClick={() => dispatch(setShowEditGroupModal(true))}>
                     <Edit size={20} color="#fff" />
                     <span style={{ color: '#fff' }}>Edit Group</span>

@@ -44,7 +44,7 @@ export type Conversation = {
   imgGroup?: string;
   member: User[];
   lastMessageId?: Message;
-  owner: User
+  owner?: User;
 };
 
 export type Message = {
@@ -89,8 +89,8 @@ export type FetchMessagePayload = {
 };
 
 export type FetchGroupMessagePayload = {
-  id: number;
-  messages: GroupMessageType[];
+  id: string;
+  messages: MessageType[];
 };
 
 export type MessageEventPayload = {
@@ -116,13 +116,13 @@ export type GroupMessage = {
 };
 
 export type DeleteMessageParams = {
-  id: number;
-  messageId: number;
+  id: string;
+  messageId: string;
 };
 
 export type DeleteGroupMessageParams = {
-  id: number;
-  messageId: number;
+  id: string;
+  messageId: string;
 };
 
 export type DeleteMessageResponse = {
@@ -131,8 +131,8 @@ export type DeleteMessageResponse = {
 };
 
 export type DeleteGroupMessageResponse = {
-  groupId: number;
-  messageId: number;
+  groupId: string;
+  messageId: string;
 };
 
 export type MessagePanelBodyProps = {
@@ -166,8 +166,8 @@ export type Group = {
 };
 
 export type GroupMessageEventPayload = {
-  message: GroupMessageType;
-  group: Group;
+  message: MessageType;
+  group: Conversation;
 };
 
 export type CreateGroupParams = {
@@ -182,8 +182,8 @@ export type AddGroupRecipientParams = {
 };
 
 export type RemoveGroupRecipientParams = {
-  id: number;
-  userId: number;
+  id: string ;
+  userId: string;
 };
 
 export type Points = {
@@ -210,8 +210,8 @@ export type RemoveGroupUserMessagePayload = {
 };
 
 export type UpdateGroupOwnerParams = {
-  id: number;
-  newOwnerId: number;
+  id: string;
+  newOwnerId: string;
 };
 
 export type ContextMenuEvent = React.MouseEvent<HTMLDivElement, MouseEvent>;

@@ -9,16 +9,16 @@ import {
     InputField,
 } from '../../utils/styles';
 import styles from './index.module.scss';
-import { User } from '../../utils/types';
+import { User, Conversation } from '../../utils/types';
 import { useDebounce } from '../../utils/hooks/useDebounce';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AppDispatch } from '../../store';
 import { searchUsers } from '../../utils/api';
-import { createGroupThunk } from '../../store/groupSlice';
 import { RecipientResultContainer } from '../recipients/RecipientResultContainer';
 import { SelectedGroupRecipientChip } from '../recipients/SelectedGroupRecipientChip';
 import { AuthContext } from '../../utils/context/AuthContext';
+import { createConversationThunk } from '../../store/conversationsSlice';
 
 type Props = {
     setShowModal: Dispatch<React.SetStateAction<boolean>>;
@@ -51,25 +51,31 @@ export const CreateGroupForm: FC<Props> = ({ setShowModal }) => {
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (selectedRecipients.length === 0 || !title) return;
-        const users = selectedRecipients.map((user) => user.id);
-        return dispatch(createGroupThunk({ title, users, creator: user! }))
+        selectedRecipients.push(user!)
+        const conversation: Conversation = {
+            type: 'group',
+            member: selectedRecipients,
+            owner: user!._id,
+            nameGroup: title,
+        }
+        return dispatch(createConversationThunk(conversation!))
             .unwrap()
             .then(({ data }) => {
                 console.log(data);
                 console.log('done');
                 setShowModal(false);
-                navigate(`/groups/${data.id}`);
+                navigate(`/conversations/${data._id}`);
             })
             .catch((err) => console.log(err));
     };
 
     const handleUserSelect = (user: User) => {
-        const exists = selectedRecipients.find((u) => u.id === user.id);
+        const exists = selectedRecipients.find((u) => u._id === user._id);
         if (!exists) setSelectedRecipients((prev) => [...prev, user]);
     };
 
     const removeUser = (user: User) =>
-        setSelectedRecipients((prev) => prev.filter((u) => u.id !== user.id));
+        setSelectedRecipients((prev) => prev.filter((u) => u._id !== user._id));
 
     return (
         <form className={styles.createConversationForm} onSubmit={onSubmit}>

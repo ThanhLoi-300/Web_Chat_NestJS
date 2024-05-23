@@ -360,8 +360,8 @@ export const MessageItemContainer = styled.div<MessageOwnerProps>`
 
   padding: 5px 0;
   word-break: break-word;
-  width: 55%;
-  margin-left: ${({ owner }) => (owner ? 'auto' : 0)} ;
+  width: 100%;
+  justify-content: ${({ owner }) => (owner ? 'end' : 'start')};
 `;
 
 export const UserAvatarContainer = styled.img`
@@ -398,15 +398,16 @@ export const MessageItemHeaderContainer = styled.div`
 `;
 
 export const MessageItemContent = styled.div<MessageItemContentProps>`
-  padding: ${({ padding }) => padding};
-  width: 100%;
+  padding: 10px;
+  max-width: 55%;
+  width: fit-content;
   white-space: pre-wrap;
   display: flex;
-  margin-left: auto;
-  justify-content: ${({ owner }) => (owner ? 'flex-end' : 'flex-start')};
+  float: ${({ owner }) => (owner ? 'right' : 'left')};
+  margin-left: ${({ ml }) => (ml ? '0' : '70px')};
   color: ${({ theme }) => theme.messagePanel.body.content.color};
-  /* background-color: gray;
-  border-radius: 10px; */
+  background-color: ${({ img }) => (img ? '' : 'gray')};
+  border-radius: 10px;
 `;
 
 export const ContextMenu = styled.ul<ContextMenuProps>`

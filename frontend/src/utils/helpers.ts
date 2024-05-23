@@ -47,8 +47,8 @@ export const getUserContextMenuIcon = (type: UserContextMenuActionType) => {
   }
 };
 
-export const isGroupOwner = (user?: User, group?: Group) =>
-  user?._id === group?.owner._id;
+export const isGroupOwner = (user?: User, group?: Conversation) =>
+  user?._id === group?.owner!._id;
 
 export const getUserSidebarIcon = (id: UserSidebarRouteType) => {
   switch (id) {
