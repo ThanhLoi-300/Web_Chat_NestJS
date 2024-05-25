@@ -52,7 +52,8 @@ export class ConversationsService implements IConversationsService {
     // Kiểm tra xem đã có cuộc trò chuyện tồn tại với cùng thành viên chưa
     const existingConversation = await this.conversationModel
       .findOne({
-        member: { $all: array }, type: 'private'
+        member: { $all: array },
+        type: 'private',
       })
       .populate('member')
       .populate('lastMessageId')
@@ -83,7 +84,7 @@ export class ConversationsService implements IConversationsService {
       .populate('member')
       .populate('lastMessageId')
       .populate('owner');
-    
+
     return { existed: false, conversation };
   }
 
@@ -145,10 +146,58 @@ export class ConversationsService implements IConversationsService {
       .findById(updatedConversation._id)
       .populate('owner')
       .populate('member')
-      .populate({path: 'lastMessageId',
+      .populate({
+        path: 'lastMessageId',
         populate: {
           path: 'senderId',
         },
       });
+  }
+
+  async searchConversation(query: string) {
+    const conversations = await this.conversationModel
+      .find()
+      .populate({
+        path: 'lastMessageId',
+        populate: {
+          path: 'senderId',
+        },
+      })
+      .populate('owner')
+      .populate('member');
+
+    // Lọc các cuộc trò chuyện dựa trên tên nhóm hoặc tên thành viên
+    return conversations.filter((conversation) => {
+      return (
+        conversation.nameGroup?.toLowerCase().includes(query.toLowerCase()) ||
+        conversation.member.some((member) => {
+          return member.name.toLowerCase().includes(query.toLowerCase());
+        })
+      );
+    });
+  }
+
+  async deleteMember(id: string, userId: string) {
+    const conversation = await this.conversationModel.findById(id);
+
+    if (!conversation) return;
+
+    const indexOfId = conversation.member.findIndex((id) => id === userId);
+    if (indexOfId !== -1) {
+      conversation.member.splice(indexOfId, 1);
+      await conversation.save();
+    } else {
+      console.log('Không tìm thấy id trong mảng.');
+    }
+  }
+
+  async updateGroupOwner(id: string, userId: string) {
+    const updatedConversation = await this.conversationModel.findByIdAndUpdate(
+      id,
+      { owner: userId },
+      { new: true },
+    );
+    console.log(updatedConversation.owner);
+
   }
 }

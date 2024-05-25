@@ -20,7 +20,7 @@ export const FriendContextMenu = () => {
     const socket = useContext(SocketContext);
 
     const getUserFriendInstance = () =>
-        user?.id === selectedFriendContextMenu?.sender.id
+        user?._id === selectedFriendContextMenu?.sender._id
             ? selectedFriendContextMenu?.receiver
             : selectedFriendContextMenu?.sender;
 
@@ -35,10 +35,10 @@ export const FriendContextMenu = () => {
     const sendMessage = () => {
         const recipient = getUserFriendInstance();
         recipient &&
-            checkConversationOrCreate(recipient.id)
+            checkConversationOrCreate(recipient._id)
                 .then(({ data }) => {
                     console.log(data);
-                    navigate(`/conversations/${data.id}`);
+                    navigate(`/conversations/${data._id}`);
                 })
                 .catch((err) => {
                     console.log(err);

@@ -5,8 +5,6 @@ import { AppDispatch, RootState } from '../../store';
 import { GroupMessageType, MessageType } from '../../utils/types';
 import { SelectedMessageContextMenu } from '../context-menus/SelectedMessageContextMenu';
 import { selectConversationMessage } from '../../store/Messages/messageSlice';
-// import { selectGroupMessage } from '../../store/groupMessagesSlice';
-// import { selectType } from '../../store/selectedSlice';
 import { MessageItemHeader } from './MessageItemHeader';
 import { MessageItemContainerBody } from './MessageItemContainerBody';
 import { useHandleClick, useKeydown } from '../../utils/hooks';
@@ -17,7 +15,6 @@ import {
     MessageItemDetails,
 } from '../../utils/styles';
 import {
-    editMessageContent,
     resetMessageContainer,
     setContextMenuLocation,
     setIsEditing,
@@ -36,10 +33,6 @@ export const MessageContainer = () => {
     const conversationMessages = useSelector((state: RootState) =>
         selectConversationMessage(state, id!)
     );
-    // const groupMessages = useSelector((state: RootState) =>
-    //     selectGroupMessage(state, parseInt(id!))
-    // );
-    // const selectedType = useSelector((state: RootState) => selectType(state));
     const { showContextMenu } = useSelector(
         (state: RootState) => state.messageContainer
     );
@@ -66,10 +59,6 @@ export const MessageContainer = () => {
         dispatch(setSelectedMessage(message));
     };
 
-    const onEditMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(editMessageContent(e.target.value));
-    }
-
     const mapMessages = (
         message: MessageType,
         index: number,
@@ -81,6 +70,7 @@ export const MessageContainer = () => {
             messages.length === index + 1 ||
             currentMessage.senderId._id !== nextMessage.senderId._id;
         const owner = currentMessage.senderId._id === user?._id
+        const isLast = currentMessage === messages[0];
 
         return (
             <MessageItemContainer owner={owner}
@@ -93,19 +83,19 @@ export const MessageContainer = () => {
                         <MessageItemHeader message={message} />
                         <MessageItemContainerBody
                             message={message}
-                            onEditMessageChange={onEditMessageChange}
                             padding="0"
                             owner={owner}
                             ml={true}
+                            isLast={isLast}
                         />
                     </MessageItemDetails>
                 ) : (
                     <MessageItemContainerBody
                         message={message}
-                        onEditMessageChange={onEditMessageChange}
                         padding="0"
-                            owner={owner}
-                            ml={false}
+                        owner={owner}
+                        ml={false}
+                        isLast={isLast}
                     />
                 )}
             </MessageItemContainer>

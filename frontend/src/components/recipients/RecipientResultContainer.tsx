@@ -5,6 +5,7 @@ import {
     RecipientScrollableItemContainer,
 } from '../../utils/styles';
 import { User } from '../../utils/types';
+import { UserAvatar } from '../users/UserAvatar';
 
 type Props = {
     userResults: User[];
@@ -20,9 +21,10 @@ export const RecipientResultContainer: FC<Props> = ({
             <RecipientScrollableItemContainer>
                 {userResults.map((user) => (
                     <RecipientResultItem
-                        key={user.id}
+                        key={user._id}
                         onClick={() => handleUserSelect(user)}
                     >
+                        <UserAvatar user={user} />
                         <span>{user.email}</span>
                     </RecipientResultItem>
                 ))}

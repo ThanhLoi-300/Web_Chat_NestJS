@@ -87,8 +87,67 @@ io.on("connection", (socket) => {
 
   socket.on("getOnlineUsers", (payload) => {
     const result = getUser(payload.idUser);
-    console.log(result);
     socket.emit("onlineUsersReceived", {result: result ? true : false});
+  });
+
+  //check user is typing
+  socket.on("onTypingStart", (payload) => {
+    io.to(payload.conversationId).emit("onTypingStart", payload);
+  });
+
+  socket.on("onTypingStop", (payload) => {
+    io.to(payload.conversationId).emit("onTypingStop", payload);
+  });
+
+  // update seen message
+  socket.on("updateSeenMessage", (payload) => {
+    io.to(payload.conversationId).emit("onUpdateSeenMessage", payload);
+  });
+
+  // delete message
+  socket.on("onMessageDelete", (payload) => {
+    const conversationId = payload.conversationId._id ? payload.conversationId._id : payload.conversationId
+    io.to(conversationId).emit("deleteMessage", payload);
+  });
+
+  // delete member
+  socket.on("deleteMember", (payload) => {
+    io.to(payload.groupId).emit("onDeleteMember", payload);
+  });
+
+  // transferOwner
+  socket.on("transferOwner", (payload) => {
+    io.to(payload.groupId).emit("onTransferOwner", payload);
+  });
+
+
+
+
+
+
+  // user leave group
+  socket.on("userLeaveGroup", (payload) => {
+    io.to(payload.groupId).emit("onUserLeaveGroup", payload);
+  });
+
+  // remove group
+  socket.on("removeGroup", (payload) => {
+    io.to(payload.groupId).emit("onRemoveGroup", payload);
+  });
+
+  // add user on group
+  socket.on("addUserOnGroup", (payload) => {
+    io.to(payload.groupId).emit("onAddUserOnGroup", payload);
+  });
+
+  // get online friends
+  socket.on("getOnlineFriends", (payload) => {
+    socket.emit("getOnlineFriends", payload);
+  });
+
+  // remove friends
+  socket.on("onFriendRemoved", (payload) => {
+    socket.emit("onFriendRemoved", payload);
   });
 
 });

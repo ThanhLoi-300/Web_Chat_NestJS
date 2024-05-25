@@ -17,7 +17,6 @@ import {
 } from '../../../store/groupRecipientsSidebarSlice';
 import { SelectedParticipantContextMenu } from '../../context-menus/SelectedParticipantContextMenu';
 import { OnlineGroupRecipients } from './OnlineGroupRecipients';
-import { OfflineGroupRecipients } from './OfflineGroupRecipients';
 
 export const GroupRecipientsSidebar = () => {
     const { id: groupId } = useParams();
@@ -45,9 +44,6 @@ export const GroupRecipientsSidebar = () => {
             socket.emit('getOnlineGroupUsers', { groupId });
         }, 1000);
         socket.on('onlineGroupUsersReceived', (payload) => {
-            console.log('received onlineGroupUsersReceived event');
-            console.log(payload.onlineUsers);
-
             setOnlineUsers(conversation?.member.filter((user: User) => payload.onlineUsers.includes(user._id))!);
             setOfflineUsers(conversation?.member.filter((user: User) => !payload.onlineUsers.includes(user._id))!);
         });
@@ -69,9 +65,7 @@ export const GroupRecipientsSidebar = () => {
         user: User
     ) => {
         e.preventDefault();
-        console.log("test")
         dispatch(toggleContextMenu(true));
-        console.log("test1")
         dispatch(setContextMenuLocation({ x: e.pageX, y: e.pageY }));
         dispatch(setSelectedUser(user));
     };
@@ -83,7 +77,7 @@ export const GroupRecipientsSidebar = () => {
             </GroupRecipientsSidebarHeader>
             <GroupRecipientSidebarItemContainer>
                 <div>
-                    <span>Online Users</span> {onlineUsers.length} / {conversation?.member.length}
+                    <span>Online Users</span> {onlineUsers?.length} / {conversation?.member.length}
                     <OnlineGroupRecipients
                         users={onlineUsers}
                         group={conversation}
@@ -92,7 +86,7 @@ export const GroupRecipientsSidebar = () => {
                 </div>
 
                 <div>
-                    <span>Offline Users</span> {offlineUsers.length} / {conversation?.member.length}
+                    <span>Offline Users</span> {offlineUsers?.length} / {conversation?.member.length}
                     <OnlineGroupRecipients
                         users={offlineUsers}
                         group={conversation}

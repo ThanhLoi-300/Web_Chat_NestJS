@@ -17,6 +17,10 @@ import { getUserContextMenuIcon, isGroupOwner } from '../../utils/helpers';
 import { ContextMenu, ContextMenuItem } from '../../utils/styles';
 import { UserContextMenuActionType } from '../../utils/types';
 import { Person, PersonCross, Crown } from 'akar-icons';
+import { SocketContext } from '../../utils/context/SocketContext';
+import {
+    toggleContextMenu,
+} from '../../store/groupRecipientsSidebarSlice';
 
 type Props = {
     points: { x: number; y: number };
@@ -42,6 +46,8 @@ export const SelectedParticipantContextMenu: FC<Props> = ({ points }) => {
         selectConversationById(state, id!)
     );
 
+    const socket = useContext(SocketContext);
+
     const kickUser = () => {
         console.log(`Kicking User: ${selectedUser?._id}`);
         console.log(selectedUser);
@@ -52,6 +58,8 @@ export const SelectedParticipantContextMenu: FC<Props> = ({ points }) => {
                 userId: selectedUser._id,
             })
         );
+        socket.emit('deleteMember', { groupId: id!, userId: selectedUser._id });
+        dispatch(toggleContextMenu(false));
     };
 
     const transferGroupOwner = () => {
@@ -60,6 +68,8 @@ export const SelectedParticipantContextMenu: FC<Props> = ({ points }) => {
         dispatch(
             updateGroupOwnerThunk({ id: id!, newOwnerId: selectedUser._id })
         );
+        socket.emit('transferOwner', { groupId: id!, user: selectedUser });
+        dispatch(toggleContextMenu(false));
     };
 
     const isOwner = isGroupOwner(user, conversation);

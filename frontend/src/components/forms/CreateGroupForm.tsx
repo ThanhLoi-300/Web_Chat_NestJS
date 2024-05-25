@@ -55,7 +55,7 @@ export const CreateGroupForm: FC<Props> = ({ setShowModal }) => {
         const conversation: Conversation = {
             type: 'group',
             member: selectedRecipients,
-            owner: user!._id,
+            owner: user,
             nameGroup: title,
         }
         return dispatch(createConversationThunk(conversation!))

@@ -5,6 +5,7 @@ import {
   Inject,
   Param,
   Post,
+  Query,
   Req,
 } from '@nestjs/common';
 import { Routes, Services } from 'src/utils/constants';
@@ -28,15 +29,16 @@ export class ConversationsController {
     @Req() req: AuthenticatedRequest,
     @Body() createConversationPayload: CreateConversationParams,
   ) {
-    const { existed, conversation } = await this.conversationsService.createConversation(
-      req.userId,
-      createConversationPayload,
-    );
+    const { existed, conversation } =
+      await this.conversationsService.createConversation(
+        req.userId,
+        createConversationPayload,
+      );
 
     if (!existed) {
       const socket = this.socketService.getSocket();
       socket.emit('conversation.create', { idUser: req.userId, conversation });
-    } 
+    }
 
     return conversation;
   }

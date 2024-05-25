@@ -16,8 +16,8 @@ const firebaseConfig = {
 // Khởi tạo Firebase
 const app = initializeApp(firebaseConfig);
 
-export const auth = getAuth(app);
-export const provider = new GoogleAuthProvider();
+// export const auth = getAuth(app);
+// export const provider = new GoogleAuthProvider();
 
 export default app;
 

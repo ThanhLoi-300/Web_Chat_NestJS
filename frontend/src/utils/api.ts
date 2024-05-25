@@ -34,14 +34,14 @@ const token = localStorage.getItem("accessToken");
 
 let config = {
   headers: {
-    authorization: "",
+    authorization: `Bearer ${token}`,
   },
 };
 
 export const updateToken = () => {
-  const token = window.localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.authorization = `Bearer ${token}`;
+  const jwt = window.localStorage.getItem("accessToken");
+  if (jwt) {
+    config.headers.authorization = `Bearer ${jwt}`;
   }
 };
 
@@ -59,6 +59,9 @@ export const getUser = () => axiosClient.get<User>(`/users`, config);
 
 export const searchUsers = (query: string) =>
   axiosClient.get<User[]>(`/users/search?query=${query}`, config);
+
+export const searchConversations = (query: string) =>
+  axiosClient.get<Conversation[]>(`/searchConversation?query=${query}`, config);
 
 export const getConversations = () =>
   axiosClient.get<Conversation[]>(`/conversations`, config);
@@ -84,10 +87,7 @@ export const getConversationMessages = (conversationId: string) =>
 //   return axiosClient.post(url, data, config);
 // };
 
-export const createMessage = (
-  id: string,
-  data: CreateMessageParams
-) => {
+export const createMessage = (id: string, data: CreateMessageParams) => {
   return axiosClient.post(`/conversations/${id}/messages`, data, config);
 };
 
@@ -107,19 +107,25 @@ export const editMessage = ({ content, id, messageId }: EditMessagePayload) =>
     config
   );
 
-export const fetchGroups = () => axiosClient.get<Conversation[]>(`/groups`, config);
+export const fetchGroups = () =>
+  axiosClient.get<Conversation[]>(`/groups`, config);
 
 export const createGroup = (params: CreateGroupParams) =>
   axiosClient.post(`/groups`, params, config);
 
 export const removeGroupRecipient = ({ id, userId }: RemoveGroupRecipientParams) =>
-  axiosClient.delete<Conversation>(
-    `/groups/${id}/recipients/${userId}`,
+  axiosClient.post<Conversation>(
+    `/searchConversation/deleteMember`,
+    { id, userId },
     config
   );
 
 export const updateGroupOwner = ({ id, newOwnerId }: UpdateGroupOwnerParams) =>
-  axiosClient.patch(`/groups/${id}/owner`, { newOwnerId }, config);
+  axiosClient.post(
+    `/searchConversation/updateGroupOwner`,
+    { id, userId: newOwnerId },
+    config
+  );
 
 export const leaveGroup = (id: string) =>
   axiosClient.delete(`/groups/${id}/recipients/leave`, config);
@@ -142,7 +148,11 @@ export const deleteGroupMessage = ({
     config
   );
 
-export const editGroupMessage = ({ content, id, messageId }: EditMessagePayload) =>
+export const editGroupMessage = ({
+  content,
+  id,
+  messageId,
+}: EditMessagePayload) =>
   axiosClient.patch<MessageType>(
     `/groups/${id}/messages/${messageId}`,
     { content },
@@ -189,27 +199,24 @@ export const rejectFriendRequest = (id: number) =>
 export const removeFriend = (id: number) =>
   axiosClient.delete<Friend>(`/friends/${id}/delete`, config);
 
-export const checkConversationOrCreate = (recipientId: number) =>
+export const checkConversationOrCreate = (recipientId: string) =>
   axiosClient.get<Conversation>(`/exists/conversations/${recipientId}`, config);
 
-export const completeUserProfile = (data: FormData) =>
-  axiosClient.post("/users/profiles", data, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+export const updateUserProfile = (
+  banner: string,
+  avatar: string,
+  name: string
+) => axiosClient.patch<User>("/users/profiles", {banner, avatar, name}, config);
 
-export const checkUsernameExists = (username: string) =>
-  axiosClient.get(`/users/check?username=${username}`, config);
-
-export const updateUserProfile = (data: FormData) =>
-  axiosClient.patch<User>("/users/profiles", data, {
-    ...config,
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-
-export const typingText = (conversationId: string, isTyping: boolean) =>
-  axiosClient.get(
-    `/conversations/${conversationId}/messages/typingText?typingStatus=${isTyping}`,
+export const updateSeenMessage = (messageId: string, conversationId: string) =>
+  axiosClient.post<any>(
+    "/conversations/" + conversationId + "/messages/updateSeenMessage",
+    { messageId },
     config
   );
+
+// export const typingText = (conversationId: string, isTyping: boolean) =>
+//   axiosClient.get(
+//     `/conversations/${conversationId}/messages/typingText?typingStatus=${isTyping}`,
+//     config
+//   );

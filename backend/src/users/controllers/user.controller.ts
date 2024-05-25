@@ -5,15 +5,14 @@ import {
   HttpException,
   HttpStatus,
   Inject,
-  Post,
+  Patch,
   Query,
   Req,
 } from '@nestjs/common';
 import { Routes, Services } from '../../utils/constants';
 import { IUserService } from '../interfaces/user';
 import { AuthenticatedRequest } from 'src/utils/types';
-import { User } from 'src/utils/typeorm';
-import { Types } from 'mongoose';
+import { UpdateUserProfileDto } from '../dtos/UpdateUserProfile.dto';
 
 @Controller(Routes.USERS)
 export class UsersController {
@@ -37,12 +36,11 @@ export class UsersController {
     return await this.userService.findUser({ _id: req.userId });
   }
 
-  @Get('check')
-  async checkUsername(@Query('name') name: string) {
-    if (!name) throw new HttpException('Invalid Query', HttpStatus.BAD_REQUEST);
-    const user = await this.userService.findUser({ name });
-    if (user)
-      throw new HttpException('User already exists', HttpStatus.CONFLICT);
-    return HttpStatus.OK;
+  @Patch('profiles')
+  async updateUserProfile(
+    @Req() req: AuthenticatedRequest,
+    @Body() updateUserProfileDto: UpdateUserProfileDto,
+  ) {
+    return this.userService.createProfileOrUpdate(req.userId, updateUserProfileDto);
   }
 }

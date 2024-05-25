@@ -28,9 +28,6 @@ export const messageContainerSlice = createSlice({
     setIsEditing: (state, action: PayloadAction<boolean>) => {
       state.isEditingMessage = action.payload;
     },
-    editMessageContent: (state, action) => {
-      if (state.messageBeingEdited) state.messageBeingEdited.content = action.payload;
-    },
     resetMessageContainer: (state) => {
       state.isEditingMessage = false;
       state.messageBeingEdited = undefined;
@@ -49,7 +46,6 @@ export const {
   setIsEditing,
   setMessageBeingEdited,
   setSelectedMessage,
-  editMessageContent,
   resetMessageContainer,
   toggleContextMenu,
   setContextMenuLocation,

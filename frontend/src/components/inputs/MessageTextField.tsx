@@ -28,7 +28,6 @@ export const MessageTextField: FC<Props> = ({
     const DEFAULT_TEXTAREA_HEIGHT = 21;
     const ref = useRef<HTMLTextAreaElement>(null);
     const dispatch = useDispatch();
-    // const { error } = useToast({ theme: 'dark' });
     const { attachments, attachmentCounter } = useSelector(
         (state: RootState) => state.messagePanel
     );

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { Conversation, CreateConversationParams } from '../utils/types';
+import { Conversation } from '../utils/types';
 import { getConversations, postNewConversation } from '../utils/api';
 import { RootState } from '.';
 
@@ -26,19 +26,46 @@ export const createConversationThunk = createAsyncThunk(
 );
 
 export const conversationsSlice = createSlice({
-  name: 'conversations',
+  name: "conversations",
   initialState,
   reducers: {
     addConversation: (state, action: PayloadAction<Conversation>) => {
-      console.log('addConversation');
+      console.log("addConversation");
       state.conversations.unshift(action.payload);
     },
     updateConversation: (state, action: PayloadAction<Conversation>) => {
-      console.log('Inside updateConversation');
+      console.log("Inside updateConversation");
+      console.log(action.payload);
       const conversation = action.payload;
-      const index = state.conversations.findIndex((c) => c._id === conversation._id);
+      const index = state.conversations.findIndex(
+        (c) => c._id === conversation._id
+      );
       state.conversations.splice(index, 1);
       state.conversations.unshift(conversation);
+    },
+    deleteMember: (state, action: PayloadAction<any>) => {
+      console.log("Inside deleteMember");
+      console.log(action.payload);
+      const { groupId, userId } = action.payload;
+      const index = state.conversations.findIndex((c) => c._id === groupId);
+      const indexMember = state.conversations[index].member.findIndex(
+        (user) => user._id === userId
+      );
+      state.conversations[index].member.splice(indexMember, 1);
+    },
+    transferOwner: (state, action: PayloadAction<any>) => {
+      console.log("Inside transferOner");
+      console.log(action.payload);
+      const { groupId, user } = action.payload;
+      const index = state.conversations.findIndex((c) => c._id === groupId);
+      state.conversations[index].owner = user;
+    },
+    deleteConversation: (state, action: PayloadAction<any>) => {
+      console.log("Inside deleteConversation");
+      console.log(action.payload);
+      const { groupId } = action.payload;
+      const index = state.conversations.findIndex((c) => c._id === groupId);
+      state.conversations.splice(index, 1);
     },
   },
   extraReducers: (builder) => {
@@ -51,7 +78,7 @@ export const conversationsSlice = createSlice({
         state.loading = true;
       })
       .addCase(createConversationThunk.fulfilled, (state, action) => {
-        console.log('Fulfilled');
+        console.log("Fulfilled");
         console.log(action.payload.data);
         state.conversations.unshift(action.payload.data);
       });
@@ -67,6 +94,12 @@ export const selectConversationById = createSelector(
 );
 
 // Action creators are generated for each case reducer function
-export const { addConversation, updateConversation } = conversationsSlice.actions;
+export const {
+  addConversation,
+  updateConversation,
+  deleteMember,
+  deleteConversation,
+  transferOwner,
+} = conversationsSlice.actions;
 
 export default conversationsSlice.reducer;

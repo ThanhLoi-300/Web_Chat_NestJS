@@ -6,7 +6,6 @@ import {
   CreateMessageResponse,
   DeleteMessageParams,
   EditMessageParams,
-  deleteMessageResponse,
 } from 'src/utils/types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -80,32 +79,30 @@ export class MessageService implements IMessageService {
       .populate('senderId');
   }
 
-  async deleteMessage(
-    params: DeleteMessageParams,
-  ): Promise<deleteMessageResponse> {
-    const { conversationId, messageId, userId, img } = params;
+  async deleteMessage(params: DeleteMessageParams): Promise<Message> {
+    const { messageId } = params;
 
-    let message = await this.messageModel.findById(messageId);
+    let message = await this.messageModel
+      .findByIdAndUpdate(
+        messageId,
+        {
+          isdeleted: true,
+        },
+        { new: true },
+      )
+      .populate('conversationId');
 
-    if (!img) message.isdeleted = true;
-    else {
-      message.img = message.img.filter((item: string) =>
-        item !== img ? item : '',
-      );
+    return message;
+  }
+
+  async updateSeenMessage(userId: string, messageId: string) {
+    const message = await this.messageModel.findById(messageId);
+
+    if (!message.seen.includes(userId)) {
+      // Nếu chưa có, thêm userId vào mảng
+      message.seen.push(userId);
+      await message.save();
     }
-    const mesageUpdated = await message.save();
-    let conversation = await this.conversationService.findById(
-      conversationId,
-      userId,
-    );
-    if (conversation.lastMessageId === mesageUpdated._id) {
-      conversation.lastMessageId = mesageUpdated._id;
-      conversation = await this.conversationService.update({
-        id: conversationId,
-        lastMessage: mesageUpdated._id,
-      });
-    }
-    return { conversation, messageDelete: mesageUpdated };
   }
 
   // async deleteLastMessage(conversation: Conversation, message: Message) {

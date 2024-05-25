@@ -403,6 +403,7 @@ export const MessageItemContent = styled.div<MessageItemContentProps>`
   width: fit-content;
   white-space: pre-wrap;
   display: flex;
+  flex-direction: column;
   float: ${({ owner }) => (owner ? 'right' : 'left')};
   margin-left: ${({ ml }) => (ml ? '0' : '70px')};
   color: ${({ theme }) => theme.messagePanel.body.content.color};
@@ -625,6 +626,9 @@ export const RecipientResultItem = styled.div`
   padding: 20px 28px;
   transition: 100ms background-color ease;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   &:hover {
     cursor: pointer;
     background-color: #0c0c0c;

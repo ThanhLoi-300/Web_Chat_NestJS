@@ -18,7 +18,7 @@ export const FriendListItem: FC<Props> = ({
     const { user } = useContext(AuthContext);
 
     const friendUserInstance =
-        user?.id === friend.sender.id ? friend.receiver : friend.sender;
+        user?._id === friend.sender._id ? friend.receiver : friend.sender;
 
     return (
         <FriendListItemContainer
@@ -30,7 +30,7 @@ export const FriendListItem: FC<Props> = ({
                 <span className="username">{friendUserInstance.name}</span>
                 {online && (
                     <span className="status">
-                        {friendUserInstance.presence?.statusMessage}
+                        {/* {friendUserInstance.presence?.statusMessage} */}
                     </span>
                 )}
             </div>

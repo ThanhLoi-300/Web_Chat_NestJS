@@ -5,6 +5,7 @@ import { CreateFriendParams, CreateUserDetails, FindUserParams, UserParams } fro
 import { IUserService } from '../interfaces/user';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { UpdateUserProfileDto } from '../dtos/UpdateUserProfile.dto';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -53,11 +54,25 @@ export class UserService implements IUserService {
     const newUser = new this.userModel({
       ...userDetails,
       password,
+      banner: '',
+      avatar: ''
     });
     return await newUser.save();
   }
 
   async findUser(params: FindUserParams): Promise<User> {
     return await this.userModel.findOne({ ...params });
+  }
+
+  async createProfileOrUpdate(userId: string, params: UpdateUserProfileDto) {
+    const user = await this.findUser({ _id: userId });
+    if (user) {
+      params.banner && (user.banner = params.banner);
+      params.avatar && (user.avatar = params.avatar);
+      user.name = params.name;
+      const saved = await user.save();
+      return await this.userModel.findById(saved._id);
+    }
+    return user;
   }
 }

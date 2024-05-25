@@ -35,21 +35,25 @@ export const ConversationSidebarItem: React.FC<Props> = ({ conversation }) => {
 
     const lastMessageContent = () => {
         const { lastMessageId } = conversation;
+        if (lastMessageId && lastMessageId.isdeleted) {
+            const content = lastMessageId.senderId?.name + ": Deleted a message"
+            return content?.length >= MESSAGE_LENGTH_MAX
+                ? content?.slice(0, MESSAGE_LENGTH_MAX).concat('...')
+                : content;
+        }
         if (lastMessageId && lastMessageId.content && lastMessageId.img && lastMessageId.img?.length == 0) {
-            const content = lastMessageId.senderId?.name+": " + lastMessageId.content
+            const content = lastMessageId.senderId?.name + ": " + lastMessageId.content
             return content?.length >= MESSAGE_LENGTH_MAX
                 ? content?.slice(0, MESSAGE_LENGTH_MAX).concat('...')
                 : content;
         } else if (lastMessageId && lastMessageId.img && lastMessageId.img?.length > 0) {
-            const content = lastMessageId.senderId?.name + ": sent photo" 
+            const content = lastMessageId.senderId?.name + ": sent photo"
             return content?.length >= MESSAGE_LENGTH_MAX
                 ? content?.slice(0, MESSAGE_LENGTH_MAX).concat('...')
                 : content;
         }
         return null;
     };
-
-    const hasProfilePicture = () => recipient?.avatar;
 
     return (
         <>
@@ -61,10 +65,8 @@ export const ConversationSidebarItem: React.FC<Props> = ({ conversation }) => {
                 selected={id! === conversation._id}
             >
                 <img
-                    src={
-                        hasProfilePicture()
-                            ? CDN_URL.BASE.concat(recipient?.avatar!)
-                            : defaultAvatar
+                    src={recipient?.avatar ? recipient?.avatar
+                        : defaultAvatar
                     }
                     alt="avatar"
                     className={styles.conversationAvatar}

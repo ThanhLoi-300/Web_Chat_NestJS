@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Conversation, Message } from 'src/utils/typeorm';
 import { ConversationsModule } from 'src/conversations/conversations.module';
 // import { FriendsModule } from 'src/friends/friends.module';
-// import { PusherHelper } from 'src/utils/PusherHelper';
 import { UsersModule } from 'src/users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConversationSchema } from 'src/utils/typeorm/entities/Conversation';
@@ -29,7 +28,6 @@ import { SocketService } from 'src/utils/SocketService';
       provide: Services.MESSAGES,
       useClass: MessageService,
     },
-    // PusherHelper,
     SocketService,
   ],
   exports: [

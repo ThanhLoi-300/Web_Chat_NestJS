@@ -33,7 +33,7 @@ export const MessageItemAttachmentContainer: FC<Props> = ({ message, owner }) =>
                     <img src={imageUrl} alt="overlay" style={{ maxHeight: '90%' }} />
                 </OverlayStyle>
             )}
-            <div>
+            <div style={{marginTop: '13px'}}>
                 {message.img?.map((attachment) => (
                     <img
                         key={attachment}

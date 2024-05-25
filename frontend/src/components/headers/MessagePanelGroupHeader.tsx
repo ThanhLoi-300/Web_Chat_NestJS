@@ -36,7 +36,7 @@ export const MessagePanelGroupHeader = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     {group?.imgGroup ? (
                         <img
-                            src={CDN_URL.BASE.concat(group.imgGroup)}
+                            src={group.imgGroup}
                             alt="avatar"
                             className={styles.groupAvatar}
                         />

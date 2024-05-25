@@ -14,6 +14,7 @@ import { ConversationSchema } from 'src/utils/typeorm/entities/Conversation';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MessageSchema } from 'src/utils/typeorm/entities/Message';
 import { SocketService } from 'src/utils/SocketService';
+import { SearchConversation } from './searchConversation.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { SocketService } from 'src/utils/SocketService';
     ]),
     UsersModule,
     // FriendsModule,
+    SearchConversation,
   ],
   controllers: [ConversationsController],
   providers: [

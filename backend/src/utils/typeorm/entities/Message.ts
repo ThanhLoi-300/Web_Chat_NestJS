@@ -18,7 +18,7 @@ export class Message {
   isdeleted: boolean;
 
   @Prop({ type: [{ type: String, ref: 'User' }] })
-  seen: string[] | User[];
+  seen: string[];
 
   @Prop({ type: String, ref: 'User' })
   senderId: string | User;

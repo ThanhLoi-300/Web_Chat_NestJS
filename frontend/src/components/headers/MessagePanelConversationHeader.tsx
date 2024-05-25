@@ -40,7 +40,7 @@ export const MessagePanelConversationHeader = () => {
         }, 1000);
         socket.on('onlineUsersReceived', (payload) => {
             console.log('received onlineUsersReceived event');
-            console.log(payload.result);
+            // console.log(payload.result);
             setCheckOnline(payload.result);
         });
         return () => {
@@ -93,7 +93,7 @@ export const MessagePanelConversationHeader = () => {
         <MessagePanelHeaderStyle>
             {/* {showModal && <UpdatePresenceStatusModal setShowModal={setShowModal} />} */}
             <UserAvatarAndName>
-                <UserAvatar user={user!} onClick={() => setShowModal(true)} />
+                <UserAvatar user={recipient} onClick={() => setShowModal(true)} />
                 <div>
                     <span>{recipient?.name || 'User'}</span>
                     <div style={{ display: 'flex', alignItems: 'center' }}>

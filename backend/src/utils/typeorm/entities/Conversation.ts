@@ -22,7 +22,7 @@ export class Conversation {
   imgGroup: string;
 
   @Prop({ type: String, ref: 'User' })
-  owner: string | User;
+  owner: string;
 
   @Prop({ type: String, ref: 'Message' })
   lastMessageId: string | Message;

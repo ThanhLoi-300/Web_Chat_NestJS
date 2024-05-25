@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { slideDown, slideUp } from '../keyframes';
+import { slideUp } from '../keyframes';
 import { SettingsSidebarItemProps, UserBannerProps } from '../styleTypes';
 
 export const SettingsSidebarStyle = styled.aside`
@@ -126,6 +126,7 @@ export const SettingsProfileUserDetails = styled.div`
   width: 100%;
   box-sizing: border-box;
   position: relative;
+  align-items: center;
   transform: translateY(-50%);
   & .avatar {
     height: 150px;
@@ -146,24 +147,6 @@ export const SettingsProfileUserDetails = styled.div`
 
 export const ProfileSection = styled.div`
   padding: 0 48px;
-`;
-
-export const ProfileAboutSection = styled.div`
-  background-color: #111111;
-  width: 500px;
-  padding: 32px;
-  box-sizing: border-box;
-  border-radius: 8px;
-  & label {
-    font-size: 20px;
-    font-weight: 500;
-  }
-`;
-
-export const ProfileAboutSectionHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 `;
 
 export const ProfileDescriptionField = styled.textarea`
@@ -211,16 +194,3 @@ export const ProfileEditActionBar = styled.div`
     gap: 10px;
   }
 `;
-
-/**
- * ${({ animate }) =>
-    animate
-      ? css`
-          animation: 0s ${slideUp} ease !important;
-          animation-fill-mode: forwards;
-        `
-      : css`
-          animation: 500ms ${slideDown} ease;
-          animation-fill-mode: forwards;
-        `}
- */

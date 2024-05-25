@@ -25,7 +25,7 @@ export const OnlineGroupRecipients: FC<Props> = ({
 
     return (
         <>
-            {users.map((user) => (
+            {users?.map((user) => (
                 <GroupRecipientSidebarItem
                     online={true}
                     onClick={(e) => onUserContextMenu(e, user)}
@@ -37,7 +37,7 @@ export const OnlineGroupRecipients: FC<Props> = ({
                             {/* <span className="status">{formatStatusMessage(user)}</span> */}
                         </div>
                     </div>
-                    {user._id === group?.owner!._id && <Crown color="#ffbf00" />}
+                    {/* {user._id === group?.owner?._id && <Crown color="#ffbf00" />} */}
                 </GroupRecipientSidebarItem>
             ))}
         </>

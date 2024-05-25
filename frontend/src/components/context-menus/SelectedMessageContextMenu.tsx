@@ -10,23 +10,27 @@ import {
 import { deleteMessageThunk } from '../../store/Messages/messageThunk';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { ContextMenu, ContextMenuItem } from '../../utils/styles';
+import { SocketContext } from '../../utils/context/SocketContext';
 
 export const SelectedMessageContextMenu = () => {
     const { id: routeId } = useParams();
     const { user } = useContext(AuthContext);
     const dispatch = useDispatch<AppDispatch>();
+    const socket = useContext(SocketContext);
     const { selectedMessage: message, points } = useSelector(
         (state: RootState) => state.messageContainer
     );
 
     const deleteMessage = () => {
         const id = routeId!;
-        console.log(`Delete message ${message?._id}`);
-        if (!message) return;
-        const messageId = message._id;
-        // return conversationType === 'private'
-        //     ? dispatch(deleteMessageThunk({ id, messageId: message._id }))
-        //     : dispatch(deleteGroupMessageThunk({ id, messageId }));
+        if (!message) return
+        dispatch(deleteMessageThunk({ id, messageId: message!._id }))
+        
+        const updatedMessage = {
+            ...message,
+            isdeleted: true,
+        };
+        socket.emit('onMessageDelete', updatedMessage)
     };
 
     return (

@@ -25,6 +25,12 @@ export const GroupSidebarItem: React.FC<Props> = ({ group, onContextMenu }) => {
 
     const lastMessageContent = () => {
         const { lastMessageId } = group;
+        if (lastMessageId && lastMessageId.isdeleted) {
+            const content = lastMessageId.senderId?.name + ": Deleted a message"
+            return content?.length >= MESSAGE_LENGTH_MAX
+                ? content?.slice(0, MESSAGE_LENGTH_MAX).concat('...')
+                : content;
+        }
         if (lastMessageId && lastMessageId.content && lastMessageId.img && lastMessageId.img?.length == 0) {
             const content = lastMessageId.senderId?.name + ": " + lastMessageId.content
             return content?.length >= MESSAGE_LENGTH_MAX
@@ -47,7 +53,7 @@ export const GroupSidebarItem: React.FC<Props> = ({ group, onContextMenu }) => {
         >
             {group.imgGroup ? (
                 <img
-                    src={CDN_URL.BASE.concat(group.imgGroup)}
+                    src={group.imgGroup}
                     alt="avatar"
                     className={styles.groupAvatar}
                 />

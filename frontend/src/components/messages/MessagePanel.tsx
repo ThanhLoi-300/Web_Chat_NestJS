@@ -34,11 +34,13 @@ import { MessageAttachmentActionIcon } from './MessageAttachmentActionIcon';
 type Props = {
     sendTypingStatus: () => void;
     isRecipientTyping: boolean;
+    textTyping: string;
 };
 
 export const MessagePanel: FC<Props> = ({
     sendTypingStatus,
     isRecipientTyping,
+    textTyping,
 }) => {
     const dispatch = useDispatch();
     const { messageCounter } = useSelector(
@@ -130,7 +132,7 @@ export const MessagePanel: FC<Props> = ({
                         <FaceVeryHappy className={styles.icon} size={ICON_SIZE} />
                     </MessageInputContainer>
                     <MessageTypingStatus>
-                        {isRecipientTyping ? `${recipient?.name} is typing...` : ''}
+                        {isRecipientTyping && textTyping}
                     </MessageTypingStatus>
                 </MessagePanelFooter>
             </MessagePanelStyle>

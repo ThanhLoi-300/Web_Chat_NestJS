@@ -20,7 +20,7 @@ export const FriendsPage = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        socket.emit('getOnlineFriends');
+        socket.emit('getOnlineFriends', {});
         const interval = setInterval(() => {
             socket.emit('getOnlineFriends');
         }, 10000);

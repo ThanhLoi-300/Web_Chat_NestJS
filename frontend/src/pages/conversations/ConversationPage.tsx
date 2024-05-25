@@ -1,24 +1,32 @@
 import { useContext, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useParams } from 'react-router-dom';
 import ConversationPanel from '../../components/conversations/ConversationPanel';
 import ConversationSidebar from '../../components/conversations/ConversationSidebar';
-import { AppDispatch } from '../../store';
+import { AppDispatch, RootState } from '../../store';
+import { useNavigate } from 'react-router-dom';
 import {
     addConversation,
     fetchConversationsThunk,
+    selectConversationById,
     updateConversation,
+    deleteMember, deleteConversation, transferOwner
 } from '../../store/conversationsSlice';
 import { addMessage, deleteMessage } from '../../store/Messages/messageSlice';
-import { Conversation, DeleteMessageResponse, MessageEventPayload } from '../../utils/types';
+import { Conversation, MessageEventPayload } from '../../utils/types';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { SocketContext } from '../../utils/context/SocketContext';
+import { toast } from 'react-toastify';
 
 export const ConversationPage = () => {
     const { id } = useParams();
     const { user } = useContext(AuthContext);
     const [showSidebar, setShowSidebar] = useState(window.innerWidth > 800);
-    const dispatch = useDispatch<AppDispatch>();
+    const dispatch: any = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
+    const conversation = useSelector((state: RootState) =>
+        selectConversationById(state, id!)
+    );
 
     const socket = useContext(SocketContext);
 
@@ -52,16 +60,46 @@ export const ConversationPage = () => {
         });
         socket.on('onMessageDelete', (payload) => {
             console.log('Message Deleted');
-            console.log(payload);
             dispatch(deleteMessage(payload));
+        });
+        socket.on('onDeleteMember', (payload) => {
+            console.log('onDeleteMember: ' + JSON.stringify(payload));
+            if (id! === payload.groupId && payload.userId !== user?._id) {
+                toast.warning('A member has been kicked');
+            } 
+            if (payload.userId === user?._id) {
+                dispatch(deleteConversation(payload.groupId));
+                toast.warning('You have been kicked from the group');
+                navigate(`/conversations`);
+            }
+            dispatch(deleteMember(payload));
+        });
+
+        socket.on('onTransferOwner', (payload) => {
+            console.log('onTransferOwner: ' + JSON.stringify(payload));
+            if (id! === payload.groupId && payload.user._id !== user?._id) {
+                toast.warning('Leader has been transfered');
+            }
+            if (id! === payload.groupId && payload.user._id === user?._id) {
+                toast.warning('You have been transferred the ownership');
+            }
+            dispatch(transferOwner(payload));
         });
         return () => {
             socket.off('connected');
             socket.off('onMessage');
             socket.off('onConversation');
             socket.off('onMessageDelete');
+            socket.off('onDeleteMember');
+            socket.off('onTransferOwner');
         };
     }, [id]);
+
+    useEffect(() => {
+        if (!conversation) {
+            navigate('/conversations');
+        }
+    }, []);
 
     return (
         <>

@@ -43,7 +43,7 @@ export type Conversation = {
   nameGroup?: string;
   imgGroup?: string;
   member: User[];
-  lastMessageId?: Message;
+  lastMessageId?: MessageType;
   owner?: User;
 };
 
@@ -360,3 +360,9 @@ export type GroupParticipantLeftPayload = {
   group: Group;
   userId: string;
 };
+
+export type UpdateMessageSeen = {
+  conversationId: string;
+  messageId: string;
+  user: User;
+}

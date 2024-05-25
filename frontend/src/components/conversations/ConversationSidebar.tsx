@@ -21,16 +21,32 @@ import { ConversationSidebarItem } from '../conversations/ConversationSidebarIte
 import { GroupSidebarItem } from '../groups/GroupSidebarItem';
 import { CreateConversationModal } from '../modals/CreateConversationModal';
 import { CreateGroupModal } from '../modals/CreateGroupModal';
-import { getConversations } from '../../utils/api';
+import { getConversations, searchConversations } from '../../utils/api';
+import { useDebounce } from '../../utils/hooks/useDebounce';
 
 const ConversationSidebar = () => {
     const [showModal, setShowModal] = useState(false);
     const [showModalGroup, setShowModalGroup] = useState(false);
-    const [search, setSearch] = useState('');
+    const [query, setQuery] = useState('');
     const dispatch = useDispatch<AppDispatch>();
+    const [searching, setSearching] = useState(false);
+    const debouncedQuery = useDebounce(query, 1000);
+    const [conversationsResults, setConversationsResults] = useState<Conversation[]>([]);
     const conversations = useSelector(
         (state: RootState) => state.conversation.conversations
     );
+
+    useEffect(() => {
+        if (debouncedQuery) {
+            setSearching(true);
+            searchConversations(debouncedQuery)
+                .then(({ data }) => {
+                    setConversationsResults(data);
+                })
+                .catch((err) => console.log(err))
+                .finally(() => setSearching(false));
+        }
+    }, [debouncedQuery]);
 
     // useEffect(() => {
     //     // setConversations([])
@@ -49,16 +65,8 @@ const ConversationSidebar = () => {
 
     const searchConversation = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
-        setSearch(value);
-
-        // try {
-        //     const response = await fetch(`/api/conversations?q=${value}`);
-        //     const data = await response.json();
-        //     // Xử lý dữ liệu trả về từ API ở đây
-        //     console.log(data);
-        // } catch (error) {
-        //     console.error('Error searching conversations:', error);
-        // }
+        setQuery(value);
+        if (!value) setConversationsResults([]);
     };
 
     const onGroupContextMenu = (event: ContextMenuEvent, group: Conversation) => {
@@ -105,17 +113,30 @@ const ConversationSidebar = () => {
                 </SidebarHeader>
                 <ScrollableContainer>
                     <SidebarContainerStyle>
-                        {conversations.map((conversation: Conversation) => (
-                            conversation.type === 'private' ?
-                                (
-                                    <ConversationSidebarItem
-                                        key={conversation._id}
-                                        conversation={conversation}
-                                    />) : (<GroupSidebarItem
-                                        key={conversation._id}
-                                        group={conversation}
-                                        onContextMenu={onGroupContextMenu}
-                                    />)))}
+                        {
+                            conversationsResults.length > 0 ? conversationsResults.map((conversation: Conversation) => (
+                                conversation.type === 'private' ?
+                                    (
+                                        <ConversationSidebarItem
+                                            key={conversation._id}
+                                            conversation={conversation}
+                                        />) : (<GroupSidebarItem
+                                            key={conversation._id}
+                                            group={conversation}
+                                            onContextMenu={onGroupContextMenu}
+                                        />)
+                            )) : conversations.map((conversation: Conversation) => (
+                                conversation.type === 'private' ?
+                                    (
+                                        <ConversationSidebarItem
+                                            key={conversation._id}
+                                            conversation={conversation}
+                                        />) : (<GroupSidebarItem
+                                            key={conversation._id}
+                                            group={conversation}
+                                            onContextMenu={onGroupContextMenu}
+                                        />)))
+                        }
                         {showGroupContextMenu && <GroupSidebarContextMenu />}
                     </SidebarContainerStyle>
                 </ScrollableContainer>
