@@ -7,6 +7,7 @@ import { Services } from '../utils/constants';
 import { FriendRequest, User } from '../utils/typeorm';
 import { Friend } from '../utils/typeorm/entities/Friend';
 import {
+  AcceptFriendRequestResponse,
   CancelFriendRequestParams,
   CreateFriendParams,
   FriendRequestParams,
@@ -25,13 +26,16 @@ export class FriendRequestService implements IFriendRequestService {
     // @Inject(Services.FRIENDS_SERVICE)
     // private readonly friendsService: IFriendsService,
   ) {}
+  accept(params: FriendRequestParams): Promise<AcceptFriendRequestResponse> {
+    throw new Error('Method not implemented.');
+  }
 
   getFriendRequests(id: string): Promise<FriendRequest[]> {
     const status = 'pending';
     return this.friendRequestRepository.find({
       where: [
-        { sender: { id }, status },
-        { receiver: { id }, status },
+        { sender: id, status },
+        { receiver: id, status },
       ],
       relations: ['receiver', 'sender', 'receiver.profile', 'sender.profile'],
     });
@@ -44,7 +48,7 @@ export class FriendRequestService implements IFriendRequestService {
         'Friend Request not found',
         HttpStatus.BAD_REQUEST,
       );
-    if (friendRequest.sender.id !== userId)
+    if (friendRequest.sender !== userId)
       throw new HttpException(
         'Friend Request Exception',
         HttpStatus.BAD_REQUEST,
@@ -75,41 +79,41 @@ export class FriendRequestService implements IFriendRequestService {
     // );
     // if (isFriends)
     //   throw new HttpException('Friend Already Exists', HttpStatus.CONFLICT);
-    const friend = this.friendRequestRepository.create({
-      sender,
-      receiver,
-      status: 'pending',
-    });
-    return this.friendRequestRepository.save(friend);
+    // const friend = this.friendRequestRepository.create({
+    //   sender,
+    //   receiver,
+    //   status: 'pending',
+    // });
+    // return this.friendRequestRepository.save(friend);
   }
 
-  async accept({ id, userId }: FriendRequestParams) {
-    const friendRequest = await this.findById(id);
-    if (!friendRequest)
-      throw new HttpException(
-        'Friend Request not found',
-        HttpStatus.BAD_REQUEST,
-      );
-    if (friendRequest.status === 'accepted')
-      throw new HttpException(
-        'Friend Request Already Accepted',
-        HttpStatus.BAD_REQUEST,
-      );
-    if (friendRequest.receiver.id !== userId)
-      throw new HttpException(
-        'Friend Request Exception',
-        HttpStatus.BAD_REQUEST,
-      );
-    friendRequest.status = 'accepted';
-    const updatedFriendRequest =
-      await this.friendRequestRepository.save(friendRequest);
-    const newFriend = this.friendRepository.create({
-      sender: friendRequest.sender,
-      receiver: friendRequest.receiver,
-    });
-    const friend = await this.friendRepository.save(newFriend);
-    return { friend, friendRequest: updatedFriendRequest };
-  }
+  // async accept({ id, userId }: FriendRequestParams) {
+  //   const friendRequest = await this.findById(id);
+  //   if (!friendRequest)
+  //     throw new HttpException(
+  //       'Friend Request not found',
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   if (friendRequest.status === 'accepted')
+  //     throw new HttpException(
+  //       'Friend Request Already Accepted',
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   if (friendRequest.receiver !== userId)
+  //     throw new HttpException(
+  //       'Friend Request Exception',
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   friendRequest.status = 'accepted';
+  //   const updatedFriendRequest =
+  //     await this.friendRequestRepository.save(friendRequest);
+  //   const newFriend = this.friendRepository.create({
+  //     sender: friendRequest.sender,
+  //     receiver: friendRequest.receiver,
+  //   });
+  //   const friend = await this.friendRepository.save(newFriend);
+  //   return { friend, friendRequest: updatedFriendRequest };
+  // }
 
   async reject({ id, userId }: CancelFriendRequestParams) {
     const friendRequest = await this.findById(id);
@@ -123,7 +127,7 @@ export class FriendRequestService implements IFriendRequestService {
         'Friend Request Already Accepted',
         HttpStatus.BAD_REQUEST,
       );
-    if (friendRequest.receiver.id !== userId)
+    if (friendRequest.receiver !== userId)
       throw new HttpException(
         'Friend Request Exception',
         HttpStatus.BAD_REQUEST,
@@ -136,13 +140,13 @@ export class FriendRequestService implements IFriendRequestService {
     return this.friendRequestRepository.findOne({
       where: [
         {
-          sender: { id: userOneId },
-          receiver: { id: userTwoId },
+          sender:userOneId,
+          receiver: userTwoId,
           status: 'pending',
         },
         {
-          sender: { id: userTwoId },
-          receiver: { id: userOneId },
+          sender: userTwoId ,
+          receiver: userOneId,
           status: 'pending',
         },
       ],

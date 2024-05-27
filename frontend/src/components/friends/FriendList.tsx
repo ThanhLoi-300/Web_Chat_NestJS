@@ -4,7 +4,7 @@ import { AppDispatch, RootState } from '../../store';
 import { FriendListContainer } from '../../utils/styles/friends';
 import { FriendListItem } from './FriendListItem';
 import { FriendContextMenu } from '../context-menus/FriendContextMenu';
-import { ContextMenuEvent, Friend } from '../../utils/types';
+import { ContextMenuEvent, Friend, User } from '../../utils/types';
 import {
     setContextMenuLocation,
     setSelectedFriend,
@@ -23,7 +23,7 @@ export const FriendList = () => {
         return () => window.removeEventListener('click', handleClick);
     }, []);
 
-    const onContextMenu = (e: ContextMenuEvent, friend: Friend) => {
+    const onContextMenu = (e: ContextMenuEvent, friend: User) => {
         e.preventDefault();
         console.log('Friend Context Menu');
         dispatch(toggleContextMenu(true));
@@ -33,24 +33,24 @@ export const FriendList = () => {
 
     return (
         <FriendListContainer>
-            {onlineFriends.length > 0 && <span>Online ({onlineFriends.length})</span>}
-            {onlineFriends.map((friend) => (
+            {onlineFriends && onlineFriends?.length > 0 && <span>Online ({onlineFriends?.length})</span>}
+            {/* {onlineFriends && onlineFriends?.map((friend) => (
                 <FriendListItem
-                    key={friend.id}
+                    key={friend._id}
                     friend={friend}
                     onContextMenu={onContextMenu}
                     online={true}
                 />
-            ))}
+            ))} */}
             <span>Offline</span>
             {friends
-                .filter(
-                    (friend) =>
-                        !onlineFriends.find((onlineFriend) => onlineFriend.id === friend.id)
-                )
+                // .filter(
+                //     (friend) =>
+                //         !onlineFriends?.find((onlineFriend) => onlineFriend._id === friend._id)
+                // )
                 .map((friend) => (
                     <FriendListItem
-                        key={friend.id}
+                        key={friend._id}
                         friend={friend}
                         onContextMenu={onContextMenu}
                         online={false}

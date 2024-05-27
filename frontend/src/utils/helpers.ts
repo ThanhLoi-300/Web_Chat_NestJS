@@ -100,10 +100,10 @@ export const getFriendRequestDetails = (
         incoming: false,
       };
 
-export const getUserFriendInstance = (
-  authenticatedUser: User,
-  selectedFriend: Friend
-) =>
-  authenticatedUser?._id === selectedFriend?.sender._id
-    ? selectedFriend?.receiver
-    : selectedFriend?.sender;
+// export const getUserFriendInstance = (
+//   authenticatedUser: User,
+//   selectedFriend: Friend
+// ) =>
+//   authenticatedUser?._id === selectedFriend?.sender._id
+//     ? selectedFriend?.receiver
+//     : selectedFriend?.sender;

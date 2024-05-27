@@ -2,19 +2,16 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConversationsController } from './conversations.controller';
 import { Services } from 'src/utils/constants';
 import { ConversationsService } from './conversations.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { Conversation, Message } from 'src/utils/typeorm';
 import { UsersModule } from 'src/users/users.module';
 import { isAuthorized } from 'src/utils/helpers';
 import { ConversationMiddleware } from './middlewares/conversation.middleware';
-import { JwtMiddleware } from 'src/auth/JwtMiddleware';
-// import { PusherHelper } from 'src/utils/PusherHelper';
-// import { FriendsModule } from 'src/friends/friends.module';
 import { ConversationSchema } from 'src/utils/typeorm/entities/Conversation';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MessageSchema } from 'src/utils/typeorm/entities/Message';
 import { SocketService } from 'src/utils/SocketService';
 import { SearchConversation } from './searchConversation.module';
+import { FriendsModule } from 'src/friends/friends.module';
 
 @Module({
   imports: [
@@ -23,7 +20,7 @@ import { SearchConversation } from './searchConversation.module';
       { name: Message.name, schema: MessageSchema },
     ]),
     UsersModule,
-    // FriendsModule,
+    FriendsModule,
     SearchConversation,
   ],
   controllers: [ConversationsController],
@@ -32,7 +29,6 @@ import { SearchConversation } from './searchConversation.module';
       provide: Services.CONVERSATIONS,
       useClass: ConversationsService,
     },
-    // PusherHelper,
     SocketService,
   ],
   exports: [

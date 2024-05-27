@@ -1,13 +1,13 @@
 import { FC, useContext } from 'react';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { FriendListItemContainer } from '../../utils/styles/friends';
-import { ContextMenuEvent, Friend } from '../../utils/types';
+import { ContextMenuEvent, Friend, User } from '../../utils/types';
 import { UserAvatar } from '../users/UserAvatar';
 
 type Props = {
-    friend: Friend;
+    friend: User;
     online: boolean;
-    onContextMenu: (e: ContextMenuEvent, friend: Friend) => void;
+    onContextMenu: (e: ContextMenuEvent, friend: User) => void;
 };
 
 export const FriendListItem: FC<Props> = ({
@@ -17,17 +17,17 @@ export const FriendListItem: FC<Props> = ({
 }) => {
     const { user } = useContext(AuthContext);
 
-    const friendUserInstance =
-        user?._id === friend.sender._id ? friend.receiver : friend.sender;
+    // const friendUserInstance =
+    //     user?._id === friend.sender._id ? friend.receiver : friend.sender;
 
     return (
         <FriendListItemContainer
             onContextMenu={(e) => onContextMenu(e, friend)}
             online={online}
         >
-            <UserAvatar user={friendUserInstance} />
+            <UserAvatar user={friend} />
             <div className="friendDetails">
-                <span className="username">{friendUserInstance.name}</span>
+                <span className="username">{friend.name}</span>
                 {online && (
                     <span className="status">
                         {/* {friendUserInstance.presence?.statusMessage} */}

@@ -224,24 +224,24 @@ export type FormEvent = React.FormEvent<HTMLFormElement>;
 export type FriendRequestStatus = 'accepted' | 'pending' | 'rejected';
 
 export type Friend = {
-  id: number;
-  sender: User;
-  receiver: User;
-  createdAt: number;
+  _id: string;
+  user: User;
+  listFriend: User[];
+  listRequest: FriendRequest[]
 };
 
 export type FriendRequest = {
-  id: number;
-  sender: User;
+  _id: string;
   receiver: User;
-  createdAt: number;
-  status: FriendRequestStatus;
+  sender: User;
+  createdAt: Date;
+  status: "accepted" | "pending" | "rejected";
 };
 
 export type HandleFriendRequestAction = 'accept' | 'reject' | 'cancel';
 
 export type CancelFriendRequestResponse = {
-  id: number;
+  _id: string;
 };
 
 export type AcceptFriendRequestResponse = {

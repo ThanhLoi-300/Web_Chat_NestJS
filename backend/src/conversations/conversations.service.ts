@@ -9,7 +9,6 @@ import {
   GetConversationMessagesParams,
   UpdateConversationParams,
 } from 'src/utils/types';
-import { Repository } from 'typeorm';
 import { IConversationsService } from './conversation';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, Types } from 'mongoose';

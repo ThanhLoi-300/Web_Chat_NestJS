@@ -9,7 +9,7 @@ import {
 } from '../../store/friends/friendsSlice';
 import { fetchFriendsThunk } from '../../store/friends/friendsThunk';
 import { SocketContext } from '../../utils/context/SocketContext';
-import { Friend } from '../../utils/types';
+import { Friend, User } from '../../utils/types';
 
 export const FriendsPage = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -40,7 +40,7 @@ export const FriendsPage = () => {
     }, []);
 
     useEffect(() => {
-        socket.on('getOnlineFriends', (friends: Friend[]) => {
+        socket.on('getOnlineFriends', (friends: User[]) => {
             console.log('received online friends');
             console.log(friends);
             dispatch(setOnlineFriends(friends));

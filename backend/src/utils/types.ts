@@ -154,3 +154,9 @@ export type UserParams = {
   banner?: string;
   avatar?: string;
 };
+export type FriendResponse = {
+  _id: string;
+  user: User;
+  listFriend: User[];
+  listRequest: FriendRequest[]
+};

@@ -1,30 +1,22 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { FriendRequestStatus } from '../../types';
-import { User } from './User';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { v4 as uuidv4 } from 'uuid';
+import { FriendRequestStatus } from 'src/utils/types';
 
-@Entity({ name: 'friend_requests' })
+@Schema({ collection: 'friend_requests' })
 export class FriendRequest {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @Prop({ type: String, default: uuidv4 })
+  _id: string;
 
-  @OneToOne(() => User, { createForeignKeyConstraints: false })
-  @JoinColumn()
-  sender: User;
+  @Prop({ type: String, ref: 'User' })
+  sender: string;
 
-  @OneToOne(() => User, { createForeignKeyConstraints: false })
-  @JoinColumn()
-  receiver: User;
+  @Prop({ type: String, ref: 'User' })
+  receiver: string;
 
-  @CreateDateColumn()
-  createdAt: number;
+  @Prop({ default: Date.now })
+  createdAt: Date;
 
-  @Column()
+  @Prop()
   status: FriendRequestStatus;
 }
+export const FriendRequestSchema = SchemaFactory.createForClass(FriendRequest);

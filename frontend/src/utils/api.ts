@@ -168,35 +168,35 @@ export const addGroupRecipient = ({
 export const updateStatusMessage = (data: UpdateStatusParams) =>
   axiosClient.patch("/users/presence/status", data, config);
 
-export const fetchFriends = () => axiosClient.get<Friend[]>("/friends", config);
+export const fetchFriends = () => axiosClient.get<User[]>("/friends", config);
 
 export const fetchFriendRequests = () =>
   axiosClient.get<FriendRequest[]>("/friends/requests", config);
 
-export const createFriendRequest = (id: number) =>
-  axiosClient.post<FriendRequest>("/friends/requests", { id }, config);
+export const createFriendRequest = (id: string) =>
+  axiosClient.post<FriendRequest[]>("/friends/requests", { id }, config);
 
-export const cancelFriendRequest = (id: number) =>
+export const cancelFriendRequest = (id: string) =>
   axiosClient.delete<CancelFriendRequestResponse>(
     `/friends/requests/${id}/cancel`,
     config
   );
 
-export const acceptFriendRequest = (id: number) =>
+export const acceptFriendRequest = (id: string) =>
   axiosClient.patch<AcceptFriendRequestResponse>(
     `/friends/requests/${id}/accept`,
     {},
     config
   );
 
-export const rejectFriendRequest = (id: number) =>
-  axiosClient.patch<FriendRequest>(
+export const rejectFriendRequest = (id: string) =>
+  axiosClient.patch<CancelFriendRequestResponse>(
     `/friends/requests/${id}/reject`,
     {},
     config
   );
 
-export const removeFriend = (id: number) =>
+export const removeFriend = (id: string) =>
   axiosClient.delete<Friend>(`/friends/${id}/delete`, config);
 
 export const checkConversationOrCreate = (recipientId: string) =>

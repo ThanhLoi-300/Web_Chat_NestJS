@@ -26,7 +26,7 @@ import { SocketService } from './utils/SocketService';
     UsersModule,
     ConversationsModule,
     MessagesModule,
-    // FriendsModule,
+    FriendsModule,
   ],
   controllers: [],
   providers: [JwtModule, SocketService],

@@ -25,7 +25,6 @@ export const SendFriendRequestForm: FC<Props> = ({ setShowModal }) => {
     const [selectedUser, setSelectedUser] = useState<User>();
     const [searching, setSearching] = useState(false);
     const [userResults, setUserResults] = useState<User[]>([]);
-    // const { success, error } = useToast({ theme: 'dark' });
 
     const debouncedQuery = useDebounce(query, 1000);
 
@@ -47,16 +46,18 @@ export const SendFriendRequestForm: FC<Props> = ({ setShowModal }) => {
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!selectedUser) return;
-        dispatch(createFriendRequestThunk(selectedUser.id))
+        dispatch(createFriendRequestThunk(selectedUser._id))
             .unwrap()
             .then(() => {
                 console.log('Success Friend Request');
                 setShowModal(false);
-                //success('Friend Request Sent!');
+                toast.success('Friend Request Sent!');
             })
-            .catch((err: Error) => {
+            .catch((err) => {
                 console.log(err);
-                toast.error(err.message);
+                if (err.code === "ERR_BAD_REQUEST")
+                    toast.error('Friend Requesting Pending');
+                else toast.error('Friend Already Exists');
             });
     };
 

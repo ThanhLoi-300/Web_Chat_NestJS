@@ -22,14 +22,14 @@ export const FriendRequestItem: FC<Props> = ({ friendRequest }) => {
     const friendRequestDetails = getFriendRequestDetails(friendRequest, user);
 
     const handleFriendRequest = (type?: HandleFriendRequestAction) => {
-        const { id } = friendRequest;
+        const { _id } = friendRequest;
         switch (type) {
             case 'accept':
-                return dispatch(acceptFriendRequestThunk(id));
+                return dispatch(acceptFriendRequestThunk(_id));
             case 'reject':
-                return dispatch(rejectFriendRequestThunk(id));
+                return dispatch(rejectFriendRequestThunk(_id));
             default:
-                return dispatch(cancelFriendRequestThunk(id));
+                return dispatch(cancelFriendRequestThunk(_id));
         }
     };
 
