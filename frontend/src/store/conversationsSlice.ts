@@ -1,8 +1,12 @@
-import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
-import { Conversation } from '../utils/types';
-import { getConversations, postNewConversation } from '../utils/api';
-import { RootState } from '.';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+} from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { Conversation } from "../utils/types";
+import { getConversations, postNewConversation } from "../utils/api";
+import { RootState } from ".";
 
 export interface ConversationsState {
   conversations: Conversation[];
@@ -14,9 +18,12 @@ const initialState: ConversationsState = {
   loading: false,
 };
 
-export const fetchConversationsThunk = createAsyncThunk('conversations/fetch', async () => {
-  return getConversations();
-});
+export const fetchConversationsThunk = createAsyncThunk(
+  "conversations/fetch",
+  async () => {
+    return getConversations();
+  }
+);
 
 export const createConversationThunk = createAsyncThunk(
   "conversations/create",
@@ -78,19 +85,22 @@ export const conversationsSlice = createSlice({
         state.loading = true;
       })
       .addCase(createConversationThunk.fulfilled, (state, action) => {
-        console.log("Fulfilled");
-        console.log(action.payload.data);
-        state.conversations.unshift(action.payload.data);
+        console.log("Fulfilled" + JSON.stringify(action.payload.data));
+        const conversation: Conversation = action.payload.data;
+        if (!state.conversations.some((conv) => conv._id === conversation._id))
+          state.conversations.unshift(conversation);
       });
   },
 });
 
-const selectConversations = (state: RootState) => state.conversation.conversations;
+const selectConversations = (state: RootState) =>
+  state.conversation.conversations;
 const selectConversationId = (state: RootState, id: string) => id;
 
 export const selectConversationById = createSelector(
   [selectConversations, selectConversationId],
-  (conversations, conversationId) => conversations.find((c) => c._id === conversationId)
+  (conversations, conversationId) =>
+    conversations.find((c) => c._id === conversationId)
 );
 
 // Action creators are generated for each case reducer function

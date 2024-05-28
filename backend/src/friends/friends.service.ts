@@ -43,6 +43,25 @@ export class FriendsService implements IFriendsService {
       { $pull: { listFriend: friendId } },
       { new: true },
     );
+    const friend1 = await this.friendModel.findOneAndUpdate(
+      { user: friendId },
+      { $pull: { listFriend: userId } },
+      { new: true },
+    );
+    const pendingRequest = await this.friendRequestModel.findOneAndDelete({
+      $or: [
+        {
+          sender: friendId,
+          receiver: userId,
+          status: 'accepted',
+        },
+        {
+          sender: userId,
+          receiver: friendId,
+          status: 'accepted',
+        },
+      ],
+    });
     return friend;
   }
 
@@ -76,20 +95,29 @@ export class FriendsService implements IFriendsService {
     if (!receiver)
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     const exists = await this.isPending(sender._id, receiver._id);
-    if (exists)
+    if (exists) {
+      console.log('Friend Requesting Pending');
       throw new HttpException(
         'Friend Requesting Pending',
         HttpStatus.BAD_REQUEST,
       );
+    }
     const isFriends = await this.isFriends(sender._id, receiver._id);
-    if (isFriends)
+    if (isFriends) {
+      console.log('Friend Already Exists');
       throw new HttpException('Friend Already Exists', HttpStatus.CONFLICT);
+    }
+      
     const friend = new this.friendRequestModel({
       sender: sender._id,
       receiver: receiver._id,
       status: 'pending',
     });
-    await friend.save();
+    const a = await friend.save();
+    return await this.friendRequestModel
+      .findById(a._id)
+      .populate('sender')
+      .populate('receiver');
   }
 
   async accept({ id, userId }: FriendRequestParams) {
@@ -175,7 +203,6 @@ export class FriendsService implements IFriendsService {
         },
       ],
     });
-
     return !!pendingRequest;
   }
 

@@ -119,21 +119,6 @@ export class ConversationsService implements IConversationsService {
     });
   }
 
-  // getMessages({
-  //   id,
-  //   limit,
-  // }: GetConversationMessagesParams): Promise<Conversation> {
-  //   return this.conversationModel
-  //     .createQueryBuilder('conversation')
-  //     .where('id = :id', { id })
-  //     .leftJoinAndSelect('conversation.lastMessageSent', 'lastMessageSent')
-  //     .leftJoinAndSelect('conversation.messages', 'message')
-  //     .where('conversation.id = :id', { id })
-  //     .orderBy('message.createdAt', 'DESC')
-  //     .limit(limit)
-  //     .getOne();
-  // }
-
   async update({ id, lastMessage }: UpdateConversationParams) {
     const updatedConversation = await this.conversationModel.findByIdAndUpdate(
       id,
@@ -197,6 +182,20 @@ export class ConversationsService implements IConversationsService {
       { new: true },
     );
     console.log(updatedConversation.owner);
+  }
 
+  async checkConversationExists(recipientId: string, userId: string) {
+    const isExist = await this.conversationModel
+      .findOne({ members: { $all: [recipientId, userId] }, type: 'private' })
+      .populate({
+        path: 'lastMessageId',
+        populate: {
+          path: 'senderId',
+        },
+      })
+      .populate('owner')
+      .populate('member');
+    if (isExist) return isExist;
+    else throw new HttpException('Conversation not found', HttpStatus.BAD_REQUEST);
   }
 }

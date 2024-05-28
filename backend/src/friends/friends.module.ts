@@ -7,6 +7,7 @@ import { FriendSchema } from 'src/utils/typeorm/entities/Friend';
 import { FriendsService } from './friends.service';
 import { UsersModule } from 'src/users/users.module';
 import { FriendRequestSchema } from 'src/utils/typeorm/entities/FriendRequest';
+import { SocketService } from 'src/utils/SocketService';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { FriendRequestSchema } from 'src/utils/typeorm/entities/FriendRequest';
       provide: Services.FRIENDS_SERVICE,
       useClass: FriendsService,
     },
+    SocketService,
   ],
   controllers: [FriendsController],
   exports: [

@@ -15,6 +15,7 @@ import { IFriendsService } from './friends';
 import { AuthenticatedRequest } from 'src/utils/types';
 import { User } from 'src/utils/typeorm';
 import { IUserService } from 'src/users/interfaces/user';
+import { SocketService } from 'src/utils/SocketService';
 
 @Controller(Routes.FRIENDS)
 export class FriendsController {
@@ -22,11 +23,13 @@ export class FriendsController {
     @Inject(Services.FRIENDS_SERVICE)
     private readonly friendsService: IFriendsService,
     @Inject(Services.USERS) private readonly userService: IUserService,
+    private socketService: SocketService,
   ) {}
 
   @Get()
   async getFriends(@Req() req: AuthenticatedRequest) {
     const listFriends = await this.friendsService.getFriends(req.userId);
+    console.log("123")
     return listFriends;
   }
 
@@ -39,7 +42,6 @@ export class FriendsController {
       id,
       userId: req.userId,
     });
-    // this.event.emit(ServerEvents.FRIEND_REMOVED, { friend, userId });
     return friend;
   }
 
@@ -68,7 +70,7 @@ export class FriendsController {
       id,
       userId: req.userId,
     });
-    console.log(response)
+    console.log(response);
     return response;
   }
 
@@ -81,7 +83,7 @@ export class FriendsController {
       id,
       userId: req.userId,
     });
-    console.log(response)
+    console.log(response);
     return response;
   }
 

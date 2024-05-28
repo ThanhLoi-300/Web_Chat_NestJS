@@ -55,4 +55,16 @@ export class ConversationsController {
   ) {
     return await this.conversationsService.findById(id, req.userId);
   }
+
+  @Get('exists/:id')
+  async checkConversationExists(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+  ) {
+    console.log(id)
+    return await this.conversationsService.checkConversationExists(
+      id,
+      req.userId,
+    );
+  }
 }

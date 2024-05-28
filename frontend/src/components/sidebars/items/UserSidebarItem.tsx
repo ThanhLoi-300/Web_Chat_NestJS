@@ -13,9 +13,6 @@ type Props = {
 export const UserSidebarItem: FC<Props> = ({ item }) => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
-    // const friendRequests = useSelector(
-    //     (state: RootState) => state.friends.friendRequests
-    // );
     const Icon = getUserSidebarIcon(item.id);
     const ICON_SIZE = 30;
     const STROKE_WIDTH = 2;

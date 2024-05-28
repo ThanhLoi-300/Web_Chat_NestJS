@@ -12,4 +12,5 @@ export interface IConversationsService {
   searchConversation(query: string);
   deleteMember(id: string, userId: string);
   updateGroupOwner(id: string, userId: string);
+  checkConversationExists(recipientId: string, userId: string)
 }

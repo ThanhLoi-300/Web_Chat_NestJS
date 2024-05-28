@@ -46,9 +46,6 @@ export const AppPage = () => {
     const { theme } = useSelector((state: RootState) => state.settings);
 
     const storageTheme = localStorage.getItem('theme') as SelectableTheme;
-    useEffect(() => {
-        dispatch(fetchFriendRequestThunk());
-    }, [dispatch]);
 
     useEffect(() => {
         if (!user) return;

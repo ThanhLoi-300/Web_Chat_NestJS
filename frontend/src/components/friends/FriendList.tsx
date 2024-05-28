@@ -4,15 +4,20 @@ import { AppDispatch, RootState } from '../../store';
 import { FriendListContainer } from '../../utils/styles/friends';
 import { FriendListItem } from './FriendListItem';
 import { FriendContextMenu } from '../context-menus/FriendContextMenu';
-import { ContextMenuEvent, Friend, User } from '../../utils/types';
+import { ContextMenuEvent, User } from '../../utils/types';
 import {
     setContextMenuLocation,
     setSelectedFriend,
     toggleContextMenu,
 } from '../../store/friends/friendsSlice';
+import { FC } from 'react';
 
-export const FriendList = () => {
-    const { showContextMenu, friends, onlineFriends } = useSelector(
+type Props = {
+    onlineUsers: User[],
+    offlineUsers: User[]
+}
+export const FriendList: FC<Props> = ({ onlineUsers, offlineUsers }) => {
+    const { showContextMenu, friends, onlineFriends, offlineFriends } = useSelector(
         (state: RootState) => state.friends
     );
     const dispatch = useDispatch<AppDispatch>();
@@ -33,21 +38,17 @@ export const FriendList = () => {
 
     return (
         <FriendListContainer>
-            {onlineFriends && onlineFriends?.length > 0 && <span>Online ({onlineFriends?.length})</span>}
-            {/* {onlineFriends && onlineFriends?.map((friend) => (
+            {onlineUsers?.length > 0 && <span>Online ({onlineUsers?.length})</span>}
+            {onlineUsers?.map((friend) => (
                 <FriendListItem
                     key={friend._id}
                     friend={friend}
                     onContextMenu={onContextMenu}
                     online={true}
                 />
-            ))} */}
+            ))}
             <span>Offline</span>
-            {friends
-                // .filter(
-                //     (friend) =>
-                //         !onlineFriends?.find((onlineFriend) => onlineFriend._id === friend._id)
-                // )
+            {offlineUsers
                 .map((friend) => (
                     <FriendListItem
                         key={friend._id}

@@ -75,18 +75,6 @@ export const getConversationMessages = (conversationId: string) =>
     config
   );
 
-// export const createMessage = (
-//   id: string,
-//   type: ConversationType,
-//   data: CreateMessageParams
-// ) => {
-//   const url =
-//     type === "private"
-//       ? `/conversations/${id}/messages`
-//       : `/groups/${id}/messages`;
-//   return axiosClient.post(url, data, config);
-// };
-
 export const createMessage = (id: string, data: CreateMessageParams) => {
   return axiosClient.post(`/conversations/${id}/messages`, data, config);
 };
@@ -200,7 +188,7 @@ export const removeFriend = (id: string) =>
   axiosClient.delete<Friend>(`/friends/${id}/delete`, config);
 
 export const checkConversationOrCreate = (recipientId: string) =>
-  axiosClient.get<Conversation>(`/exists/conversations/${recipientId}`, config);
+  axiosClient.get<Conversation>(`/conversations/exists/${recipientId}`, config);
 
 export const updateUserProfile = (
   banner: string,
@@ -214,9 +202,3 @@ export const updateSeenMessage = (messageId: string, conversationId: string) =>
     { messageId },
     config
   );
-
-// export const typingText = (conversationId: string, isTyping: boolean) =>
-//   axiosClient.get(
-//     `/conversations/${conversationId}/messages/typingText?typingStatus=${isTyping}`,
-//     config
-//   );

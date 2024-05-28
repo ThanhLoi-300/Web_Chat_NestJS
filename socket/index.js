@@ -141,15 +141,17 @@ io.on("connection", (socket) => {
   });
 
   // get online friends
-  socket.on("getOnlineFriends", (payload) => {
-    socket.emit("getOnlineFriends", payload);
+  socket.on("getOnlineFriends", (payload) => {console.log(payload.friends)
+    const list = users.filter((u) => payload.friends.includes(u.userId))
+    socket.emit("getOnlineFriends", list?.map((i)=> i.userId));
   });
 
   // remove friends
   socket.on("onFriendRemoved", (payload) => {
-    socket.emit("onFriendRemoved", payload);
+    const user = getUser(payload.id)
+    if(user)
+      socket.to(user.socketId).emit("onFriendRemoved", payload.user);
   });
-
 });
 
 server.listen(process.env.PORT || 4000, () => {

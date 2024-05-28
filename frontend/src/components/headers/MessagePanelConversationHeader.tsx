@@ -31,7 +31,12 @@ export const MessagePanelConversationHeader = () => {
         selectConversationById(state, id!)
     );
 
+    const friends = useSelector(
+        (state: RootState) => state.friends.friends
+    );
+
     const recipient = getRecipientFromConversation(conversation, user)!;
+    const isFriend = friends.some((u) => u._id === recipient._id)
 
     useEffect(() => {
         socket.emit('getOnlineUsers', { idUser: recipient._id });
@@ -95,7 +100,7 @@ export const MessagePanelConversationHeader = () => {
             <UserAvatarAndName>
                 <UserAvatar user={recipient} onClick={() => setShowModal(true)} />
                 <div>
-                    <span>{recipient?.name || 'User'}</span>
+                    <span>{recipient?.name}</span>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <div style={{ marginRight: 5,marginTop: 5, height: 10, width: 10, backgroundColor: checkOnline ? 'blue' : "gray", borderRadius: '50%' }}></div>
                         <span>{checkOnline ? "Online" : "Offline"}</span>
@@ -103,6 +108,7 @@ export const MessagePanelConversationHeader = () => {
                 </div>
             </UserAvatarAndName>
             <MessagePanelHeaderIcons>
+                {!isFriend && (<button style={{ padding: '6px 12px', borderRadius: '10px', cursor: 'pointer' }}>Add friend</button>)}
                 <FaPhoneAlt size={24} cursor="pointer" onClick={voiceCallUser} />
                 <FaVideo size={30} cursor="pointer" onClick={videoCallUser} />
             </MessagePanelHeaderIcons>
