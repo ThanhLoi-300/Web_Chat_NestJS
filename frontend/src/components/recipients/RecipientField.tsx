@@ -7,19 +7,21 @@ type Props = {
     selectedUser: User | undefined;
     setQuery: Dispatch<SetStateAction<string>>;
     setSelectedUser: Dispatch<SetStateAction<User | undefined>>;
+    friend?: User,
 };
 
 export const RecipientField: FC<Props> = ({
     selectedUser,
     setQuery,
     setSelectedUser,
+    friend
 }) => (
     <section>
         <InputContainer backgroundColor="#161616">
             <InputLabel>Recipient</InputLabel>
-            {selectedUser ? (
+            {selectedUser || friend ? (
                 <SelectedRecipientChip
-                    user={selectedUser}
+                    user={friend ? friend! : selectedUser!}
                     setSelectedUser={setSelectedUser}
                 />
             ) : (

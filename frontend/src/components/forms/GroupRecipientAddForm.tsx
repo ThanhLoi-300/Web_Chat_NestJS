@@ -1,41 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addGroupRecipient, searchUsers } from '../../utils/api';
-// import { useToast } from '../../utils/hooks/useToast';
+import { addGroupRecipient, searchFriends } from '../../utils/api';
+import { RecipientResultContainer } from '../recipients/RecipientResultContainer';
+import { SelectedGroupRecipientChip } from '../recipients/SelectedGroupRecipientChip';
 import {
     Button,
-    InputContainer,
-    InputField,
-    InputLabel,
+    RecipientChipContainer,
 } from '../../utils/styles';
 import styles from './index.module.scss';
-import { RecipientField } from '../recipients/RecipientField';
-import { RecipientResultContainer } from '../recipients/RecipientResultContainer';
 import { User } from '../../utils/types';
-import { createConversationThunk } from '../../store/conversationsSlice';
 import { useDebounce } from '../../utils/hooks/useDebounce';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store';
 import { toast } from 'react-toastify';
+import { GroupRecipientsField } from '../recipients/GroupRecipientsField';
+import { addMemberToConversation } from '../../store/conversationsSlice'
+import { SocketContext } from '../../utils/context/SocketContext';
 
 export const GroupRecipientAddForm = () => {
     const { id: groupId } = useParams();
     const [query, setQuery] = useState('');
     const [userResults, setUserResults] = useState<User[]>([]);
-    const [selectedUser, setSelectedUser] = useState<User>();
+    const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
     const [searching, setSearching] = useState(false);
     const debouncedQuery = useDebounce(query, 1000);
     const dispatch = useDispatch<AppDispatch>();
-    const navigate = useNavigate();
-    // const { success, error } = useToast({ theme: 'dark' });
+    const socket = useContext(SocketContext);
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        addGroupRecipient({ id: parseInt(groupId!), recipentId: selectedUser?.id! })
+        
+        addGroupRecipient({ id: groupId!, recipentIds: selectedUsers!.map((u)=> u._id) })
             .then(({ data }) => {
                 console.log(data);
                 toast.success('Added user')
-                setSelectedUser(undefined);
+                dispatch(addMemberToConversation(data))
+                setSelectedUsers([]);
+                socket.emit("addMemberToConversation", data)
             })
             .catch((err) => {
                 console.log(err);
@@ -46,7 +47,7 @@ export const GroupRecipientAddForm = () => {
     useEffect(() => {
         if (debouncedQuery) {
             setSearching(true);
-            searchUsers(debouncedQuery)
+            searchFriends(debouncedQuery)
                 .then(({ data }) => {
                     console.log(data);
                     setUserResults(data);
@@ -56,33 +57,31 @@ export const GroupRecipientAddForm = () => {
         }
     }, [debouncedQuery]);
 
-
     const handleUserSelect = (user: User) => {
-        setSelectedUser(user);
-        setUserResults([]);
-        setQuery('');
+        const exists = selectedUsers.find((u) => u._id === user._id);
+        if (!exists) setSelectedUsers((prev) => [...prev, user]);
     };
+
+    const removeUser = (user: User) =>
+        setSelectedUsers((prev) => prev.filter((u) => u._id !== user._id));
 
     return (
         <form className={styles.createConversationForm} onSubmit={onSubmit}>
-            <RecipientField
-                selectedUser={selectedUser}
-                setQuery={setQuery}
-                setSelectedUser={setSelectedUser}
-            />
-            {!selectedUser && userResults.length > 0 && query && (
+            <RecipientChipContainer>
+                {selectedUsers.map((user) => (
+                    <SelectedGroupRecipientChip user={user} removeUser={removeUser} />
+                ))}
+            </RecipientChipContainer>
+            <GroupRecipientsField setQuery={setQuery} />
+            {userResults.length > 0 && query && (
                 <RecipientResultContainer
                     userResults={userResults}
                     handleUserSelect={handleUserSelect}
                 />
             )}
-            <Button style={{ margin: '10px 0' }} disabled={!selectedUser}>
+            <Button style={{ margin: '10px 0' }} disabled={selectedUsers.length > 0 ? false:true}>
                 Add Recipient
             </Button>
         </form>
     );
 };
-
-function setShowModal(arg0: boolean) {
-    throw new Error('Function not implemented.');
-}

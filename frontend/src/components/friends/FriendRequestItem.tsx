@@ -12,6 +12,7 @@ import {
 import { getFriendRequestDetails } from '../../utils/helpers';
 import { FriendRequestDetails } from './friend-request/FriendRequestDetails';
 import { FriendRequestIcons } from './friend-request/FriendRequestIcons';
+import { SocketContext } from '../../utils/context/SocketContext';
 
 type Props = {
     friendRequest: FriendRequest;
@@ -19,17 +20,24 @@ type Props = {
 export const FriendRequestItem: FC<Props> = ({ friendRequest }) => {
     const { user } = useContext(AuthContext);
     const dispatch = useDispatch<AppDispatch>();
+    const socket = useContext(SocketContext);
     const friendRequestDetails = getFriendRequestDetails(friendRequest, user);
 
     const handleFriendRequest = (type?: HandleFriendRequestAction) => {
         const { _id } = friendRequest;
         switch (type) {
             case 'accept':
-                return dispatch(acceptFriendRequestThunk(_id));
+                dispatch(acceptFriendRequestThunk(_id));
+                socket.emit('onFriendRequestAccepted', friendRequest)
+                break
             case 'reject':
-                return dispatch(rejectFriendRequestThunk(_id));
+                dispatch(rejectFriendRequestThunk(_id));
+                socket.emit('onFriendRequestRejected', friendRequest)
+                break
             default:
-                return dispatch(cancelFriendRequestThunk(_id));
+                dispatch(cancelFriendRequestThunk(_id));
+                socket.emit('onFriendRequestCancelled', friendRequest)
+                break
         }
     };
 

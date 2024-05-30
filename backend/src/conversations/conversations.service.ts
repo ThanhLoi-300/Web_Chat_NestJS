@@ -5,6 +5,7 @@ import { Services } from 'src/utils/constants';
 import { Conversation, Message, User } from 'src/utils/typeorm';
 import {
   AccessParams,
+  ConversationResponse,
   CreateConversationParams,
   GetConversationMessagesParams,
   UpdateConversationParams,
@@ -197,5 +198,26 @@ export class ConversationsService implements IConversationsService {
       .populate('member');
     if (isExist) return isExist;
     else throw new HttpException('Conversation not found', HttpStatus.BAD_REQUEST);
+  }
+
+  async addMemberToConversation(id: string, recipentIds: string[]) {
+    const conversation: ConversationResponse =
+      await this.conversationModel.findById(id);
+
+    if (!conversation)
+      throw new HttpException('Conversation not found', HttpStatus.BAD_REQUEST);
+    // Create a set from the existing members for faster lookups
+    const existingMembers = new Set(conversation.member);
+
+    // Filter the recipentIds array to get only the unique members that are not already in the conversation
+    const newMembers = recipentIds.filter((id) => !existingMembers.has(id));
+
+    // Add the new members to the conversation.member array
+    conversation.member.push(...newMembers);
+
+    // Save the updated conversation
+    await this.conversationModel.findByIdAndUpdate(conversation._id, {
+      member: [...conversation.member]
+    });
   }
 }

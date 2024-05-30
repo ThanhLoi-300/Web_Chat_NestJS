@@ -160,3 +160,13 @@ export type FriendResponse = {
   listFriend: User[];
   listRequest: FriendRequest[]
 };
+
+export type ConversationResponse = {
+  _id: string;
+  member: string[];
+  type: string;
+  nameGroup: string;
+  imgGroup: string;
+  owner: string;
+  lastMessageId: string;
+};

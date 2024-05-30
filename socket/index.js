@@ -120,11 +120,6 @@ io.on("connection", (socket) => {
     io.to(payload.groupId).emit("onTransferOwner", payload);
   });
 
-
-
-
-
-
   // user leave group
   socket.on("userLeaveGroup", (payload) => {
     io.to(payload.groupId).emit("onUserLeaveGroup", payload);
@@ -141,7 +136,7 @@ io.on("connection", (socket) => {
   });
 
   // get online friends
-  socket.on("getOnlineFriends", (payload) => {console.log(payload.friends)
+  socket.on("getOnlineFriends", (payload) => {
     const list = users.filter((u) => payload.friends.includes(u.userId))
     socket.emit("getOnlineFriends", list?.map((i)=> i.userId));
   });
@@ -151,6 +146,35 @@ io.on("connection", (socket) => {
     const user = getUser(payload.id)
     if(user)
       socket.to(user.socketId).emit("onFriendRemoved", payload.user);
+  });
+
+  // onFriendRequestCancelled
+  socket.on("onFriendRequestCancelled", (payload) => {
+    const user = getUser(payload.receiver._id)
+    if(user) socket.to(user.socketId).emit("onFriendRequestCancelled", payload);
+  });
+
+  //onFriendRequestAccepted
+  socket.on("onFriendRequestAccepted", (payload) => {
+    const user = getUser(payload.sender._id)
+    if(user) socket.to(user.socketId).emit("onFriendRequestAccepted", payload);
+  });
+
+  // onFriendRequestRejected
+  socket.on("onFriendRequestRejected", (payload) => {
+    const user = getUser(payload.sender._id)
+    if(user) socket.to(user.socketId).emit("onFriendRequestRejected", payload);
+  });
+
+  // onFriendRequestRejected
+  socket.on("onFriendRequestReceived", (payload) => {
+    const user = getUser(payload.receiverId)
+    if(user) socket.to(user.socketId).emit("onFriendRequestReceived");
+  });
+
+  // addMemberToConversation
+  socket.on("addMemberToConversation", (payload) => {
+    io.emit("addMemberToConversation", payload);
   });
 });
 

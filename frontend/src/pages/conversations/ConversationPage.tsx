@@ -10,7 +10,8 @@ import {
     fetchConversationsThunk,
     selectConversationById,
     updateConversation,
-    deleteMember, deleteConversation, transferOwner
+    deleteMember, deleteConversation, transferOwner,
+    addMemberToConversation
 } from '../../store/conversationsSlice';
 import { addMessage, deleteMessage } from '../../store/Messages/messageSlice';
 import { Conversation, MessageEventPayload } from '../../utils/types';
@@ -85,6 +86,7 @@ export const ConversationPage = () => {
             }
             dispatch(transferOwner(payload));
         });
+    
         return () => {
             socket.off('connected');
             socket.off('onMessage');
@@ -96,6 +98,21 @@ export const ConversationPage = () => {
     }, [id]);
 
     useEffect(() => {
+        socket.on(
+            'addMemberToConversation',
+            (conversation: Conversation) => {
+                console.log('Received addMemberToConversation');
+                const list = conversation.member.map((u) => u._id)
+                if (list.includes(user!._id)) {
+                    console.log('Received addMemberToConversation: yes')
+                    dispatch(addMemberToConversation(conversation));
+                }
+            }
+        );
+
+        return () => {
+            socket.off('addMemberToConversation');
+        };
         if (!conversation) {
             navigate('/conversations');
         }

@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -29,7 +30,19 @@ export class FriendsController {
   @Get()
   async getFriends(@Req() req: AuthenticatedRequest) {
     const listFriends = await this.friendsService.getFriends(req.userId);
-    console.log("123")
+    return listFriends;
+  }
+
+  @Get('searchFriends')
+  async searchFriends(
+    @Req() req: AuthenticatedRequest,
+    @Query('query') query: string,
+  ) {
+    const listFriends = await this.friendsService.searchFriends(
+      req.userId,
+      query,
+    );
+    console.log(listFriends)
     return listFriends;
   }
 
@@ -70,7 +83,6 @@ export class FriendsController {
       id,
       userId: req.userId,
     });
-    console.log(response);
     return response;
   }
 

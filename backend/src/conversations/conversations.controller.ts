@@ -15,6 +15,7 @@ import {
   CreateConversationParams,
 } from 'src/utils/types';
 import { SocketService } from 'src/utils/SocketService';
+import { AddMember } from './dtos/AddMember';
 
 @Controller(Routes.CONVERSATIONS)
 export class ConversationsController {
@@ -43,6 +44,21 @@ export class ConversationsController {
     return conversation;
   }
 
+  @Post('/:id/addMemberToConversation')
+  async addMemberToConversation(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() params: AddMember,
+  ) {
+    console.log(id, params)
+    await this.conversationsService.addMemberToConversation(
+      id,
+      params.recipentIds,
+    );
+
+    return await this.conversationsService.findById(id,req.userId);
+  }
+
   @Get()
   async getConversations(@Req() req: AuthenticatedRequest) {
     return await this.conversationsService.getConversations(req.userId);
@@ -61,7 +77,7 @@ export class ConversationsController {
     @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
   ) {
-    console.log(id)
+    console.log(id);
     return await this.conversationsService.checkConversationExists(
       id,
       req.userId,

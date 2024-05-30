@@ -46,11 +46,6 @@ export const fetchGroupsThunk = createAsyncThunk('groups/fetch', () => {
   return fetchGroupsAPI();
 });
 
-export const createGroupThunk = createAsyncThunk(
-  'groups/create',
-  (params: CreateGroupParams) => createGroupAPI(params)
-);
-
 export const removeGroupRecipientThunk = createAsyncThunk(
   'groups/recipients/delete',
   (params: RemoveGroupRecipientParams) => removeGroupRecipientAPI(params)

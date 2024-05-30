@@ -9,6 +9,8 @@ import {
 } from '../../store/groupSlice';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { SocketContext } from '../../utils/context/SocketContext';
+import { addMemberToConversation } from '../../store/conversationsSlice';
+import { Conversation } from '../../utils/types';
 export const GroupPage = () => {
   const { id } = useParams();
   const { user } = useContext(AuthContext);
@@ -32,10 +34,10 @@ export const GroupPage = () => {
 
   useEffect(() => {
     // socket.on(
-    //   'onGroupReceivedNewUser',
-    //   ({ group }: AddGroupUserMessagePayload) => {
-    //     console.log('Received onGroupReceivedNewUser');
-    //     dispatch(updateGroup({ group }));
+    //   'addMemberToConversation',
+    //   (conversation: Conversation) => {
+    //     console.log('Received addMemberToConversation');
+    //     dispatch(addMemberToConversation(conversation));
     //   }
     // );
 

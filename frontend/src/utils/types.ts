@@ -23,7 +23,7 @@ export type UserPresence = {
 };
 
 export type UserPeer = {
-  id: string;
+  _id: string;
 };
 
 export type User = {
@@ -32,9 +32,8 @@ export type User = {
   name: string;
   avatar: string;
   banner: string;
-  // profile?: Profile;
   // presence?: UserPresence;
-  // peer: UserPeer;
+  peer: UserPeer;
 };
 
 export type Conversation = {
@@ -177,8 +176,8 @@ export type CreateGroupParams = {
 };
 
 export type AddGroupRecipientParams = {
-  id: number;
-  recipentId: number;
+  id: string;
+  recipentIds: string[];
 };
 
 export type RemoveGroupRecipientParams = {
@@ -334,7 +333,7 @@ export type SetVideoRefPayload = {
 export type CallInitiatePayload = {
   localStream: MediaStream;
   isCalling: boolean;
-  activeConversationId: number;
+  activeConversationId: string;
   caller: User;
   receiver: User;
   callType: CallType;

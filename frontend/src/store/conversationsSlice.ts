@@ -74,6 +74,17 @@ export const conversationsSlice = createSlice({
       const index = state.conversations.findIndex((c) => c._id === groupId);
       state.conversations.splice(index, 1);
     },
+    addMemberToConversation: (state, action: PayloadAction<Conversation>) => {
+      console.log("Inside addMemberToConversation");
+      console.log(action.payload);
+      const index = state.conversations.findIndex((c) => c._id === action.payload._id);
+      if (index === -1) {
+        state.conversations.unshift(action.payload);
+      } else {
+        state.conversations.splice(index, 1);
+        state.conversations.unshift(action.payload);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -110,6 +121,7 @@ export const {
   deleteMember,
   deleteConversation,
   transferOwner,
+  addMemberToConversation,
 } = conversationsSlice.actions;
 
 export default conversationsSlice.reducer;

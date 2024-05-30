@@ -17,6 +17,10 @@ export const UserSidebarItem: FC<Props> = ({ item }) => {
     const ICON_SIZE = 30;
     const STROKE_WIDTH = 2;
 
+    const friendRequests = useSelector(
+        (state: RootState) => state.friends.friendRequests
+    );
+
     const isActive = () => {
         if (pathname.includes('/groups') && item.id === 'conversations')
             return true;
@@ -28,11 +32,11 @@ export const UserSidebarItem: FC<Props> = ({ item }) => {
             active={isActive()}
         >
             <Icon size={ICON_SIZE} strokeWidth={STROKE_WIDTH} />
-            {/* {item.id === 'friends' && friendRequests.length > 0 && (
+            {item.id === 'friends' && friendRequests.length > 0 && (
                 <IconBadge>
                     {friendRequests.length > 9 ? '10+' : friendRequests.length}
                 </IconBadge>
-            )} */}
+            )}
         </UserSidebarItemStyle>
     );
 };

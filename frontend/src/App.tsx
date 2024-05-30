@@ -24,6 +24,8 @@ import { SettingsAppearancePage } from './pages/settings/SettingsAppearancePage'
 import { Socket } from 'socket.io-client';
 import { socket, SocketContext } from './utils/context/SocketContext';
 import { ConversationPageGuard } from "./guards/ConversationPageGuard";
+import { CallsPage } from './pages/calls/CallsPage';
+import { CurrentCallPage } from './pages/calls/CurrentCallPage';
 
 enableMapSet()
 
@@ -64,12 +66,6 @@ function App() {
                 <Route path=":id" element={<ConversationPageGuard children={<ConversationChannelPage />} />}></Route>
               </Route>
 
-              {/* <Route path="/groups" element={<GroupPage />}>
-                <Route path=":id"
-                  element={<ConversationPageGuard children={<GroupChannelPage />} />}
-                />
-              </Route> */}
-
               <Route path="friends" element={<FriendsLayoutPage />}>
                 <Route path="requests" element={<FriendRequestPage />} />
                 <Route path="blocked" element={<div>Blocked</div>} />
@@ -77,6 +73,9 @@ function App() {
               <Route path="settings" element={<SettingsPage />}>
                 <Route path="profile" element={<SettingsProfilePage />} />
                 <Route path="appearance" element={<SettingsAppearancePage />} />
+              </Route>
+              <Route path="calls" element={<CallsPage />}>
+                <Route path="current" element={<CurrentCallPage />} />
               </Route>
             </Route>
           </Routes>

@@ -13,8 +13,6 @@ import {
 export interface FriendsState {
   friends: User[];
   friendRequests: FriendRequest[];
-  onlineFriends: User[];
-  offlineFriends: User[];
   showContextMenu: boolean;
   selectedFriendContextMenu?: User;
   points: Points;
@@ -23,8 +21,6 @@ export interface FriendsState {
 const initialState: FriendsState = {
   friends: [],
   friendRequests: [],
-  onlineFriends: [],
-  offlineFriends: [],
   showContextMenu: false,
   points: { x: 0, y: 0 },
 };
@@ -49,20 +45,6 @@ export const friendsSlice = createSlice({
         (friend) => friend._id !== action.payload._id
       );
       console.log("removeFriend reducer2" + JSON.stringify(state.friends));
-    },
-    setOnlineFriends: (state, action: PayloadAction<User[]>) => {
-      console.log('setFriends Reducer');
-      state.onlineFriends = action.payload;
-    },
-    setOfflineFriends: (state) => {
-      console.log('setOfflineFriends Reducer');
-      console.log(state.onlineFriends);
-      // state.offlineFriends = state.friends.filter(
-      //   (friend) =>
-      //     !state.onlineFriends.find(
-      //       (onlineFriend) => onlineFriend._id === friend._id
-      //     )
-      // );
     },
     toggleContextMenu: (state, action: PayloadAction<boolean>) => {
       state.showContextMenu = action.payload;
@@ -125,8 +107,6 @@ export const friendsSlice = createSlice({
 export const {
   addFriendRequest,
   removeFriendRequest,
-  setOnlineFriends,
-  setOfflineFriends,
   toggleContextMenu,
   setContextMenuLocation,
   setSelectedFriend,

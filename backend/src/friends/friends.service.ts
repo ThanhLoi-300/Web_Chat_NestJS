@@ -224,4 +224,10 @@ export class FriendsService implements IFriendsService {
 
     return !!pendingRequest;
   }
+
+  async searchFriends(userId: string, query: string) {
+    const result = await this.friendModel.findOne({ user: userId })
+    let users: User[] = await this.userService.searchUsers(query, { id: userId })
+    return users.filter((user) => result.listFriend.includes(user._id));
+  }
 }

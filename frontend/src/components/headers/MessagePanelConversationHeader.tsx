@@ -3,7 +3,7 @@ import { FaPhoneAlt, FaVideo } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { RootState } from '../../store';
-// import { initiateCallState } from '../../../store/call/callSlice';
+import { initiateCallState } from '../../store/call/callSlice';
 import { selectConversationById } from '../../store/conversationsSlice';
 import { SenderEvents } from '../../utils/constants';
 import { AuthContext } from '../../utils/context/AuthContext';
@@ -17,14 +17,16 @@ import {
 import { CallInitiatePayload, CallType } from '../../utils/types';
 import { UserAvatar } from '../users/UserAvatar';
 import { UpdatePresenceStatusModal } from '../modals/UpdatePresenceStatusModal';
+import { CreateFriendRequestModal } from '../modals/CreateFriendRequestModal';
 
 
 export const MessagePanelConversationHeader = () => {
     const user = useContext(AuthContext).user!;
     const { id } = useParams();
     const socket = useContext(SocketContext);
-    const [showModal, setShowModal] = useState(false);
     const [checkOnline, setCheckOnline] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [showModalPresence, setShowModalPresence] = useState(false);
 
     const dispatch = useDispatch();
     const conversation = useSelector((state: RootState) =>
@@ -55,18 +57,18 @@ export const MessagePanelConversationHeader = () => {
         };
     }, [conversation]);
 
-    // const buildCallPayloadParams = (
-    //     stream: MediaStream,
-    //     type: CallType
-    // ): CallInitiatePayload | undefined =>
-    //     conversation && {
-    //         localStream: stream,
-    //         caller: user,
-    //         receiver: recipient!,
-    //         isCalling: true,
-    //         activeConversationId: conversation._id,
-    //         callType: type,
-    //     };
+    const buildCallPayloadParams = (
+        stream: MediaStream,
+        type: CallType
+    ): CallInitiatePayload | undefined =>
+        conversation && {
+            localStream: stream,
+            caller: user!,
+            receiver: recipient!,
+            isCalling: true,
+            activeConversationId: conversation._id!,
+            callType: type,
+        };
 
     const videoCallUser = async () => {
         if (!recipient) return console.log('Recipient undefined');
@@ -76,9 +78,9 @@ export const MessagePanelConversationHeader = () => {
         });
         const constraints = { video: true, audio: true };
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        // const payload = buildCallPayloadParams(stream, 'video');
-        // if (!payload) throw new Error('Video Call Payload is undefined.');
-        //dispatch(initiateCallState(payload));
+        const payload = buildCallPayloadParams(stream, 'video');
+        if (!payload) throw new Error('Video Call Payload is undefined.');
+        dispatch(initiateCallState(payload));
     };
 
     const voiceCallUser = async () => {
@@ -89,14 +91,15 @@ export const MessagePanelConversationHeader = () => {
         });
         const constraints = { video: false, audio: true };
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        // const payload = buildCallPayloadParams(stream, 'audio');
-        // if (!payload) throw new Error('Voice Call Payload is undefined.');
-        //dispatch(initiateCallState(payload));
+        const payload = buildCallPayloadParams(stream, 'audio');
+        if (!payload) throw new Error('Voice Call Payload is undefined.');
+        dispatch(initiateCallState(payload));
     };
 
     return (
         <MessagePanelHeaderStyle>
-            {/* {showModal && <UpdatePresenceStatusModal setShowModal={setShowModal} />} */}
+            {showModalPresence && <UpdatePresenceStatusModal setShowModal={setShowModalPresence} />}
+            {showModal && <CreateFriendRequestModal setShowModal={setShowModal} friend={recipient} />}
             <UserAvatarAndName>
                 <UserAvatar user={recipient} onClick={() => setShowModal(true)} />
                 <div>
@@ -108,7 +111,7 @@ export const MessagePanelConversationHeader = () => {
                 </div>
             </UserAvatarAndName>
             <MessagePanelHeaderIcons>
-                {!isFriend && (<button style={{ padding: '6px 12px', borderRadius: '10px', cursor: 'pointer' }}>Add friend</button>)}
+                {!isFriend && (<button style={{ padding: '6px 12px', borderRadius: '10px', cursor: 'pointer' }} onClick={() => setShowModal(true)}>Add friend</button>)}
                 <FaPhoneAlt size={24} cursor="pointer" onClick={voiceCallUser} />
                 <FaVideo size={30} cursor="pointer" onClick={videoCallUser} />
             </MessagePanelHeaderIcons>

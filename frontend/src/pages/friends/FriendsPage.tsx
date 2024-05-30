@@ -3,12 +3,10 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { FriendList } from '../../components/friends/FriendList';
 import {
     removeFriend,
-    setOfflineFriends,
-    setOnlineFriends,
 } from '../../store/friends/friendsSlice';
 import { fetchFriendsThunk } from '../../store/friends/friendsThunk';
 import { SocketContext } from '../../utils/context/SocketContext';
-import { Friend, User } from '../../utils/types';
+import { User } from '../../utils/types';
 import { AppDispatch, RootState } from '../../store';
 
 export const FriendsPage = () => {

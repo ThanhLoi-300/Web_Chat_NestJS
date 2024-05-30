@@ -17,7 +17,7 @@ type Props = {
     offlineUsers: User[]
 }
 export const FriendList: FC<Props> = ({ onlineUsers, offlineUsers }) => {
-    const { showContextMenu, friends, onlineFriends, offlineFriends } = useSelector(
+    const { showContextMenu } = useSelector(
         (state: RootState) => state.friends
     );
     const dispatch = useDispatch<AppDispatch>();

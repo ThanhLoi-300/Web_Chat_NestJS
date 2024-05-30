@@ -147,11 +147,18 @@ export const editGroupMessage = ({
     config
   );
 
-export const addGroupRecipient = ({
-  id,
-  recipentId,
-}: AddGroupRecipientParams) =>
-  axiosClient.post(`/groups/${id}/recipients`, { recipentId }, config);
+export const addGroupRecipient = ({ id, recipentIds }: AddGroupRecipientParams) =>
+  axiosClient.post(
+    `/conversations/${id}/addMemberToConversation`,
+    { recipentIds },
+    config
+  );
+
+export const searchFriends = (query: string) =>
+  axiosClient.get<User[]>(
+    `/friends/searchFriends?query=${query}`,
+    config
+  );
 
 export const updateStatusMessage = (data: UpdateStatusParams) =>
   axiosClient.patch("/users/presence/status", data, config);
@@ -202,3 +209,10 @@ export const updateSeenMessage = (messageId: string, conversationId: string) =>
     { messageId },
     config
   );
+
+  export const completeUserProfile = (data: FormData) =>
+    axiosClient.post("/users/profiles", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });

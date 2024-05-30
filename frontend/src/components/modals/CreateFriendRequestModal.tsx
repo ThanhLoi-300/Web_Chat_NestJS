@@ -3,12 +3,14 @@ import { MdClose } from 'react-icons/md';
 import { ModalContainer, ModalHeader, ModalContentBody } from '.';
 import { OverlayStyle } from '../../utils/styles';
 import { SendFriendRequestForm } from '../forms/SendFriendRequestForm';
+import { User } from '../../utils/types';
 
 type Props = {
     setShowModal: Dispatch<SetStateAction<boolean>>;
+    friend?: User;
 };
 
-export const CreateFriendRequestModal: FC<Props> = ({ setShowModal }) => {
+export const CreateFriendRequestModal: FC<Props> = ({ setShowModal, friend }) => {
     const ref = createRef<HTMLDivElement>();
     const handleOverlayClick = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -34,7 +36,7 @@ export const CreateFriendRequestModal: FC<Props> = ({ setShowModal }) => {
                     <MdClose size={32} onClick={() => setShowModal(false)} />
                 </ModalHeader>
                 <ModalContentBody>
-                    <SendFriendRequestForm setShowModal={setShowModal} />
+                    <SendFriendRequestForm setShowModal={setShowModal} friend={friend} />
                 </ModalContentBody>
             </ModalContainer>
         </OverlayStyle>

@@ -1,34 +1,38 @@
-import React, { FC, useState, Dispatch, SetStateAction, useEffect } from 'react';
+import React, { FC, useState, Dispatch, SetStateAction, useEffect, useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { createFriendRequestThunk } from '../../store/friends/friendsThunk';
 import {
     Button,
-    InputContainer,
-    InputField,
-    InputLabel,
 } from '../../utils/styles';
 import styles from './index.module.scss';
 import { toast } from 'react-toastify';
-import { User } from '../../utils/types';
 import { useDebounce } from '../../utils/hooks/useDebounce';
 import { searchUsers } from '../../utils/api';
 import { RecipientField } from '../recipients/RecipientField';
 import { RecipientResultContainer } from '../recipients/RecipientResultContainer';
+import { SocketContext } from '../../utils/context/SocketContext';
+import { User } from '../../utils/types';
 
 type Props = {
     setShowModal: Dispatch<SetStateAction<boolean>>;
+    friend?: User;
 };
 
-export const SendFriendRequestForm: FC<Props> = ({ setShowModal }) => {
+export const SendFriendRequestForm: FC<Props> = ({ setShowModal, friend }) => {
     const [query, setQuery] = useState('');
     const [selectedUser, setSelectedUser] = useState<User>();
     const [searching, setSearching] = useState(false);
     const [userResults, setUserResults] = useState<User[]>([]);
+    const socket = useContext(SocketContext);
 
     const debouncedQuery = useDebounce(query, 1000);
 
     const dispatch = useDispatch<AppDispatch>();
+
+    useEffect(() => {
+        friend && setSelectedUser(friend)
+    }, []);
 
     useEffect(() => {
         if (debouncedQuery) {
@@ -52,6 +56,9 @@ export const SendFriendRequestForm: FC<Props> = ({ setShowModal }) => {
                 console.log('Success Friend Request');
                 setShowModal(false);
                 toast.success('Friend Request Sent!');
+                socket.emit('onFriendRequestReceived', {
+                    receiverId: selectedUser._id
+                })
             })
             .catch((err) => {
                 console.log(err);
@@ -73,6 +80,7 @@ export const SendFriendRequestForm: FC<Props> = ({ setShowModal }) => {
                 selectedUser={selectedUser}
                 setQuery={setQuery}
                 setSelectedUser={setSelectedUser}
+                friend={friend}
             />
             {!selectedUser && userResults.length > 0 && query && (
                 <RecipientResultContainer

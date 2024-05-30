@@ -72,10 +72,10 @@ export const userSidebarItems: UserSidebarItemType[] = [
     id: 'settings',
     pathname: '/settings',
   },
-  // {
-  //   id: 'calls',
-  //   pathname: '/calls',
-  // },
+  {
+    id: 'calls',
+    pathname: '/calls',
+  },
 ];
 
 export const settingsItems: SettingsItemType[] = [
