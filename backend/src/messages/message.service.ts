@@ -23,8 +23,6 @@ export class MessageService implements IMessageService {
     private readonly messageModel: Model<Message>,
     @Inject(Services.CONVERSATIONS)
     private readonly conversationService: IConversationsService,
-    // @Inject(Services.FRIENDS_SERVICE)
-    // private readonly friendsService: IFriendsService,
   ) {}
 
   async createMessage(
@@ -32,18 +30,6 @@ export class MessageService implements IMessageService {
   ): Promise<CreateMessageResponse> {
     const { user, content, id } = params;
     const conversation = await this.conversationService.findById(id, user._id);
-
-    // if (!conversation) throw new ConversationNotFoundException();
-
-    // const { creator, recipient } = conversation;
-    // const isFriends = await this.friendsService.isFriends(
-    //   creator.id,
-    //   recipient.id,
-    // );
-
-    // if (!isFriends) throw new FriendNotFoundException();
-
-    // if (creator.id !== user.id && recipient.id !== user.id) throw new CannotCreateMessageException();
 
     const message = new this.messageModel({
       content,

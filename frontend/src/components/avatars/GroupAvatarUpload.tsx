@@ -1,7 +1,6 @@
 import { useRef, useState, Dispatch, SetStateAction, FC } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { CDN_URL } from '../../utils/constants';
 import {
     AvatarUploadContainer,
     GroupAvatarUploadContainer,
@@ -18,14 +17,13 @@ export const GroupAvatarUpload: FC<Props> = ({ setFile }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [source, setSource] = useState('');
     const { selectedGroupContextMenu } = useSelector(
-        (state: RootState) => state.groups
+        (state: RootState) => state.conversation
     );
 
     const getGroupAvatar = () => {
-        // return selectedGroupContextMenu && selectedGroupContextMenu.avatar
-        //     ? CDN_URL.BASE.concat(selectedGroupContextMenu.avatar)
-        //     : defaultAvatar;
-        return defaultAvatar
+        return selectedGroupContextMenu && selectedGroupContextMenu.imgGroup
+            ? selectedGroupContextMenu.imgGroup
+            : defaultAvatar;
     };
 
     const onFileChange = (e: InputChangeEvent) => {

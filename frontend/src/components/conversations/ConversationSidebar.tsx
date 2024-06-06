@@ -15,13 +15,13 @@ import {
     SidebarStyle,
     ScrollableContainer,
 } from '../../utils/styles';
-import { ContextMenuEvent, Conversation, Group } from '../../utils/types';
+import { ContextMenuEvent, Conversation } from '../../utils/types';
 import { GroupSidebarContextMenu } from '../context-menus/GroupSidebarContextMenu';
 import { ConversationSidebarItem } from '../conversations/ConversationSidebarItem';
 import { GroupSidebarItem } from '../groups/GroupSidebarItem';
 import { CreateConversationModal } from '../modals/CreateConversationModal';
 import { CreateGroupModal } from '../modals/CreateGroupModal';
-import { getConversations, searchConversations } from '../../utils/api';
+import { searchConversations } from '../../utils/api';
 import { useDebounce } from '../../utils/hooks/useDebounce';
 
 const ConversationSidebar = () => {
@@ -48,20 +48,11 @@ const ConversationSidebar = () => {
         }
     }, [debouncedQuery]);
 
-    // useEffect(() => {
-    //     // setConversations([])
-    //     console.log('state.conversations' + JSON.stringify(conversations))
-    // }, [conversations])
-
     const showGroupContextMenu = useSelector(
         (state: RootState) => state.groups.showGroupContextMenu
     );
 
     // const groups = useSelector((state: RootState) => state.groups.groups);
-
-    // const conversationType = useSelector(
-    //     (state: RootState) => state.selectedConversationType.type
-    // );
 
     const searchConversation = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;

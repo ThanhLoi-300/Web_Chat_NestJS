@@ -6,7 +6,6 @@ import { RootState, AppDispatch } from '../../store';
 import { toggleSidebar } from '../../store/groupRecipientsSidebarSlice';
 import { selectConversationById } from '../../store/conversationsSlice';
 import { AuthContext } from '../../utils/context/AuthContext';
-import { CDN_URL } from '../../utils/constants';
 import styles from '../groups/index.module.scss';
 import {
     MessagePanelHeaderStyle,

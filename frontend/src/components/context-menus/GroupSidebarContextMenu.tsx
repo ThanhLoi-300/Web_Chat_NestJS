@@ -4,13 +4,11 @@ import { useParams } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../store';
 import {
     leaveGroupThunk,
-    selectGroupById,
-    setShowEditGroupModal,
     toggleContextMenu,
 } from '../../store/groupSlice';
-selectConversationById
+
 import {
-    selectConversationById
+    selectConversationById, setShowEditGroupModal, setSelectedGroup
 } from '../../store/conversationsSlice';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { isGroupOwner } from '../../utils/helpers';
@@ -46,7 +44,10 @@ export const GroupSidebarContextMenu: FC = () => {
                 <span style={{ color: '#ff0000' }}>Leave Group</span>
             </ContextMenuItem>
             {user?._id === contextMenuGroup?.owner?._id && (
-                <ContextMenuItem onClick={() => dispatch(setShowEditGroupModal(true))}>
+                <ContextMenuItem onClick={() => {
+                    dispatch(setShowEditGroupModal(true))
+                    dispatch(setSelectedGroup(conversation!))
+                } }>
                     <Edit size={20} color="#fff" />
                     <span style={{ color: '#fff' }}>Edit Group</span>
                 </ContextMenuItem>

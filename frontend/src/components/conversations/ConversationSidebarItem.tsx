@@ -19,8 +19,8 @@ type Props = {
 };
 
 export const ConversationSidebarItem: React.FC<Props> = ({ conversation }) => {
-    const MESSAGE_LENGTH_MAX = 22;
-    const MAX_NAME_LENGTH = 20;
+    const MESSAGE_LENGTH_MAX = 18;
+    const MAX_NAME_LENGTH = 18;
     const { id } = useParams();
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();

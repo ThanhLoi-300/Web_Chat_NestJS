@@ -16,7 +16,6 @@ export const MessageAttachmentActionIcon = () => {
     const attachmentIconRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const dispatch = useDispatch<AppDispatch>();
-    // const { error } = useToast({ theme: 'dark' });
     const { attachmentCounter, attachments } = useSelector(
         (state: RootState) => state.messagePanel
     );

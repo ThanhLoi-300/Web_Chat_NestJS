@@ -206,16 +206,13 @@ export class ConversationsService implements IConversationsService {
 
     if (!conversation)
       throw new HttpException('Conversation not found', HttpStatus.BAD_REQUEST);
-    // Create a set from the existing members for faster lookups
+
     const existingMembers = new Set(conversation.member);
 
-    // Filter the recipentIds array to get only the unique members that are not already in the conversation
     const newMembers = recipentIds.filter((id) => !existingMembers.has(id));
 
-    // Add the new members to the conversation.member array
     conversation.member.push(...newMembers);
 
-    // Save the updated conversation
     await this.conversationModel.findByIdAndUpdate(conversation._id, {
       member: [...conversation.member]
     });

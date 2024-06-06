@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { RootState } from '../../store';
 import { selectConversationById } from '../../store/conversationsSlice';
-// import { selectGroupById } from '../../store/groupSlice';
 import styles from './index.module.scss';
 import { removeAllAttachments } from '../../store/message-panel/messagePanelSlice';
 import {
@@ -13,8 +12,6 @@ import {
 } from '../../store/system-messages/systemMessagesSlice';
 import { createMessage } from '../../utils/api';
 import { AuthContext } from '../../utils/context/AuthContext';
-import { getRecipientFromConversation } from '../../utils/helpers';
-// import { useToast } from '../../utils/hooks/useToast';
 import {
     MessageInputContainer,
     MessagePanelBody,
@@ -30,6 +27,10 @@ import { CreateMessageParams } from '../../utils/types';
 import { FaceVeryHappy } from 'akar-icons';
 import { MessageTextField } from '../inputs/MessageTextField';
 import { MessageAttachmentActionIcon } from './MessageAttachmentActionIcon';
+import Picker, { EmojiStyle, PickerProps } from 'emoji-picker-react';
+import { FaTimes } from 'react-icons/fa';
+import { PickerComponent } from 'stipop-react-sdk'
+import { TbSticker2 } from "react-icons/tb";
 
 type Props = {
     sendTypingStatus: () => void;
@@ -56,8 +57,6 @@ export const MessagePanel: FC<Props> = ({
     const conversation = useSelector((state: RootState) =>
         selectConversationById(state, routeId!)
     );
-
-    const recipient = getRecipientFromConversation(conversation, user);
 
     useEffect(() => {
         return () => {
@@ -109,6 +108,25 @@ export const MessagePanel: FC<Props> = ({
         }
     };
 
+    const [isPickerVisible, setIsPickerVisible] = useState(false);
+    const [isStickerVisible, setIsStickerVisible] = useState(false);
+    const [selectedSticker, setSelectedSticker] = useState<string>('');
+
+    const handleEmojiClick: PickerProps['onEmojiClick'] = (emojiData, event) => {
+        setContent((preText) => preText + emojiData.emoji)
+    };
+
+    const handleSticker = async (url: string) => {
+        setSelectedSticker(url)
+        const data: CreateMessageParams = {
+            id: routeId!,
+            content: "",
+            attachments: [url],
+            user: user!
+        }
+        await createMessage(routeId!, data);
+    }
+
     return (
         <>
             <MessagePanelStyle>
@@ -116,6 +134,32 @@ export const MessagePanel: FC<Props> = ({
                 <MessagePanelBody>
                     <MessageContainer />
                 </MessagePanelBody>
+
+                <div style={{ position: 'fixed', top: '50px', right: '30px' }}>
+                    {/* <img
+                        src={selectedSticker ? selectedSticker : 'https://img.stipop.io/1546967074721_Expression_03.gif'}
+                        style={{ width: '100%', maxWidth: '150px' }}
+                    /> */}
+                    {
+                        isStickerVisible && (<PickerComponent
+                            params={{
+                                apikey: '9df560dd7e4344d0fa6c3b55781a4f72',
+                                userId: '1234',
+                            }}
+                            stickerClick={(url: any) => handleSticker(url.url)}
+                        />)
+                    }
+
+                    {isPickerVisible && (
+                        <>
+                            <FaTimes onClick={() => setIsPickerVisible(false)} className={styles.icon} />
+                            <Picker
+                                onEmojiClick={handleEmojiClick}
+                                emojiStyle={EmojiStyle.APPLE}
+                            />
+                        </>
+                    )}
+                </div>
                 <MessagePanelFooter>
                     {attachments.length > 0 && <MessageAttachmentContainer />}
                     <MessageInputContainer isMultiLine={isMultiLine}>
@@ -129,7 +173,8 @@ export const MessagePanel: FC<Props> = ({
                                 sendMessage={sendMessage}
                             />
                         </form>
-                        <FaceVeryHappy className={styles.icon} size={ICON_SIZE} />
+                        <TbSticker2 className={styles.icon} size={ICON_SIZE} onClick={() => setIsStickerVisible(!isStickerVisible)} />
+                        <FaceVeryHappy className={styles.icon} size={ICON_SIZE} onClick={() => setIsPickerVisible(!isPickerVisible)} />
                     </MessageInputContainer>
                     <MessageTypingStatus>
                         {isRecipientTyping && textTyping}

@@ -13,6 +13,7 @@ import { updateSeenMessage } from '../../utils/api';
 import { UpdateMessageSeen } from '../../utils/types';
 import { deleteMessage, updateMessageSeen } from '../../store/Messages/messageSlice'
 import { toggleCloseSidebar } from '../../store/groupRecipientsSidebarSlice';
+import { EditGroupModal } from '../../components/modals/EditGroupModal';
 
 export const ConversationChannelPage = () => {
   const { id } = useParams();
@@ -23,6 +24,10 @@ export const ConversationChannelPage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isRecipientTyping, setIsRecipientTyping] = useState(false);
   const [textTyping, setTextTyping] = useState('');
+
+  const { showEditGroupModal } = useSelector(
+    (state: RootState) => state.conversation
+  );
   const showSidebar = useSelector(
     (state: RootState) => state.groupSidebar.showSidebar
   );
@@ -106,6 +111,7 @@ export const ConversationChannelPage = () => {
 
   return (
     <>
+      {showEditGroupModal && <EditGroupModal />}
       <ConversationChannelPageStyle>
         <MessagePanel
           sendTypingStatus={sendTypingStatus}

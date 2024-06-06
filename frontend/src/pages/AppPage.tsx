@@ -1,16 +1,14 @@
 import { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { UserSidebar } from '../components/sidebars/UserSidebar';
 import { AppDispatch, RootState } from '../store';
-import { addFriendRequest, removeFriendRequest } from '../store/friends/friendsSlice';
+import { removeFriendRequest } from '../store/friends/friendsSlice';
 import { LayoutPage } from '../utils/styles';
 import {
-    AcceptFriendRequestResponse,
     FriendRequest,
     SelectableTheme,
 } from '../utils/types';
-import { BsFillPersonCheckFill } from 'react-icons/bs';
 import { fetchFriendRequestThunk, fetchFriendsThunk } from '../store/friends/friendsThunk';
 import { ThemeProvider } from 'styled-components';
 import { DarkTheme, LightTheme } from '../utils/themes';
@@ -38,9 +36,7 @@ import { useVideoCallAccept } from '../utils/hooks/sockets/useVideoCallAccept';
 export const AppPage = () => {
     const { user } = useContext(AuthContext);
     const dispatch = useDispatch<AppDispatch>();
-    const navigate = useNavigate();
     const socket = useContext(SocketContext);
-    const { friendRequests } = useSelector((state: RootState) => state.friends);
     const { friends } = useSelector((state: RootState) => state.friends);
     const { peer, call, isReceivingCall, caller, connection, callType } =
         useSelector((state: RootState) => state.call);

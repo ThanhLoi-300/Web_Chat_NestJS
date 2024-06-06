@@ -12,7 +12,7 @@ export const MessageTextarea = styled.textarea`
   padding: 0;
   margin: 4px 0;
   resize: none;
-  height: 20px;
+  height: 25px;
   max-height: 200px;
   flex: 0 0 auto;
   &::-webkit-scrollbar {

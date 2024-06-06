@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
-import { FaPhoneAlt, FaVideo } from 'react-icons/fa';
+import { FaPhoneAlt, FaVideo, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { RootState } from '../../store';
@@ -26,6 +26,7 @@ export const MessagePanelConversationHeader = () => {
     const socket = useContext(SocketContext);
     const [checkOnline, setCheckOnline] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showModalContact, setShowModalContact] = useState(false);
     const [showModalPresence, setShowModalPresence] = useState(false);
 
     const dispatch = useDispatch();
@@ -101,7 +102,7 @@ export const MessagePanelConversationHeader = () => {
             {showModalPresence && <UpdatePresenceStatusModal setShowModal={setShowModalPresence} />}
             {showModal && <CreateFriendRequestModal setShowModal={setShowModal} friend={recipient} />}
             <UserAvatarAndName>
-                <UserAvatar user={recipient} onClick={() => setShowModal(true)} />
+                <UserAvatar user={recipient} />
                 <div>
                     <span>{recipient?.name}</span>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -114,6 +115,10 @@ export const MessagePanelConversationHeader = () => {
                 {!isFriend && (<button style={{ padding: '6px 12px', borderRadius: '10px', cursor: 'pointer' }} onClick={() => setShowModal(true)}>Add friend</button>)}
                 <FaPhoneAlt size={24} cursor="pointer" onClick={voiceCallUser} />
                 <FaVideo size={30} cursor="pointer" onClick={videoCallUser} />
+                {
+                    showModalContact ? <FaToggleOn cursor="pointer" size={36} onClick={()=> setShowModalContact(false) } />
+                        : <FaToggleOff cursor="pointer" size={36} onClick={() => setShowModalContact(true)} />
+                }
             </MessagePanelHeaderIcons>
         </MessagePanelHeaderStyle>
     );

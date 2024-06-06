@@ -40,7 +40,7 @@ export const MessageItemContainerBody: FC<Props> = ({
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div>
-                {message.content && !message.isdeleted ? (
+                {!message.isdeleted ? (
                     <MessageItemContent padding={padding} owner={owner} ml={ml} img={false}>
                         {message.content}
                         {
