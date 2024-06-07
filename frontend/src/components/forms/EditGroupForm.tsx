@@ -1,11 +1,12 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useCallback, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import {
     setIsSavingChanges,
     setShowEditGroupModal,
-    updateGroupDetailsThunk,
-} from '../../store/groupSlice';
+    // updateGroupDetailsThunk,
+    updateGroupDetail
+} from '../../store/conversationsSlice';
 import { useBeforeUnload } from '../../utils/hooks';
 import {
     Button,
@@ -14,17 +15,22 @@ import {
     InputField,
     InputLabel,
 } from '../../utils/styles';
-import { FormEvent } from '../../utils/types';
+import { Conversation, FormEvent } from '../../utils/types';
 import { GroupAvatarUpload } from '../avatars/GroupAvatarUpload';
 import { toast } from 'react-toastify';
+import { uploadFile }  from "../../utils/uploadFile"
+import { SocketContext } from '../../utils/context/SocketContext';
+import { updateGroupDetails } from "../../utils/api"
 
 export const EditGroupForm = () => {
+    const socket = useContext(SocketContext);
     const { selectedGroupContextMenu: group, isSavingChanges } = useSelector(
         (state: RootState) => state.conversation
     );
     const dispatch = useDispatch<AppDispatch>();
     const formRef = useRef<HTMLFormElement>(null);
     const [file, setFile] = useState<File>();
+    const [urlFirebase, setUrlFirebase] = useState<string>();
     const [newGroupTitle, setNewGroupName] = useState(group?.nameGroup);
     const isStateChanged = useCallback(
         () => file || group?.nameGroup !== newGroupTitle,
@@ -36,18 +42,22 @@ export const EditGroupForm = () => {
         [isStateChanged]
     );
 
-    const onSubmit = (e: FormEvent) => {
+    const onSubmit = async (e: FormEvent) => {
         e.preventDefault();
         if (!group) throw new Error('Group Undefined');
-        const formData = new FormData();
-        file && formData.append('avatar', file);
-        newGroupTitle &&
-            group.nameGroup !== newGroupTitle &&
-            formData.append('title', newGroupTitle);
+
+        let img
+        if(file) img = await uploadFile(file)
+        else if (urlFirebase) img = urlFirebase
+        else return
+
         dispatch(setIsSavingChanges(true));
-        dispatch(updateGroupDetailsThunk({ id: group._id!, data: formData }))
-            .then(() => {
+        updateGroupDetails({ _id: group._id!, nameGroup: newGroupTitle ? newGroupTitle : group!.nameGroup!, avatarGroup: img!  })
+            .then((data: any) => {
+                console.log("updateGroupDetailsThunk"+ JSON.stringify(data.data))
                 dispatch(setShowEditGroupModal(false));
+                dispatch(updateGroupDetail(data.data))
+                socket.emit("updateGroupDetails", {conversation: data.data})
                 toast.success('Group Details Updated!');
             })
             .catch((err) => {
@@ -59,7 +69,7 @@ export const EditGroupForm = () => {
 
     return (
         <Form onSubmit={onSubmit} ref={formRef}>
-            <GroupAvatarUpload setFile={setFile} />
+            <GroupAvatarUpload setFile={setFile} setUrlFirebase={setUrlFirebase} />
             <InputContainer backgroundColor="#161616">
                 <InputLabel htmlFor="groupName">Group Name</InputLabel>
                 <InputField

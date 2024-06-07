@@ -13,6 +13,7 @@ import {
 import { IConversationsService } from './conversation';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, Types } from 'mongoose';
+import { UpdateGroup } from './dtos/UpdateGroup';
 // import { IFriendsService } from 'src/friends/friends';
 
 @Injectable()
@@ -197,7 +198,8 @@ export class ConversationsService implements IConversationsService {
       .populate('owner')
       .populate('member');
     if (isExist) return isExist;
-    else throw new HttpException('Conversation not found', HttpStatus.BAD_REQUEST);
+    else
+      throw new HttpException('Conversation not found', HttpStatus.BAD_REQUEST);
   }
 
   async addMemberToConversation(id: string, recipentIds: string[]) {
@@ -214,7 +216,45 @@ export class ConversationsService implements IConversationsService {
     conversation.member.push(...newMembers);
 
     await this.conversationModel.findByIdAndUpdate(conversation._id, {
-      member: [...conversation.member]
+      member: [...conversation.member],
     });
+  }
+
+  async leaveGroup(id: string, userId: string) {
+    const conversation: ConversationResponse =
+      await this.conversationModel.findById(id);
+
+    if (!conversation)
+      throw new HttpException('Conversation not found', HttpStatus.BAD_REQUEST);
+
+    conversation.member = conversation.member.filter(
+      (memberId) => memberId !== userId,
+    );
+
+    await this.conversationModel.updateOne(
+      { _id: conversation._id },
+      { $set: { member: conversation.member } },
+    );
+  }
+
+  async updateGroup(params: UpdateGroup) {
+    await this.conversationModel.findByIdAndUpdate(
+      { _id: params._id },
+      {
+        nameGroup: params.nameGroup,
+        imgGroup: params.avatarGroup
+      },{new: true}
+    );
+
+    return this.conversationModel
+      .findById(params._id)
+      .populate('owner')
+      .populate('member')
+      .populate({
+        path: 'lastMessageId',
+        populate: {
+          path: 'senderId',
+        },
+      });
   }
 }

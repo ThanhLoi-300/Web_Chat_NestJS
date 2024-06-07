@@ -7,7 +7,7 @@ import {
     setContextMenuLocation,
     setSelectedGroup,
     toggleContextMenu,
-} from '../../store/groupSlice';
+} from '../../store/conversationsSlice';
 import { SidebarContainerStyle } from '../../utils/styles';
 import {
     ConversationSearchbar,
@@ -49,7 +49,7 @@ const ConversationSidebar = () => {
     }, [debouncedQuery]);
 
     const showGroupContextMenu = useSelector(
-        (state: RootState) => state.groups.showGroupContextMenu
+        (state: RootState) => state.conversation.showGroupContextMenu
     );
 
     // const groups = useSelector((state: RootState) => state.groups.groups);

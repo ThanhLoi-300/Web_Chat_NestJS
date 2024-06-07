@@ -8,7 +8,7 @@ import { AppDispatch, RootState } from '../../store';
 import { fetchMessagesThunk } from '../../store/Messages/messageThunk';
 import { GroupRecipientsSidebar } from '../../components/sidebars/group-recipients/GroupRecipientsSidebar';
 import { AuthContext } from '../../utils/context/AuthContext';
-import { selectConversationById, updateConversation } from '../../store/conversationsSlice';
+import { selectConversationById, updateConversation, memberLeaveGroup } from '../../store/conversationsSlice';
 import { updateSeenMessage } from '../../utils/api';
 import { UpdateMessageSeen } from '../../utils/types';
 import { deleteMessage, updateMessageSeen } from '../../store/Messages/messageSlice'
@@ -25,9 +25,9 @@ export const ConversationChannelPage = () => {
   const [isRecipientTyping, setIsRecipientTyping] = useState(false);
   const [textTyping, setTextTyping] = useState('');
 
-  const { showEditGroupModal } = useSelector(
-    (state: RootState) => state.conversation
-  );
+  // const { showEditGroupModal } = useSelector(
+  //   (state: RootState) => state.conversation
+  // );
   const showSidebar = useSelector(
     (state: RootState) => state.groupSidebar.showSidebar
   );
@@ -72,19 +72,22 @@ export const ConversationChannelPage = () => {
       }
     });
 
+    socket.on('memberLeaveGroup', (payload) => {
+      dispatch(memberLeaveGroup(payload));
+    });
+
     return () => {
       socket.emit('onConversationLeave', { conversationId });
       socket.off('onTypingStart');
       socket.off('onTypingStop');
       socket.off('onUpdateSeenMessage');
-      // socket.off('onMessageUpdate');
+      socket.off('memberLeaveGroup');
     };
   }, [id]);
 
   useEffect(() => {
     if (conversation?.lastMessageId?.seen.filter((u: any) => u._id === user?._id).length === 0) {
       console.log('updateSeenMessage');
-      // toast.success('You have received a new message');
       updateSeenMessage(conversation.lastMessageId?._id!, conversation._id!);
       socket.emit("updateSeenMessage", { conversationId: conversation._id, messageId: conversation.lastMessageId?._id, user: user });
     }
@@ -92,14 +95,12 @@ export const ConversationChannelPage = () => {
   }, [conversation, id!]);
 
   const sendTypingStatus = () => {
-    // updateToken()
     if (isTyping) {
       clearTimeout(timer);
       setTimer(
         setTimeout(() => {
           console.log('User stopped typing');
           setIsTyping(false);
-          // typingText(id!, false);
           socket.emit('onTypingStop', { typing: false, conversationId: id });
         }, 2000)
       );
@@ -111,7 +112,7 @@ export const ConversationChannelPage = () => {
 
   return (
     <>
-      {showEditGroupModal && <EditGroupModal />}
+      {/* {showEditGroupModal && <EditGroupModal />} */}
       <ConversationChannelPageStyle>
         <MessagePanel
           sendTypingStatus={sendTypingStatus}

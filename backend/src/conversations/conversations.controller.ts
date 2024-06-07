@@ -16,6 +16,7 @@ import {
 } from 'src/utils/types';
 import { SocketService } from 'src/utils/SocketService';
 import { AddMember } from './dtos/AddMember';
+import { UpdateGroup } from './dtos/UpdateGroup';
 
 @Controller(Routes.CONVERSATIONS)
 export class ConversationsController {
@@ -50,13 +51,12 @@ export class ConversationsController {
     @Param('id') id: string,
     @Body() params: AddMember,
   ) {
-    console.log(id, params)
     await this.conversationsService.addMemberToConversation(
       id,
       params.recipentIds,
     );
 
-    return await this.conversationsService.findById(id,req.userId);
+    return await this.conversationsService.findById(id, req.userId);
   }
 
   @Get()
@@ -72,15 +72,16 @@ export class ConversationsController {
     return await this.conversationsService.findById(id, req.userId);
   }
 
-  @Get('exists/:id')
-  async checkConversationExists(
+  @Get(':id/leaveGroup')
+  async leaveGroup(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+    await this.conversationsService.leaveGroup(id, req.userId);
+  }
+
+  @Post(':id/updateGroup')
+  async updateGroup(
     @Req() req: AuthenticatedRequest,
-    @Param('id') id: string,
+    @Body() params: UpdateGroup,
   ) {
-    console.log(id);
-    return await this.conversationsService.checkConversationExists(
-      id,
-      req.userId,
-    );
+    return await this.conversationsService.updateGroup(params);;
   }
 }

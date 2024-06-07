@@ -14,12 +14,18 @@ import { UserAvatar } from '../users/UserAvatar';
 import { updateToken, logoutUser as logoutUserAPI } from '../../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { SocketContext } from '../../utils/context/SocketContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store';
+import { EditGroupModal } from '../../components/modals/EditGroupModal';
 
 export const UserSidebar = () => {
     const [showModal, setShowModal] = useState(false);
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
     const socket = useContext(SocketContext);
+    const { showEditGroupModal } = useSelector(
+        (state: RootState) => state.conversation
+    );
 
     const logoutUser = () => {
         updateToken()
@@ -32,6 +38,7 @@ export const UserSidebar = () => {
     return (
         <>
             {showModal && <UpdatePresenceStatusModal setShowModal={setShowModal} />}
+            {showEditGroupModal && <EditGroupModal />}
             <UserSidebarStyle>
                 <UserSidebarHeader>
                     <UserAvatar user={user!} onClick={() => setShowModal(true)} />

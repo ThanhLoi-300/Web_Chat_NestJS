@@ -11,9 +11,10 @@ import defaultAvatar from '../../__assets__/default_avatar.jpg';
 
 type Props = {
     setFile: Dispatch<SetStateAction<File | undefined>>;
+    setUrlFirebase: Dispatch<SetStateAction<string | undefined>>;
 };
 
-export const GroupAvatarUpload: FC<Props> = ({ setFile }) => {
+export const GroupAvatarUpload: FC<Props> = ({ setFile, setUrlFirebase }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [source, setSource] = useState('');
     const { selectedGroupContextMenu } = useSelector(
@@ -21,6 +22,7 @@ export const GroupAvatarUpload: FC<Props> = ({ setFile }) => {
     );
 
     const getGroupAvatar = () => {
+        selectedGroupContextMenu && selectedGroupContextMenu.imgGroup && setUrlFirebase(selectedGroupContextMenu.imgGroup)
         return selectedGroupContextMenu && selectedGroupContextMenu.imgGroup
             ? selectedGroupContextMenu.imgGroup
             : defaultAvatar;
@@ -31,6 +33,7 @@ export const GroupAvatarUpload: FC<Props> = ({ setFile }) => {
         if (file) {
             setSource(URL.createObjectURL(file));
             setFile(file);
+            setUrlFirebase(undefined)
         }
     };
 

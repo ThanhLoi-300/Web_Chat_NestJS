@@ -101,7 +101,10 @@ export const fetchGroups = () =>
 export const createGroup = (params: CreateGroupParams) =>
   axiosClient.post(`/groups`, params, config);
 
-export const removeGroupRecipient = ({ id, userId }: RemoveGroupRecipientParams) =>
+export const removeGroupRecipient = ({
+  id,
+  userId,
+}: RemoveGroupRecipientParams) =>
   axiosClient.post<Conversation>(
     `/searchConversation/deleteMember`,
     { id, userId },
@@ -116,38 +119,19 @@ export const updateGroupOwner = ({ id, newOwnerId }: UpdateGroupOwnerParams) =>
   );
 
 export const leaveGroup = (id: string) =>
-  axiosClient.delete(`/groups/${id}/recipients/leave`, config);
+  axiosClient.get(`/conversations/${id}/leaveGroup`, config);
 
-export const updateGroupDetails = ({ id, data }: UpdateGroupDetailsPayload) =>
-  axiosClient.patch<Conversation>(`/groups/${id}/details`, data, config);
-
-export const fetchGroupById = (id: string) =>
-  axiosClient.get<Conversation>(`/groups/${id}`, config);
-
-export const fetchGroupMessages = (id: string) =>
-  axiosClient.get<FetchGroupMessagePayload>(`/groups/${id}/messages`, config);
-
-export const deleteGroupMessage = ({
-  id,
-  messageId,
-}: DeleteGroupMessageParams) =>
-  axiosClient.delete<DeleteGroupMessageResponse>(
-    `/groups/${id}/messages/${messageId}`,
+export const updateGroupDetails = (data: UpdateGroupDetailsPayload) =>
+  axiosClient.post<Conversation>(
+    `/conversations/${data._id}/updateGroup`,
+    data,
     config
   );
 
-export const editGroupMessage = ({
-  content,
+export const addGroupRecipient = ({
   id,
-  messageId,
-}: EditMessagePayload) =>
-  axiosClient.patch<MessageType>(
-    `/groups/${id}/messages/${messageId}`,
-    { content },
-    config
-  );
-
-export const addGroupRecipient = ({ id, recipentIds }: AddGroupRecipientParams) =>
+  recipentIds,
+}: AddGroupRecipientParams) =>
   axiosClient.post(
     `/conversations/${id}/addMemberToConversation`,
     { recipentIds },
@@ -155,10 +139,7 @@ export const addGroupRecipient = ({ id, recipentIds }: AddGroupRecipientParams) 
   );
 
 export const searchFriends = (query: string) =>
-  axiosClient.get<User[]>(
-    `/friends/searchFriends?query=${query}`,
-    config
-  );
+  axiosClient.get<User[]>(`/friends/searchFriends?query=${query}`, config);
 
 export const updateStatusMessage = (data: UpdateStatusParams) =>
   axiosClient.patch("/users/presence/status", data, config);
@@ -180,14 +161,12 @@ export const cancelFriendRequest = (id: string) =>
 export const acceptFriendRequest = (id: string) =>
   axiosClient.patch<AcceptFriendRequestResponse>(
     `/friends/requests/${id}/accept`,
-    {},
     config
   );
 
 export const rejectFriendRequest = (id: string) =>
   axiosClient.patch<CancelFriendRequestResponse>(
     `/friends/requests/${id}/reject`,
-    {},
     config
   );
 
@@ -195,13 +174,17 @@ export const removeFriend = (id: string) =>
   axiosClient.delete<Friend>(`/friends/${id}/delete`, config);
 
 export const checkConversationOrCreate = (recipientId: string) =>
-  axiosClient.get<Conversation>(`/conversations/exists/${recipientId}`, config);
+  axiosClient.get<Conversation>(
+    `/searchConversation/${recipientId}/exists`,
+    config
+  );
 
 export const updateUserProfile = (
   banner: string,
   avatar: string,
   name: string
-) => axiosClient.patch<User>("/users/profiles", {banner, avatar, name}, config);
+) =>
+  axiosClient.patch<User>("/users/profiles", { banner, avatar, name }, config);
 
 export const updateSeenMessage = (messageId: string, conversationId: string) =>
   axiosClient.post<any>(
@@ -210,9 +193,5 @@ export const updateSeenMessage = (messageId: string, conversationId: string) =>
     config
   );
 
-  export const completeUserProfile = (data: FormData) =>
-    axiosClient.post("/users/profiles", data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+export const completeUserProfile = (data: FormData) =>
+  axiosClient.post("/users/profiles", data);

@@ -11,7 +11,8 @@ import {
     selectConversationById,
     updateConversation,
     deleteMember, deleteConversation, transferOwner,
-    addMemberToConversation
+    addMemberToConversation,
+    updateGroupDetail
 } from '../../store/conversationsSlice';
 import { addMessage, deleteMessage } from '../../store/Messages/messageSlice';
 import { Conversation, MessageEventPayload } from '../../utils/types';
@@ -86,6 +87,11 @@ export const ConversationPage = () => {
             }
             dispatch(transferOwner(payload));
         });
+
+        socket.on('updateGroupDetails', (payload) => {
+            console.log('updateGroupDetails: ' + JSON.stringify(payload));
+            dispatch(updateGroupDetail(payload));
+        });
     
         return () => {
             socket.off('connected');
@@ -113,9 +119,6 @@ export const ConversationPage = () => {
         return () => {
             socket.off('addMemberToConversation');
         };
-        if (!conversation) {
-            navigate('/conversations');
-        }
     }, []);
 
     return (

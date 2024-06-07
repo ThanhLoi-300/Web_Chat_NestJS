@@ -4,18 +4,31 @@ import {
   createSlice,
 } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { Conversation } from "../utils/types";
-import { getConversations, postNewConversation } from "../utils/api";
+import { Conversation, Points, MemberLeaveGroup } from "../utils/types";
+import {
+  getConversations,
+  postNewConversation,
+  leaveGroup as leaveGroupAPI,
+} from "../utils/api";
 import { RootState } from ".";
 
 export interface ConversationsState {
   conversations: Conversation[];
   loading: boolean;
+  showGroupContextMenu: boolean;
+  selectedGroupContextMenu?: Conversation;
+  showEditGroupModal: boolean;
+  points: Points;
+  isSavingChanges: boolean;
 }
 
 const initialState: ConversationsState = {
   conversations: [],
   loading: false,
+  showGroupContextMenu: false,
+  showEditGroupModal: false,
+  points: { x: 0, y: 0 },
+  isSavingChanges: false,
 };
 
 export const fetchConversationsThunk = createAsyncThunk(
@@ -30,6 +43,11 @@ export const createConversationThunk = createAsyncThunk(
   async (data: Conversation) => {
     return postNewConversation(data);
   }
+);
+
+export const leaveGroupThunk = createAsyncThunk(
+  "conversations/leave",
+  (id: string) => leaveGroupAPI(id)
 );
 
 export const conversationsSlice = createSlice({
@@ -77,13 +95,75 @@ export const conversationsSlice = createSlice({
     addMemberToConversation: (state, action: PayloadAction<Conversation>) => {
       console.log("Inside addMemberToConversation");
       console.log(action.payload);
-      const index = state.conversations.findIndex((c) => c._id === action.payload._id);
+      const index = state.conversations.findIndex(
+        (c) => c._id === action.payload._id
+      );
       if (index === -1) {
         state.conversations.unshift(action.payload);
       } else {
         state.conversations.splice(index, 1);
         state.conversations.unshift(action.payload);
       }
+    },
+    updateGroupDetail: (state, action: PayloadAction<Conversation>) => {
+      console.log("Inside updateGroupDetail"+JSON.stringify(action.payload));
+      const index = state.conversations.findIndex(
+        (c) => c._id === action.payload._id
+      );
+      if (index != -1) {
+        state.conversations.splice(index, 1);
+        state.conversations.unshift(action.payload);
+      }
+    },
+    removeGroup: (state, action: PayloadAction<Conversation>) => {
+      console.log("removeGroup Reducer");
+      const group = state.conversations.find(
+        (g) => g._id === action.payload._id
+      );
+      const index = state.conversations.findIndex(
+        (g) => g._id === action.payload._id
+      );
+      if (!group) return;
+      state.conversations.splice(index, 1);
+    },
+    leaveGroup: (state, action: PayloadAction<string>) => {
+      console.log("leaveGroup Reducer");
+      const group = state.conversations.find((g) => g._id === action.payload);
+      const index = state.conversations.findIndex(
+        (g) => g._id === action.payload
+      );
+      if (!group) return;
+      state.conversations.splice(index, 1);
+    },
+    memberLeaveGroup: (state, action: PayloadAction<MemberLeaveGroup>) => {
+      console.log("memberLeaveGroup Reducer");
+      const group = state.conversations.find(
+        (g) => g._id === action.payload.conversationId
+      );
+      const index = state.conversations.findIndex(
+        (g) => g._id === action.payload.conversationId
+      );
+      if (!group) return;
+      group.member = group.member.filter(
+        (u) => u._id !== action.payload.userId
+      );
+      state.conversations[index].member = group.member;
+    },
+    toggleContextMenu: (state, action: PayloadAction<boolean>) => {
+      state.showGroupContextMenu = action.payload;
+    },
+    setSelectedGroup: (state, action: PayloadAction<Conversation>) => {
+      console.log("setSelectedGroup: "+ JSON.stringify(action.payload));
+      state.selectedGroupContextMenu = action.payload;
+    },
+    setContextMenuLocation: (state, action: PayloadAction<Points>) => {
+      state.points = action.payload;
+    },
+    setShowEditGroupModal: (state, action: PayloadAction<boolean>) => {
+      state.showEditGroupModal = action.payload;
+    },
+    setIsSavingChanges: (state, action: PayloadAction<boolean>) => {
+      state.isSavingChanges = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -122,6 +202,15 @@ export const {
   deleteConversation,
   transferOwner,
   addMemberToConversation,
+  removeGroup,
+  toggleContextMenu,
+  setContextMenuLocation,
+  setSelectedGroup,
+  setShowEditGroupModal,
+  setIsSavingChanges,
+  leaveGroup,
+  memberLeaveGroup,
+  updateGroupDetail,
 } = conversationsSlice.actions;
 
 export default conversationsSlice.reducer;

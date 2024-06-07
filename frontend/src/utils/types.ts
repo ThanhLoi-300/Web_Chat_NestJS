@@ -342,18 +342,14 @@ export type CallInitiatePayload = {
 export type CallType = 'video' | 'audio';
 
 export type UpdateGroupDetailsPayload = {
-  id: string;
-  data: FormData;
+  _id: string;
+  nameGroup: string;
+  avatarGroup: string;
 };
 
 export enum UpdateGroupAction {
   NEW_MESSAGE = 'newMessage',
 }
-
-export type UpdateGroupPayload = {
-  type?: UpdateGroupAction;
-  group: Conversation;
-};
 
 export type GroupParticipantLeftPayload = {
   group: Group;
@@ -365,3 +361,8 @@ export type UpdateMessageSeen = {
   messageId: string;
   user: User;
 }
+
+export type MemberLeaveGroup = {
+  conversationId: string;
+  userId: string;
+};

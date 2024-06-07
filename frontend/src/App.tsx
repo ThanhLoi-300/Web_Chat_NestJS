@@ -11,7 +11,6 @@ import { User } from "./utils/types";
 import { store } from "./store";
 import { Provider as ReduxProvider } from 'react-redux';
 import { enableMapSet } from 'immer'
-import { GroupChannelPage } from './pages/group/GroupChannelPage';
 import { GroupPage } from './pages/group/GroupPage';
 import { AppPage } from './pages/AppPage';
 import { ToastContainer } from 'react-toastify';

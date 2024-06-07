@@ -11,6 +11,7 @@ import {
 import { Routes, Services } from 'src/utils/constants';
 import { IConversationsService } from './conversation';
 import { DeleteMember } from './dtos/DeleteMember';
+import { AuthenticatedRequest } from 'src/utils/types';
 
 @Controller(Routes.SEARCHCONVERSATION)
 export class SearchConversationsController {
@@ -36,5 +37,17 @@ export class SearchConversationsController {
     const { id, userId } = deleteMemberPayload;
     console.log(userId);
     await this.conversationsService.updateGroupOwner(id, userId);
+  }
+
+  @Get(':id/exists')
+  async checkConversationExists(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+  ) {
+    console.log('zo');
+    return await this.conversationsService.checkConversationExists(
+      id,
+      req.userId,
+    );
   }
 }

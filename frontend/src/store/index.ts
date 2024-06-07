@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import conversationReducer from './conversationsSlice'
 import messageReducer from './Messages/messageSlice'
 import groupsReducer from './groupSlice';
-import groupMessagesReducer from './groupMessagesSlice';
+// import groupMessagesReducer from './groupMessagesSlice';
 import messageContainerReducer from './messageContainerSlice';
 import groupSidebarReducer from './groupRecipientsSidebarSlice';
 import friendsReducer from './friends/friendsSlice';
@@ -17,7 +17,7 @@ export const store = configureStore({
     conversation: conversationReducer,
     messages: messageReducer,
     groups: groupsReducer,
-    groupMessages: groupMessagesReducer,
+    // groupMessages: groupMessagesReducer,
     messageContainer: messageContainerReducer,
     groupSidebar: groupSidebarReducer,
     friends: friendsReducer,

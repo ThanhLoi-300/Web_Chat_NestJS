@@ -176,6 +176,19 @@ io.on("connection", (socket) => {
   socket.on("addMemberToConversation", (payload) => {
     io.emit("addMemberToConversation", payload);
   });
+
+  // memberLeaveGroup
+  socket.on("memberLeaveGroup", (payload) => {
+    io.to(payload.conversationId).emit("memberLeaveGroup", payload);
+  });
+
+  // updateGroupDetails
+  socket.on("updateGroupDetails", (payload) => {
+    payload.conversation.member.map((u) => {
+      const user = getUser(u._id)
+      user && socket.to(user.socketId).emit("updateGroupDetails", payload.conversation)
+    })
+  });
 });
 
 server.listen(process.env.PORT || 4000, () => {
