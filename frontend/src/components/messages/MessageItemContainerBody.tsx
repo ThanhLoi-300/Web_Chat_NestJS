@@ -42,7 +42,7 @@ export const MessageItemContainerBody: FC<Props> = ({
             <div>
                 {!message.isdeleted ? (
                     <MessageItemContent padding={padding} owner={owner} ml={ml} img={false}>
-                        {message.content}
+                        <span style={{ width: '100%', display: 'flex', justifyContent: owner ? 'flex-end' : "flex-start"}}>{message.content}</span>
                         {
                             message.img?.length > 0 && <MessageItemAttachmentContainer message={message} owner={owner} />
                         }

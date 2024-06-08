@@ -25,23 +25,24 @@ export const MessageItemAttachmentContainer: FC<Props> = ({ message, owner }) =>
     return (
         <>
             {showOverlay && (
-                <OverlayStyle>
+                <OverlayStyle style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center', cursor: 'pointer'}}>
                     <MdClose
                         className={styles.closeIcon}
+                        size={50}
                         onClick={() => setShowOverlay(false)}
                     />
                     <img src={imageUrl} alt="overlay" style={{ maxHeight: '90%' }} />
                 </OverlayStyle>
             )}
-            <div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: owner ? 'flex-end' : 'flex-start'}}>
                 {message.img?.map((attachment) => (
                     <img
                         key={attachment}
                         src={attachment}
-                        width={150}
+                        width={130}
                         alt={attachment}
                         onClick={() => onClick(attachment)}
-                        style={{ cursor: 'pointer', marginLeft: '5px', float: owner ? 'right' : 'left'}}
+                        style={{ cursor: 'pointer', marginLeft: '5px', float: owner ? 'right' : 'left', objectFit: 'fill' }}
                     />
                 ))}
             </div>

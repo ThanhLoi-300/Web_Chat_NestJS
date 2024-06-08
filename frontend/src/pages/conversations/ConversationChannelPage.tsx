@@ -14,6 +14,7 @@ import { UpdateMessageSeen } from '../../utils/types';
 import { deleteMessage, updateMessageSeen } from '../../store/Messages/messageSlice'
 import { toggleCloseSidebar } from '../../store/groupRecipientsSidebarSlice';
 import { EditGroupModal } from '../../components/modals/EditGroupModal';
+import { ConversationInfor } from '../../components/conversations/ConversationInfor';
 
 export const ConversationChannelPage = () => {
   const { id } = useParams();
@@ -22,15 +23,13 @@ export const ConversationChannelPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [timer, setTimer] = useState<ReturnType<typeof setTimeout>>();
   const [isTyping, setIsTyping] = useState(false);
+  const [showInfor, setShowInfor] = useState(true);
   const [isRecipientTyping, setIsRecipientTyping] = useState(false);
   const [textTyping, setTextTyping] = useState('');
 
-  // const { showEditGroupModal } = useSelector(
-  //   (state: RootState) => state.conversation
+  // const showSidebar = useSelector(
+  //   (state: RootState) => state.groupSidebar.showSidebar
   // );
-  const showSidebar = useSelector(
-    (state: RootState) => state.groupSidebar.showSidebar
-  );
 
   const conversation = useSelector((state: RootState) =>
     selectConversationById(state, id!)
@@ -118,9 +117,12 @@ export const ConversationChannelPage = () => {
           sendTypingStatus={sendTypingStatus}
           isRecipientTyping={isRecipientTyping}
           textTyping={textTyping}
+          setShowInfor={setShowInfor}
+          showInfor={showInfor}
         ></MessagePanel>
       </ConversationChannelPageStyle>
-      {showSidebar && <GroupRecipientsSidebar />}
+      {/* {showSidebar && <GroupRecipientsSidebar />} */}
+      {showInfor && <ConversationInfor conversation={conversation!} setShowInfor={setShowInfor} />}
     </>
   );
 };

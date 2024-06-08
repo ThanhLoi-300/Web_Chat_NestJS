@@ -114,9 +114,6 @@ export const MessageContainer = () => {
         >
             <>
                 {/* <SystemMessageList /> */}
-                {/* {selectedType === 'private'
-                    ? conversationMessages?.messages.map(mapMessages)
-                    : groupMessages?.messages.map(mapMessages)} */}
                 {conversationMessages?.messages.map(mapMessages)}
             </>
             {showContextMenu && <SelectedMessageContextMenu />}

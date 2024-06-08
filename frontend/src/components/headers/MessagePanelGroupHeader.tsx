@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useContext, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { PersonAdd, PeopleGroup } from 'akar-icons';
@@ -12,8 +12,14 @@ import {
     MessagePanelHeaderIcons,
 } from '../../utils/styles';
 import { AddGroupRecipientModal } from '../modals/AddGroupRecipientModal';
+import { FaToggleOn, FaToggleOff } from 'react-icons/fa';
 
-export const MessagePanelGroupHeader = () => {
+type Props = {
+    setShowInfor: Dispatch<SetStateAction<boolean>>;
+    showInfor: boolean;
+};
+
+export const MessagePanelGroupHeader: FC<Props> = ({ setShowInfor, showInfor }) => {
     const [showModal, setShowModal] = useState(false);
     const user = useContext(AuthContext).user!;
     const { id } = useParams();
@@ -54,11 +60,15 @@ export const MessagePanelGroupHeader = () => {
                             onClick={() => setShowModal(true)}
                         />
                     )}
-                    <PeopleGroup
+                    {/* <PeopleGroup
                         cursor="pointer"
                         size={30}
                         onClick={() => dispatch(toggleSidebar())}
-                    />
+                    /> */}
+                    {
+                        showInfor ? <FaToggleOn cursor="pointer" size={36} onClick={() => setShowInfor(false)} />
+                            : <FaToggleOff cursor="pointer" size={36} onClick={() => setShowInfor(true)} />
+                    }
                 </MessagePanelHeaderIcons>
             </MessagePanelHeaderStyle>
         </>

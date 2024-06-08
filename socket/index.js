@@ -82,7 +82,7 @@ io.on("connection", (socket) => {
   //check user online
   socket.on("getOnlineGroupUsers", (payload) => {
     const onlineUsers = users.map((user) => user.userId);
-    io.to(payload.groupId).emit("onlineGroupUsersReceived", {onlineUsers});
+    io.to(payload.id).emit("onlineGroupUsersReceived", {onlineUsers});
   });
 
   socket.on("getOnlineUsers", (payload) => {

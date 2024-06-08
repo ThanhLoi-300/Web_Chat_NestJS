@@ -39,8 +39,8 @@ export type User = {
 export type Conversation = {
   _id?: string;
   type: string;
-  nameGroup?: string;
-  imgGroup?: string;
+  nameGroup: string;
+  imgGroup: string;
   member: User[];
   lastMessageId?: MessageType;
   owner?: User;

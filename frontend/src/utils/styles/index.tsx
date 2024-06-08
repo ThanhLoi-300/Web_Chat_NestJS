@@ -401,7 +401,6 @@ export const MessageItemContent = styled.div<MessageItemContentProps>`
   padding: 10px;
   max-width: 55%;
   width: fit-content;
-  white-space: pre-wrap;
   display: flex;
   flex-direction: column;
   float: ${({ owner }) => (owner ? 'right' : 'left')};
@@ -789,10 +788,14 @@ export const GroupRecipientsSidebarStyle = styled.aside`
   width: 350px;
   flex: 0 0 auto;
   background-color: ${({ theme }) => theme.background.secondary};
+  border-left: 1px solid gray;
+  @media (max-width: 768px) {
+    position: fixed;
+  }
 `;
 
 export const GroupRecipientsSidebarHeader = styled.div`
-  height: 90px;
+  height: 50px;
   padding: 10px 32px;
   box-sizing: border-box;
   width: 100%;
@@ -800,11 +803,39 @@ export const GroupRecipientsSidebarHeader = styled.div`
   border-bottom: 1px solid #49494925;
   display: flex;
   align-items: center;
+  justify-content: center;
   color: ${({ theme }) => theme.text.primary};
   gap: 20px;
+  border-bottom: 1px solid gray;
   & span {
     font-size: 20px;
     font-weight: 500;
+  }
+`;
+
+export const UserContactInforStyle = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 10px auto 0 auto;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid gray;
+  width: 100%;
+`;
+
+export const UserContactItemStyle = styled.div`
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid gray;
+  width: 100%;
+  cursor: pointer;
+
+  & span {
+    padding: 10px;
+  }
+
+  :hover {
+    background: grey;
   }
 `;
 
@@ -1052,4 +1083,41 @@ export const GroupAvatarUploadContainer = styled.div`
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+`;
+
+export const DropdownStyle = styled.div`
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid gray;
+  width: 100%;
+  cursor: pointer;
+
+  & span {
+    padding: 10px;
+  }
+`
+export const DropdownContentStyle = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  gap: 10px;
+  padding: 10px 15px;
+  max-height: 200px;
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: #1a1a1a;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #3b6aa8;
+    border-radius: 3px;
+  }
+`;
+
+export const ImageDropdownStyle = styled.img`
+  width: 70px;
+  height: 70px;
+  border-radius: 10%;
+  object-fit: fill;
 `;

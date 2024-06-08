@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { FC, useContext, useState, useEffect } from 'react';
+import { FC, useContext, useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { RootState } from '../../store';
@@ -36,12 +36,16 @@ type Props = {
     sendTypingStatus: () => void;
     isRecipientTyping: boolean;
     textTyping: string;
+    setShowInfor: Dispatch<SetStateAction<boolean>>;
+    showInfor: boolean;
 };
 
 export const MessagePanel: FC<Props> = ({
     sendTypingStatus,
     isRecipientTyping,
     textTyping,
+    setShowInfor,
+    showInfor
 }) => {
     const dispatch = useDispatch();
     const { messageCounter } = useSelector(
@@ -130,16 +134,12 @@ export const MessagePanel: FC<Props> = ({
     return (
         <>
             <MessagePanelStyle>
-                <MessagePanelHeader type={conversation?.type!} />
+                <MessagePanelHeader type={conversation?.type!} setShowInfor={setShowInfor} showInfor={showInfor} />
                 <MessagePanelBody>
                     <MessageContainer />
                 </MessagePanelBody>
 
                 <div style={{ position: 'fixed', top: '50px', right: '30px' }}>
-                    {/* <img
-                        src={selectedSticker ? selectedSticker : 'https://img.stipop.io/1546967074721_Expression_03.gif'}
-                        style={{ width: '100%', maxWidth: '150px' }}
-                    /> */}
                     {
                         isStickerVisible && (<PickerComponent
                             params={{

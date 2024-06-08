@@ -31,9 +31,11 @@ export const getRecipientFromConversation = (
   conversation?: Conversation,
   user?: User
 ) => {
-  return user?._id !== conversation?.member[0]._id
-    ? conversation?.member[0]
-    : conversation?.member[1];
+  if(conversation?.type === 'private')
+    return user?._id !== conversation?.member[0]._id
+      ? conversation?.member[0]
+      : conversation?.member[1];
+  else return conversation?.member[0];
 };
 
 export const getUserContextMenuIcon = (type: UserContextMenuActionType) => {

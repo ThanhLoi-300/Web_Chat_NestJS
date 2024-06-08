@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, Dispatch, FC, SetStateAction } from 'react';
 import { FaPhoneAlt, FaVideo, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -19,14 +19,17 @@ import { UserAvatar } from '../users/UserAvatar';
 import { UpdatePresenceStatusModal } from '../modals/UpdatePresenceStatusModal';
 import { CreateFriendRequestModal } from '../modals/CreateFriendRequestModal';
 
+type Props = {
+    setShowInfor: Dispatch<SetStateAction<boolean>>;
+    showInfor: boolean;
+};
 
-export const MessagePanelConversationHeader = () => {
+export const MessagePanelConversationHeader: FC<Props> = ({ setShowInfor, showInfor }) => {
     const user = useContext(AuthContext).user!;
     const { id } = useParams();
     const socket = useContext(SocketContext);
     const [checkOnline, setCheckOnline] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [showModalContact, setShowModalContact] = useState(false);
     const [showModalPresence, setShowModalPresence] = useState(false);
 
     const dispatch = useDispatch();
@@ -116,8 +119,8 @@ export const MessagePanelConversationHeader = () => {
                 <FaPhoneAlt size={24} cursor="pointer" onClick={voiceCallUser} />
                 <FaVideo size={30} cursor="pointer" onClick={videoCallUser} />
                 {
-                    showModalContact ? <FaToggleOn cursor="pointer" size={36} onClick={()=> setShowModalContact(false) } />
-                        : <FaToggleOff cursor="pointer" size={36} onClick={() => setShowModalContact(true)} />
+                    showInfor ? <FaToggleOn cursor="pointer" size={36} onClick={() => setShowInfor(false) } />
+                        : <FaToggleOff cursor="pointer" size={36} onClick={() => setShowInfor(true)} />
                 }
             </MessagePanelHeaderIcons>
         </MessagePanelHeaderStyle>

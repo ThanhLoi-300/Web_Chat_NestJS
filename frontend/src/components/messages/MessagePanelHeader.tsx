@@ -5,13 +5,15 @@ import { ConversationAudioCall } from '../conversations/ConversationAudioCall';
 import { ConversationVideoCall } from '../conversations/ConversationVideoCall';
 import { MessagePanelConversationHeader } from '../headers/MessagePanelConversationHeader';
 import { MessagePanelGroupHeader } from '../headers/MessagePanelGroupHeader';
-import { FC } from 'react';
+import { FC, Dispatch, SetStateAction } from 'react';
 
 type Props = {
     type: string;
+    setShowInfor: Dispatch<SetStateAction<boolean>>;
+    showInfor: boolean;
 };
 
-export const MessagePanelHeader: FC<Props> = ({ type }) => {
+export const MessagePanelHeader: FC<Props> = ({ type, setShowInfor, showInfor }) => {
     const { id: routeId } = useParams();
     const { isCalling, isCallInProgress, activeConversationId, callType } =
         useSelector((state: RootState) => state.call);
@@ -23,9 +25,9 @@ export const MessagePanelHeader: FC<Props> = ({ type }) => {
     console.log(callType);
     if (!showCallPanel)
         return type === 'private' ? (
-            <MessagePanelConversationHeader  />
+            <MessagePanelConversationHeader setShowInfor={setShowInfor} showInfor={showInfor} />
         ) : (
-            <MessagePanelGroupHeader />
+            <MessagePanelGroupHeader setShowInfor={setShowInfor} showInfor={showInfor} />
         );
 
     return isRouteActive && callType === 'video' ? (
