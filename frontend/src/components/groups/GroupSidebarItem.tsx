@@ -46,7 +46,7 @@ export const GroupSidebarItem: React.FC<Props> = ({ group, onContextMenu }) => {
 
     return (
         <ConversationSidebarItemStyle
-            onClick={() => navigate(`/vite-deploy/conversations/${group._id}`)}
+            onClick={() => navigate(`/conversations/${group._id}`)}
             onContextMenu={(e) => onContextMenu(e, group)}
             selected={id! === group._id}
         >

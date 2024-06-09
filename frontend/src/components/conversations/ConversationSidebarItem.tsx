@@ -58,7 +58,7 @@ export const ConversationSidebarItem: React.FC<Props> = ({ conversation }) => {
         <>
             <ConversationSidebarItemStyle
                 onClick={() => {
-                    navigate(`/vite-deploy/conversations/${conversation._id}`)
+                    navigate(`/conversations/${conversation._id}`)
                     dispatch(toggleCloseSidebar())
                 }}
                 selected={id! === conversation._id}

@@ -8,7 +8,7 @@ export const FriendsLayoutPage = () => {
     return (
         <FriendsPageStyle>
             <FriendPageNavbar />
-            {pathname === '/vite-deploy/friends' && <FriendsPage />}
+            {pathname === '/friends' && <FriendsPage />}
             <Outlet />
         </FriendsPageStyle>
     );

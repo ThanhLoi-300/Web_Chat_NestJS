@@ -31,7 +31,7 @@ export const UserSidebar = () => {
         updateToken()
         logoutUserAPI()
         localStorage.removeItem('accessToken');
-        navigate('/vite-deploy/login', { replace: true })
+        navigate('/login', { replace: true })
         socket.disconnect()
     };
 

@@ -56,23 +56,23 @@ function App() {
       <BrowserRouter>
         <AppWithProviders user={user} setUser={setUser} socket={socket}>
           <Routes>
-            <Route path="/vite-deploy/register" element={<RegisterPage />}></Route>
-            <Route path="/vite-deploy/login" element={<LoginPage />}></Route>
+            <Route path="/register" element={<RegisterPage />}></Route>
+            <Route path="/login" element={<LoginPage />}></Route>
             <Route element={<AuthenticatedRoute children={<AppPage />} />}>
-              <Route path="/vite-deploy/" element={<ConversationPage />} />
-              <Route path="/vite-deploy/conversations" element={ <ConversationPage /> } >
+              <Route path="/" element={<ConversationPage />} />
+              <Route path="/conversations" element={ <ConversationPage /> } >
                 <Route path=":id" element={<ConversationPageGuard children={<ConversationChannelPage />} />}></Route>
               </Route>
 
-              <Route path="/vite-deploy/friends" element={<FriendsLayoutPage />}>
+              <Route path="/friends" element={<FriendsLayoutPage />}>
                 <Route path="requests" element={<FriendRequestPage />} />
                 <Route path="blocked" element={<div>Blocked</div>} />
               </Route>
-              <Route path="/vite-deploy/settings" element={<SettingsPage />}>
+              <Route path="/settings" element={<SettingsPage />}>
                 <Route path="profile" element={<SettingsProfilePage />} />
                 <Route path="appearance" element={<SettingsAppearancePage />} />
               </Route>
-              <Route path="/vite-deploy/calls" element={<CallsPage />}>
+              <Route path="/calls" element={<CallsPage />}>
                 <Route path="current" element={<CurrentCallPage />} />
               </Route>
             </Route>
