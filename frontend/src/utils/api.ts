@@ -4,21 +4,14 @@ import {
   CancelFriendRequestResponse,
   AddGroupRecipientParams,
   Conversation,
-  ConversationType,
-  CreateConversationParams,
   CreateGroupParams,
   CreateUserParams,
-  DeleteGroupMessageParams,
-  DeleteGroupMessageResponse,
   DeleteMessageParams,
   DeleteMessageResponse,
   EditMessagePayload,
-  FetchGroupMessagePayload,
   FetchMessagePayload,
   Friend,
   FriendRequest,
-  Group,
-  GroupMessageType,
   MessageType,
   RemoveGroupRecipientParams,
   UpdateGroupDetailsPayload,
@@ -29,7 +22,7 @@ import {
   CreateMessageParams,
 } from "./types";
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = "https://web-chat-nestjs-1.onrender.com/api";
 const token = localStorage.getItem("accessToken");
 
 let config = {
