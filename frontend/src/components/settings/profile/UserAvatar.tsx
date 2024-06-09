@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction, useRef } from 'react';
 import { FileInput } from '../../../utils/styles/inputs/Textarea';
 import { UserAvatarContainer } from '../../../utils/styles/settings';
-import { DivMouseEvent, InputChangeEvent } from '../../../utils/types';
+import { InputChangeEvent } from '../../../utils/types';
 
 type Props = {
     avatarSource: string;

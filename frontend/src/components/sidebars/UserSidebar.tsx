@@ -14,8 +14,8 @@ import { UserAvatar } from '../users/UserAvatar';
 import { updateToken, logoutUser as logoutUserAPI } from '../../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { SocketContext } from '../../utils/context/SocketContext';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 import { EditGroupModal } from '../../components/modals/EditGroupModal';
 
 export const UserSidebar = () => {

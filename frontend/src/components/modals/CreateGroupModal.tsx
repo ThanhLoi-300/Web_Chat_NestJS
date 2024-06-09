@@ -1,8 +1,7 @@
-import { createRef, Dispatch, FC, useEffect, useState } from 'react';
+import { createRef, Dispatch, FC, useEffect } from 'react';
 import { ModalContainer, ModalContentBody, ModalHeader } from '.';
 import { OverlayStyle } from '../../utils/styles';
 import { MdClose } from 'react-icons/md';
-import { ConversationType } from '../../utils/types';
 import { CreateGroupForm } from '../forms/CreateGroupForm';
 
 type Props = {
