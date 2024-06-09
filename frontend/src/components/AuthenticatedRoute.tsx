@@ -16,6 +16,6 @@ export const AuthenticatedRoute: FC<React.PropsWithChildren> = ({
     else {
         localStorage.removeItem('accessToken');
         toast.error("Token is expired, Please login again");
-        return <Navigate to="/login" state={{ from: location }} replace />;
+        return <Navigate to="/vite-deploy/login" state={{ from: location }} replace />;
     }
 };
