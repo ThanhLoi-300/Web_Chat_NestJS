@@ -29,7 +29,7 @@ const RegisterForm = () => {
             console.log(register)
             try {
                 await postRegisterUser(register);
-                navigate('/login');
+                navigate('/vite-deploy/login');
                 toast.success("Account is created successfully")
             } catch (err: any) {
                 toast.error(err.response?.data?.message)
@@ -99,7 +99,7 @@ const RegisterForm = () => {
             <Button type="submit" className={styles.button}>Create My Account</Button>
             <div className={styles.footerText}>
                 <span>Already have an account? </span>
-                <Link to="/login"><span>Login</span></Link>
+                <Link to="/vite-deploy/login"><span>Login</span></Link>
             </div>
         </form>
     )

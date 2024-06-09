@@ -39,50 +39,50 @@ export const userContextMenuItems: ContextMenuItemType[] = [
 
 export const friendsNavbarItems = [
   {
-    id: 'friends',
-    label: 'Friends',
-    pathname: '/friends',
+    id: "friends",
+    label: "Friends",
+    pathname: "/vite-deploy/friends",
   },
   {
-    id: 'requests',
-    label: 'Requests',
-    pathname: '/friends/requests',
+    id: "requests",
+    label: "Requests",
+    pathname: "/vite-deploy/friends/requests",
   },
   {
-    id: 'blocked',
-    label: 'Blocked',
-    pathname: '/friends/blocked',
+    id: "blocked",
+    label: "Blocked",
+    pathname: "/vite-deploy/friends/blocked",
   },
 ];
 
 export const userSidebarItems: UserSidebarItemType[] = [
   {
-    id: 'conversations',
-    pathname: '/conversations',
+    id: "conversations",
+    pathname: "/vite-deploy/conversations",
   },
   {
-    id: 'friends',
-    pathname: '/friends',
+    id: "friends",
+    pathname: "/vite-deploy/friends",
   },
   // {
   //   id: 'connections',
   //   pathname: '/connections',
   // },
   {
-    id: 'settings',
-    pathname: '/settings',
+    id: "settings",
+    pathname: "/vite-deploy/settings",
   },
   {
-    id: 'calls',
-    pathname: '/calls',
+    id: "calls",
+    pathname: "/vite-deploy/calls",
   },
 ];
 
 export const settingsItems: SettingsItemType[] = [
   {
-    id: 'profile',
-    label: 'Profile',
-    pathname: '/settings/profile',
+    id: "profile",
+    label: "Profile",
+    pathname: "/vite-deploy/settings/profile",
   },
   // {
   //   id: 'security',
@@ -100,9 +100,9 @@ export const settingsItems: SettingsItemType[] = [
   //   pathname: '/settings/integrations',
   // },
   {
-    id: 'appearance',
-    label: 'Appearance',
-    pathname: '/settings/appearance',
+    id: "appearance",
+    label: "Appearance",
+    pathname: "/vite-deploy/settings/appearance",
   },
 ];
 

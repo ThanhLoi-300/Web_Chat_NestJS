@@ -24,7 +24,7 @@ const LoginForm = () => {
         try {
             const response = await postLoginUser(info);
             localStorage.setItem('accessToken', response.data.access_token);
-            navigate('/conversations');
+            navigate('/vite-deploy/conversations');
         } catch (err) {
             console.log(err);
         }
@@ -58,7 +58,7 @@ const LoginForm = () => {
             <Button className={styles.button}>Login</Button>
             <div className={styles.footerText}>
                 <span>Don't have an account? </span>
-                <Link to="/register"><span>Register</span></Link>
+                <Link to="/vite-deploy/register"><span>Register</span></Link>
             </div>
         </form>
     )
