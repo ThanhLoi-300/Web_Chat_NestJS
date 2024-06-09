@@ -1,8 +1,8 @@
 import { Dispatch, FC, SetStateAction, useContext, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { PersonAdd, PeopleGroup } from 'akar-icons';
-import { RootState, AppDispatch } from '../../store';
+import { RootState } from '../../store';
 import { selectConversationById } from '../../store/conversationsSlice';
 import { AuthContext } from '../../utils/context/AuthContext';
 import styles from '../groups/index.module.scss';

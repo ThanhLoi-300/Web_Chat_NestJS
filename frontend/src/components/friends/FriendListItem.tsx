@@ -1,5 +1,4 @@
-import { FC, useContext } from 'react';
-import { AuthContext } from '../../utils/context/AuthContext';
+import { FC } from 'react';
 import { FriendListItemContainer } from '../../utils/styles/friends';
 import { ContextMenuEvent, User } from '../../utils/types';
 import { UserAvatar } from '../users/UserAvatar';

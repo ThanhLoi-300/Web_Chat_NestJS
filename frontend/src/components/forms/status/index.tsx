@@ -1,6 +1,4 @@
-import { useState, useContext, Dispatch, SetStateAction, FC } from 'react';
-import { updateStatusMessage } from '../../../utils/api';
-import { AuthContext } from '../../../utils/context/AuthContext';
+import { Dispatch, SetStateAction, FC } from 'react';
 // import { useToast } from '../../../utils/hooks/useToast';
 import {
     InputContainer,

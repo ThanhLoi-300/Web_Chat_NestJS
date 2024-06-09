@@ -8,7 +8,7 @@ import {
 } from '../../store/message-panel/messagePanelSlice';
 // import { useToast } from '../../utils/hooks/useToast';
 import { FileInput } from '../../utils/styles/inputs/Textarea';
-import { DivMouseEvent, InputChangeEvent } from '../../utils/types';
+import { InputChangeEvent } from '../../utils/types';
 import styles from './index.module.scss';
 import { toast } from 'react-toastify';
 

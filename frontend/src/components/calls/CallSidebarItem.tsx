@@ -1,5 +1,4 @@
-import { FC, useContext } from 'react';
-import { AuthContext } from '../../utils/context/AuthContext';
+import { FC } from 'react';
 import { getUserFriendInstance } from '../../utils/helpers';
 import { CallSidebarItemContainer } from '../../utils/styles';
 import { User } from '../../utils/types';
