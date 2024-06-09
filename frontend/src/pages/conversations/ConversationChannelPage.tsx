@@ -6,14 +6,12 @@ import { SocketContext } from '../../utils/context/SocketContext';
 import { ConversationChannelPageStyle } from '../../utils/styles';
 import { AppDispatch, RootState } from '../../store';
 import { fetchMessagesThunk } from '../../store/Messages/messageThunk';
-import { GroupRecipientsSidebar } from '../../components/sidebars/group-recipients/GroupRecipientsSidebar';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { selectConversationById, updateConversation, memberLeaveGroup } from '../../store/conversationsSlice';
 import { updateSeenMessage } from '../../utils/api';
 import { UpdateMessageSeen } from '../../utils/types';
 import { deleteMessage, updateMessageSeen } from '../../store/Messages/messageSlice'
 import { toggleCloseSidebar } from '../../store/groupRecipientsSidebarSlice';
-import { EditGroupModal } from '../../components/modals/EditGroupModal';
 import { ConversationInfor } from '../../components/conversations/ConversationInfor';
 
 export const ConversationChannelPage = () => {

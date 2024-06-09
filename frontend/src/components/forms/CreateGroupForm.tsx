@@ -3,7 +3,6 @@ import { GroupRecipientsField } from '../recipients/GroupRecipientsField';
 import {
     InputContainer,
     InputLabel,
-    TextField,
     Button,
     RecipientChipContainer,
     InputField,
@@ -34,6 +33,7 @@ export const CreateGroupForm: FC<Props> = ({ setShowModal }) => {
     const debouncedQuery = useDebounce(query, 1000);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+    console.log(searching)
 
     useEffect(() => {
         if (debouncedQuery) {

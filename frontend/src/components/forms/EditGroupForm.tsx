@@ -15,7 +15,7 @@ import {
     InputField,
     InputLabel,
 } from '../../utils/styles';
-import { Conversation, FormEvent } from '../../utils/types';
+import { FormEvent } from '../../utils/types';
 import { GroupAvatarUpload } from '../avatars/GroupAvatarUpload';
 import { toast } from 'react-toastify';
 import { uploadFile }  from "../../utils/uploadFile"

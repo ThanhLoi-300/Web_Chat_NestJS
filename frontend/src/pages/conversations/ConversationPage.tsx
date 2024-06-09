@@ -1,14 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Outlet, useParams } from 'react-router-dom';
 import ConversationPanel from '../../components/conversations/ConversationPanel';
 import ConversationSidebar from '../../components/conversations/ConversationSidebar';
-import { AppDispatch, RootState } from '../../store';
+import { AppDispatch } from '../../store';
 import { useNavigate } from 'react-router-dom';
 import {
     addConversation,
     fetchConversationsThunk,
-    selectConversationById,
     updateConversation,
     deleteMember, deleteConversation, transferOwner,
     addMemberToConversation,
@@ -26,9 +25,6 @@ export const ConversationPage = () => {
     const [showSidebar, setShowSidebar] = useState(window.innerWidth > 800);
     const dispatch: any = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const conversation = useSelector((state: RootState) =>
-        selectConversationById(state, id!)
-    );
 
     const socket = useContext(SocketContext);
 

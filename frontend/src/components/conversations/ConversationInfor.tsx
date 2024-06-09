@@ -1,13 +1,11 @@
-import { useEffect, useRef, useState, useContext, FC, Dispatch, SetStateAction, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store';
+import { useEffect, useState, useContext, FC, Dispatch, SetStateAction, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 import {
     GroupRecipientsSidebarHeader,
     GroupRecipientsSidebarStyle,
     UserContactInforStyle,
-    UserContactItemStyle
 } from '../../utils/styles';
-import { SocketContext } from '../../utils/context/SocketContext';
 import { Conversation } from '../../utils/types';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { getRecipientFromConversation } from '../../utils/helpers';
@@ -22,15 +20,12 @@ type Props = {
 };
 
 export const ConversationInfor: FC<Props> = ({ conversation, setShowInfor }) => {
-    const socket = useContext(SocketContext);
-    const [microphoneEnabled, setMicrophoneEnabled] = useState(true);
-    const dispatch = useDispatch<AppDispatch>();
     const [commonGroup, setCommonGroup] = useState<Conversation[]>([]);
     const user = useContext(AuthContext).user!;
     const { conversations } = useSelector((state: RootState) => state.conversation);
 
     useEffect(() => {
-        const handleResize = (e: UIEvent) => setShowInfor(false);
+        const handleResize = () => setShowInfor(false);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);

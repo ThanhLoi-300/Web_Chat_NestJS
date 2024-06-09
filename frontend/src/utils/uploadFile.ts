@@ -1,6 +1,6 @@
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+// import { getAuth, GoogleAuthProvider } from "firebase/auth";
 // import config from "../config";
 
 const firebaseConfig = {
@@ -28,7 +28,7 @@ export const uploadFile = (file: File): Promise<string> => {
     const storageRef = ref(storage, `gs://video-8f328.appspot.com/Multi_Vendor_Website/${fileName}`);
 
     uploadBytes(storageRef, file)
-      .then((snapshot) => {
+      .then(() => {
         getDownloadURL(storageRef)
           .then((url) => {
             resolve(url);
@@ -55,7 +55,7 @@ export const uploadFiles = (files: File[]): Promise<string[]> => {
       const storageRef = ref(storage, `gs://video-8f328.appspot.com/Multi_Vendor_Website/${fileName}`);
 
       const uploadPromise = uploadBytes(storageRef, file)
-        .then((snapshot) => {
+        .then(() => {
           return getDownloadURL(storageRef);
         })
         .catch((error) => {

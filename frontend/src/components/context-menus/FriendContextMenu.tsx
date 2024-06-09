@@ -38,9 +38,9 @@ export const FriendContextMenu = () => {
             checkConversationOrCreate(selectedFriendContextMenu._id)
                 .then(({ data }) => {
                     console.log(data);
-                    navigate(`/conversations/${data._id}`);
+                    navigate(`/vite-deploy/conversations/${data._id}`);
                 })
-                .catch((err) => {
+                .catch(() => {
                     const conversation: Conversation = {
                         type: 'private',
                         member: [selectedFriendContextMenu, user!]
@@ -51,7 +51,7 @@ export const FriendContextMenu = () => {
                     )
                         .unwrap()
                         .then(({ data }) => {
-                            navigate(`/conversations/${data._id}`);
+                            navigate(`/vite-deploy/conversations/${data._id}`);
                         })
                         .catch((err) => console.log(err));
                 });

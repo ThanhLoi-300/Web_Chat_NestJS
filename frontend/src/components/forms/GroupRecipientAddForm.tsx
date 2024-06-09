@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { addGroupRecipient, searchFriends } from '../../utils/api';
 import { RecipientResultContainer } from '../recipients/RecipientResultContainer';
 import { SelectedGroupRecipientChip } from '../recipients/SelectedGroupRecipientChip';
@@ -10,8 +10,8 @@ import {
 import styles from './index.module.scss';
 import { User } from '../../utils/types';
 import { useDebounce } from '../../utils/hooks/useDebounce';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../store';
 import { toast } from 'react-toastify';
 import { GroupRecipientsField } from '../recipients/GroupRecipientsField';
 import { addMemberToConversation } from '../../store/conversationsSlice'
@@ -26,6 +26,7 @@ export const GroupRecipientAddForm = () => {
     const debouncedQuery = useDebounce(query, 1000);
     const dispatch = useDispatch<AppDispatch>();
     const socket = useContext(SocketContext);
+    console.log(searching)
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

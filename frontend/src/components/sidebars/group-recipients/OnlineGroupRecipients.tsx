@@ -1,4 +1,3 @@
-import { Crown } from 'akar-icons';
 import { FC } from 'react';
 import { GroupRecipientSidebarItem } from '../../../utils/styles';
 import { ContextMenuEvent, Conversation, User } from '../../../utils/types';
@@ -22,7 +21,7 @@ export const OnlineGroupRecipients: FC<Props> = ({
     //         ? statusMessage.slice(0, 30).concat('...')
     //         : statusMessage;
     // };
-
+console.log(group?.owner?._id)
     return (
         <>
             {users?.map((user) => (

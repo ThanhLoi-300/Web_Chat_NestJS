@@ -25,6 +25,7 @@ export const SendFriendRequestForm: FC<Props> = ({ setShowModal, friend }) => {
     const [searching, setSearching] = useState(false);
     const [userResults, setUserResults] = useState<User[]>([]);
     const socket = useContext(SocketContext);
+    console.log(searching)
 
     const debouncedQuery = useDebounce(query, 1000);
 

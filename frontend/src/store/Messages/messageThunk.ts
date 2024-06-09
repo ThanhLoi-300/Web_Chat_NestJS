@@ -2,11 +2,10 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
   deleteMessage as deleteMessageAPI,
   editMessage as editMessageAPI,
-  createMessage as createMessageAPI,
+  // createMessage as createMessageAPI,
   getConversationMessages,
 } from '../../utils/api';
 import {
-  CreateMessageParams,
   DeleteMessageParams,
   EditMessagePayload,
 } from '../../utils/types';

@@ -20,7 +20,7 @@ export const MessageAttachmentActionIcon = () => {
         (state: RootState) => state.messagePanel
     );
 
-    const onClick = (e: DivMouseEvent) => {
+    const onClick = () => {
         console.log('on click');
         fileInputRef.current?.click();
     };

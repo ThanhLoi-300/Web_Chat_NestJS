@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { PersonAdd, PeopleGroup } from 'akar-icons';
 import { RootState, AppDispatch } from '../../store';
-import { toggleSidebar } from '../../store/groupRecipientsSidebarSlice';
 import { selectConversationById } from '../../store/conversationsSlice';
 import { AuthContext } from '../../utils/context/AuthContext';
 import styles from '../groups/index.module.scss';
@@ -27,7 +26,6 @@ export const MessagePanelGroupHeader: FC<Props> = ({ setShowInfor, showInfor }) 
     const group = useSelector((state: RootState) =>
         selectConversationById(state, id!)
     );
-    const dispatch = useDispatch<AppDispatch>();
 
     return (
         <>

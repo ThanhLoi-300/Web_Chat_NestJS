@@ -11,7 +11,6 @@ type Props = {
 
 export const CreateGroupModal: FC<Props> = ({ setShowModal }) => {
     const ref = createRef<HTMLDivElement>();
-    const [type, setType] = useState<ConversationType>('group');
 
     useEffect(() => {
         const handleKeydown = (e: KeyboardEvent) =>

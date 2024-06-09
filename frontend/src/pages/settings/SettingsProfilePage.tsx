@@ -14,10 +14,9 @@ import {
 import { Button } from '../../utils/styles/button';
 import { updateToken, updateUserProfile } from '../../utils/api';
 import { AuthContext } from '../../utils/context/AuthContext';
-import { CDN_URL } from '../../utils/constants';
 import { UserAvatar } from '../../components/settings/profile/UserAvatar';
-import app, { uploadFile } from '../../utils/uploadFile';
-import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import app from '../../utils/uploadFile';
 
 export const SettingsProfilePage = () => {
     const { user, updateAuthUser } = useContext(AuthContext);
@@ -26,6 +25,7 @@ export const SettingsProfilePage = () => {
     const [avatarSource, setAvatarSource] = useState(
         user?.avatar || ''
     );
+    setAvatarSource(user?.avatar || '')
     const [avatarSourceCopy, setAvatarSourceCopy] = useState(avatarSource);
 
     const [bannerSource, setBannerSource] = useState(
@@ -75,7 +75,7 @@ export const SettingsProfilePage = () => {
                 const storageRef = ref(storage, `gs://video-8f328.appspot.com/Multi_Vendor_Website/${fileName}`);
 
                 uploadBytes(storageRef, bannerFile!)
-                    .then((snapshot) => {
+                    .then(() => {
                         getDownloadURL(storageRef)
                             .then((url) => {
                                 resolve(url);
@@ -101,7 +101,7 @@ export const SettingsProfilePage = () => {
                 const storageRef = ref(storage, `gs://video-8f328.appspot.com/Multi_Vendor_Website/${fileName}`);
 
                 uploadBytes(storageRef, avatarFile!)
-                    .then((snapshot) => {
+                    .then(() => {
                         getDownloadURL(storageRef)
                             .then((url) => {
                                 resolve(url);

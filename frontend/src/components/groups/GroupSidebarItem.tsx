@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { CDN_URL } from '../../utils/constants';
 import { ConversationSidebarItemStyle } from '../../utils/styles';
 import { ContextMenuEvent, Conversation } from '../../utils/types';
 import { PeopleGroup } from 'akar-icons';

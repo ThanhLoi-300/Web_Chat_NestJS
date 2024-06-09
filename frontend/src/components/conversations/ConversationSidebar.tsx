@@ -35,6 +35,7 @@ const ConversationSidebar = () => {
     const conversations = useSelector(
         (state: RootState) => state.conversation.conversations
     );
+    console.log(searching)
 
     useEffect(() => {
         if (debouncedQuery) {

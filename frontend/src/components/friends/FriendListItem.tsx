@@ -1,7 +1,7 @@
 import { FC, useContext } from 'react';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { FriendListItemContainer } from '../../utils/styles/friends';
-import { ContextMenuEvent, Friend, User } from '../../utils/types';
+import { ContextMenuEvent, User } from '../../utils/types';
 import { UserAvatar } from '../users/UserAvatar';
 
 type Props = {
@@ -15,7 +15,6 @@ export const FriendListItem: FC<Props> = ({
     online,
     onContextMenu,
 }) => {
-    const { user } = useContext(AuthContext);
 
     // const friendUserInstance =
     //     user?._id === friend.sender._id ? friend.receiver : friend.sender;

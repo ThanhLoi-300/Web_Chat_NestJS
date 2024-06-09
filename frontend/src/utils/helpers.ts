@@ -17,10 +17,8 @@ import {
 } from 'react-icons/io';
 import {
   Conversation,
-  Friend,
   FriendRequest,
   FriendRequestDetailsType,
-  Group,
   SettingsSidebarRouteType,
   User,
   UserContextMenuActionType,

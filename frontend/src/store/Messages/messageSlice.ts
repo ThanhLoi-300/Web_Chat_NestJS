@@ -65,7 +65,7 @@ export const messagesSlice = createSlice({
     builder
       .addCase(fetchMessagesThunk.fulfilled, (state, action) => {
         // console.log("data mess: " + JSON.stringify(action.payload.data));
-        const { _id, messages } = action.payload.data;
+        const { _id } = action.payload.data;
         const index = state.messages.findIndex((cm) => cm._id === _id);
         const exists = state.messages.find((cm) => cm._id === _id);
         if (exists) {
@@ -104,7 +104,10 @@ export const messagesSlice = createSlice({
 
 const selectConversationMessages = (state: RootState) => state.messages.messages;
 
-const selectConversationMessageId = (state: RootState, id: string) => id;
+const selectConversationMessageId = (state: RootState, id: string) => {
+  console.log(state)
+  return id;
+}
 
 export const selectConversationMessage = createSelector(
   [selectConversationMessages, selectConversationMessageId],

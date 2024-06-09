@@ -3,7 +3,6 @@ import {
     InputContainer,
     InputField,
     InputLabel,
-    RecipientChipContainer,
 } from '../../utils/styles';
 
 type Props = {

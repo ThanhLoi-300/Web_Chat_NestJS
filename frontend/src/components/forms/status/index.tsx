@@ -16,24 +16,25 @@ type Props = {
 };
 
 export const UpdateUserStatusForm: FC<Props> = ({ setShowModal }) => {
-    const { user } = useContext(AuthContext);
+    // const { user } = useContext(AuthContext);
     // const { success, error } = useToast({ theme: 'dark' });
-    const [statusMessage, setStatusMessage] = useState(
-        user?.presence?.statusMessage || ''
-    );
+    // const [statusMessage, setStatusMessage] = useState(
+    //     user?.presence?.statusMessage || ''
+    // );
 
     const saveStatus = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log('Updating Status...');
-        updateStatusMessage({ statusMessage })
-            .then(() => {
-                // success('Updated Status!');
-                setShowModal(false);
-            })
-            .catch((err) => {
-                console.log(err);
-                // error('Failed to Update Status');
-            });
+        setShowModal(false)
+        // updateStatusMessage({ statusMessage })
+        //     .then(() => {
+        //         // success('Updated Status!');
+        //         setShowModal(false);
+        //     })
+        //     .catch((err) => {
+        //         console.log(err);
+        //         // error('Failed to Update Status');
+        //     });
     };
 
     return (
@@ -45,8 +46,8 @@ export const UpdateUserStatusForm: FC<Props> = ({ setShowModal }) => {
                 <InputField
                     type="test"
                     id="message"
-                    value={statusMessage}
-                    onChange={(e) => setStatusMessage(e.target.value)}
+                    // value={statusMessage}
+                    // onChange={(e) => setStatusMessage(e.target.value)}
                 />
             </InputContainer>
             <div className={styles.updateStatusFormButtons}>

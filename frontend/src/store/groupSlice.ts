@@ -7,22 +7,15 @@ import {
 import { RootState } from '.';
 import {
   fetchGroups as fetchGroupsAPI,
-  createGroup as createGroupAPI,
   removeGroupRecipient as removeGroupRecipientAPI,
   updateGroupOwner as updateGroupOwnerAPI,
   leaveGroup as leaveGroupAPI,
-  updateGroupDetails as updateGroupDetailsAPI,
 } from '../utils/api';
 import {
   Conversation,
-  CreateGroupParams,
-  Group,
   Points,
   RemoveGroupRecipientParams,
-  UpdateGroupAction,
-  UpdateGroupDetailsPayload,
   UpdateGroupOwnerParams,
-  UpdateGroupPayload,
 } from '../utils/types';
 
 export interface GroupState {
@@ -60,20 +53,6 @@ export const leaveGroupThunk = createAsyncThunk('groups/leave', (id: string) =>
   leaveGroupAPI(id)
 );
 
-export const updateGroupDetailsThunk = createAsyncThunk(
-  'groups/update/details',
-  async (payload: UpdateGroupDetailsPayload, thunkAPI) => {
-    try {
-      const { data: group } = await updateGroupDetailsAPI(payload);
-      console.log('Updated Group Successful. Dispatching updateGroup');
-      thunkAPI.dispatch(updateGroup({ group }));
-      thunkAPI.fulfillWithValue(group);
-    } catch (err) {
-      thunkAPI.rejectWithValue(err);
-    }
-  }
-);
-
 export const groupsSlice = createSlice({
   name: "groups",
   initialState,
@@ -82,25 +61,8 @@ export const groupsSlice = createSlice({
       console.log(`addGroup reducer: Adding ${action.payload._id} to state`);
       state.groups.unshift(action.payload);
     },
-    updateGroup: (state, action: PayloadAction<UpdateGroupPayload>) => {
-      console.log("Inside updateGroup");
-      const { type, group } = action.payload;
-      const existingGroup = state.groups.find((g) => g._id === group._id);
-      const index = state.groups.findIndex((g) => g._id === group._id);
-      if (!existingGroup) return;
-      switch (type) {
-        case UpdateGroupAction.NEW_MESSAGE: {
-          console.log("Inside UpdateGroupAction.NEW_MESSAGE");
-          state.groups.splice(index, 1);
-          state.groups.unshift(group);
-          break;
-        }
-        default: {
-          console.log("Default Case for updateGroup");
-          state.groups[index] = group;
-          break;
-        }
-      }
+    updateGroup: () => {
+      
     },
     removeGroup: (state, action: PayloadAction<Conversation>) => {
       console.log("removeGroup Reducer");
@@ -144,20 +106,11 @@ export const groupsSlice = createSlice({
           console.log("Updating Group....");
         }
       })
-      .addCase(updateGroupOwnerThunk.fulfilled, (state, action) => {
-        console.log("updateGroupOwnerThunk.fulfilled");
-      })
-      .addCase(leaveGroupThunk.fulfilled, (state, action) => {
-        console.log("leaveGroupThunk.fulfilled");
-      })
-      .addCase(updateGroupDetailsThunk.fulfilled, (state, action) => {
-        console.log("updateGroupDetailsThunk.fulfilled");
-      });
   },
 });
 
 const selectGroups = (state: RootState) => state.groups.groups;
-const selectGroupId = (state: RootState, id: string) => id;
+const selectGroupId = (id: string) => id;
 
 export const selectGroupById = createSelector(
   [selectGroups, selectGroupId],

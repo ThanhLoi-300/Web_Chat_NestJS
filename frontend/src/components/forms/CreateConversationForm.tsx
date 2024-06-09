@@ -1,10 +1,6 @@
 import React, { Dispatch, FC, useContext, useEffect, useState } from 'react';
 import {
     Button,
-    ConversationSelectedStyle,
-    InputContainer,
-    InputLabel,
-    TextField,
 } from '../../utils/styles';
 import styles from './index.module.scss';
 import { useDispatch } from 'react-redux';
@@ -31,6 +27,7 @@ export const CreateConversationForm: FC<Props> = ({ setShowModal }) => {
     const debouncedQuery = useDebounce(query, 1000);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+    console.log(searching)
 
     useEffect(() => {
         if (debouncedQuery) {

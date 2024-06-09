@@ -2,11 +2,6 @@ import { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../store';
-import { deleteGroupMessageThunk } from '../../store/groupMessagesSlice';
-import {
-    setIsEditing,
-    setMessageBeingEdited,
-} from '../../store/messageContainerSlice';
 import { deleteMessageThunk } from '../../store/Messages/messageThunk';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { ContextMenu, ContextMenuItem } from '../../utils/styles';

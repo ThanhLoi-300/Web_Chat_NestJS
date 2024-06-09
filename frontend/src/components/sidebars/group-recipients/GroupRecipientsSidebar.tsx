@@ -55,7 +55,7 @@ export const GroupRecipientsSidebar = () => {
     }, [conversation, groupId]);
 
     useEffect(() => {
-        const handleResize = (e: UIEvent) => dispatch(toggleContextMenu(false));
+        const handleResize = () => dispatch(toggleContextMenu(false));
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);

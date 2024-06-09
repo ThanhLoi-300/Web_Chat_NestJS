@@ -9,17 +9,16 @@ import {
 } from '../../store/conversationsSlice';
 
 import {
-    selectConversationById, setShowEditGroupModal, setSelectedGroup
+    setShowEditGroupModal, setSelectedGroup
 } from '../../store/conversationsSlice';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { ContextMenu, ContextMenuItem } from '../../utils/styles';
-import { IoMdExit, IoIosArchive } from 'react-icons/io';
+import { IoMdExit } from 'react-icons/io';
 import { Edit } from 'akar-icons';
 import { SocketContext } from '../../utils/context/SocketContext';
 import { toast } from 'react-toastify';
 
 export const GroupSidebarContextMenu: FC = () => {
-    const { id } = useParams()
     const { user } = useContext(AuthContext);
     const dispatch = useDispatch<AppDispatch>();
     const socket = useContext(SocketContext);

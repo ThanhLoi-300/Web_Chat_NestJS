@@ -115,8 +115,9 @@ export const MessagePanel: FC<Props> = ({
     const [isPickerVisible, setIsPickerVisible] = useState(false);
     const [isStickerVisible, setIsStickerVisible] = useState(false);
     const [selectedSticker, setSelectedSticker] = useState<string>('');
+    console.log(selectedSticker)
 
-    const handleEmojiClick: PickerProps['onEmojiClick'] = (emojiData, event) => {
+    const handleEmojiClick: PickerProps['onEmojiClick'] = (emojiData) => {
         setContent((preText) => preText + emojiData.emoji)
     };
 

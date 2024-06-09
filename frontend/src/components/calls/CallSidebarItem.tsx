@@ -13,7 +13,6 @@ type Props = {
 };
 export const CallSidebarItem: FC<Props> = ({ friend }) => {
     const iconSize = 32;
-    const { user } = useContext(AuthContext);
     const { friends } = useSelector((state: RootState) => state.friends);
     const nameUser = () => {
         return friend?.name.length! > 10 ? friend?.name.slice(0, 10).concat('...') : friend?.name

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Friend, FriendRequest, Points, User } from '../../utils/types';
+import { FriendRequest, Points, User } from '../../utils/types';
 import {
   acceptFriendRequestThunk,
   cancelFriendRequestThunk,
@@ -59,8 +59,9 @@ export const friendsSlice = createSlice({
   extraReducers: (builder) =>
     builder
       .addCase(fetchFriendsThunk.fulfilled, (state, action) => {
-        console.log('fetchFriendsThunk.fulfilled');
-        console.log(action.payload.data);
+        console.log(
+          "fetchFriendsThunk.fulfilled " + JSON.stringify(action.payload.data)
+        );
         state.friends = action.payload.data;
       })
       .addCase(fetchFriendRequestThunk.fulfilled, (state, action) => {
@@ -72,7 +73,7 @@ export const friendsSlice = createSlice({
         state.friendRequests = action.payload.data;
       })
       .addCase(createFriendRequestThunk.rejected, (state, action) => {
-        console.log('createFriendRequestThunk.rejected');
+        console.log(state, action);
       })
       .addCase(cancelFriendRequestThunk.fulfilled, (state, action) => {
         const { _id } = action.payload.data;
