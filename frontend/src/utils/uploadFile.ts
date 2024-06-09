@@ -1,16 +1,16 @@
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import config from "../config";
+// import config from "../config";
 
 const firebaseConfig = {
-  apiKey: config.apiKey,
-  authDomain: config.authDomain,
-  projectId: config.projectId,
-  storageBucket: config.storageBucket,
+  apiKey: import.meta.env.APIKEY,
+  authDomain: import.meta.env.authDomain,
+  projectId: import.meta.env.projectId,
+  storageBucket: import.meta.env.storageBucket,
   messagingSenderId: "1039293544656",
-  appId: config.appId,
-  measurementId: config.measurementId,
+  appId: import.meta.env.appId,
+  measurementId: import.meta.env.measurementId,
 };
 
 // Khởi tạo Firebase
