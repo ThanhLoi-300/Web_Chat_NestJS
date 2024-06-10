@@ -22,10 +22,10 @@ export const SettingsProfilePage = () => {
     const { user, updateAuthUser } = useContext(AuthContext);
 
     const [avatarFile, setAvatarFile] = useState<File>();
-    const [avatarSource, setAvatarSource] = useState(
+    const [avatarSource] = useState(
         user?.avatar || ''
     );
-    setAvatarSource(user?.avatar || '')
+    // setAvatarSource(user?.avatar || '')
     const [avatarSourceCopy, setAvatarSourceCopy] = useState(avatarSource);
 
     const [bannerSource, setBannerSource] = useState(
@@ -135,6 +135,7 @@ export const SettingsProfilePage = () => {
             console.log(err);
         } finally {
             setLoading(false);
+            setIsChange(false)
         }
     };
 
@@ -142,7 +143,6 @@ export const SettingsProfilePage = () => {
         <>
             {loading && (
                 <OverlayStyle>
-                    {/* <MoonLoader size={40} color="#fff" /> */}
                     Loading
                 </OverlayStyle>
             )}
@@ -161,18 +161,17 @@ export const SettingsProfilePage = () => {
                             setAvatarSourceCopy={setAvatarSourceCopy}
                             setAvatarFile={setAvatarFile}
                         />
-                        <span>@{user?.name} <Edit size={28} onClick={() => setIsEditing(!isEditing)} /></span>
+                        <p>@{user?.name} <Edit size={28} onClick={() => setIsEditing(!isEditing)} /></p>
                     </SettingsProfileUserDetails>
                     {
-                        isEditing && (<div style={{ width: '50%' }}>
+                        isEditing && (
                             <EditMessageInputField
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                            />
-                        </div>)
+                            />)
                     }
-
                 </ProfileSection>
+                
                 {isChange && (
                     <ProfileEditActionBar>
                         <div>

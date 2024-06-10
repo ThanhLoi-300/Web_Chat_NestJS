@@ -115,12 +115,12 @@ export const MessagePanelConversationHeader: FC<Props> = ({ setShowInfor, showIn
                 </div>
             </UserAvatarAndName>
             <MessagePanelHeaderIcons>
-                {!isFriend && (<button style={{ padding: '6px 12px', borderRadius: '10px', cursor: 'pointer' }} onClick={() => setShowModal(true)}>Add friend</button>)}
+                {!isFriend && (<button style={{ padding: '4px 8px', borderRadius: '10px', cursor: 'pointer' }} onClick={() => setShowModal(true)}>Add friend</button>)}
                 <FaPhoneAlt size={24} cursor="pointer" onClick={voiceCallUser} />
-                <FaVideo size={30} cursor="pointer" onClick={videoCallUser} />
+                <FaVideo size={24} cursor="pointer" onClick={videoCallUser} />
                 {
-                    showInfor ? <FaToggleOn cursor="pointer" size={36} onClick={() => setShowInfor(false) } />
-                        : <FaToggleOff cursor="pointer" size={36} onClick={() => setShowInfor(true)} />
+                    showInfor ? <FaToggleOn cursor="pointer" size={24} onClick={() => setShowInfor(false) } />
+                        : <FaToggleOff cursor="pointer" size={24} onClick={() => setShowInfor(true)} />
                 }
             </MessagePanelHeaderIcons>
         </MessagePanelHeaderStyle>

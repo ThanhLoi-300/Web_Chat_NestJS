@@ -42,7 +42,7 @@ export const MessageAttachmentActionIcon = () => {
 
     return (
         <div ref={attachmentIconRef} onClick={onClick}>
-            <CirclePlusFill size={36} className={styles.icon} cursor="pointer" />
+            <CirclePlusFill size={25} className={styles.icon} cursor="pointer" />
             <FileInput
                 multiple
                 ref={fileInputRef}

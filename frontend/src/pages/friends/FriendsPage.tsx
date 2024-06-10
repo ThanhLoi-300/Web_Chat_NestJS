@@ -15,17 +15,14 @@ export const FriendsPage = () => {
     );
     const dispatch = useDispatch<AppDispatch>();
     const socket = useContext(SocketContext);
-    const [onlineUsers, setOnlineUsers] = useState<User[]>(friends);
-    const [offlineUsers, setOfflineUsers] = useState<User[]>(friends);
+    const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
+    const [offlineUsers, setOfflineUsers] = useState<User[]>([]);
 
     useEffect(() => {
-        console.log("check friends: 1 "+ JSON.stringify(friends));
         dispatch(fetchFriendsThunk());
-        console.log('fetching friends: '+ JSON.stringify(friends));
     }, [dispatch]);
 
     useEffect(() => {
-        console.log("check friends: 2 " + JSON.stringify(friends));
         socket.emit('getOnlineFriends', {friends: friends.map((f) => f._id)});
         const interval = setInterval(() => {
             socket.emit('getOnlineFriends', { friends: friends.map((f) => f._id) });

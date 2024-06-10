@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 export const SettingsAppearancePage = () => {
     const dispatch = useDispatch();
-    const [dark, setDark] = useState(localStorage.getItem('theme') as SelectableTheme)
+    const [dark, setDark] = useState(localStorage.getItem('theme'))
 
     const handleThemeChange = (theme: SelectableTheme) => {
         dispatch(setTheme(theme));

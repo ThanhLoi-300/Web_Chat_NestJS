@@ -99,11 +99,11 @@ export const settingsItems: SettingsItemType[] = [
   //   label: 'Integrations',
   //   pathname: '/settings/integrations',
   // },
-  {
-    id: "appearance",
-    label: "Appearance",
-    pathname: "/settings/appearance",
-  },
+  // {
+  //   id: "appearance",
+  //   label: "Appearance",
+  //   pathname: "/settings/appearance",
+  // },
 ];
 
 export enum CDN_URL {

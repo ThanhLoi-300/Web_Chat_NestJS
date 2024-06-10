@@ -15,6 +15,8 @@ export const FriendsNavbar = styled.nav`
   font-size: 20px;
   padding: 48px 60px;
   height: 150px;
+  width: 100%;
+  flex-wrap: wrap;
   box-sizing: border-box;
   border-bottom: 1px solid #30303035;
   justify-content: space-between;
@@ -22,11 +24,25 @@ export const FriendsNavbar = styled.nav`
     display: flex;
     align-items: center;
     gap: 80px;
+
+    @media (max-width: 767px) {
+       gap: 20px;
+    }
+  }
+
+  & Button{
+    @media (max-width: 767px) {
+       margin-top: 25px;
+    }
   }
 `;
 
 export const FriendsNavbarItem = styled.span<FriendsNavbarItemProps>`
   cursor: pointer;
+  @media (max-width: 767px) {
+       font-size: 15px;
+    }
+  
   ${({ active }) =>
         active &&
         css`

@@ -18,6 +18,13 @@ export const MessageTextarea = styled.textarea`
   &::-webkit-scrollbar {
     display: none;
   }
+
+  @media (max-width: 767px) {
+    font-size: 15px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+  }
 `;
 
 export const OnboardingInputField = styled.input`
@@ -63,8 +70,8 @@ export const OnboardingAboutField = styled.textarea`
 
 export const FileInput = styled.input`
   ${({ type }) =>
-        type === 'file' &&
-        css`
+    type === 'file' &&
+    css`
       display: none;
     `}
 `;

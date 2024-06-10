@@ -109,7 +109,7 @@ export const ConversationChannelPageStyle = styled.div`
   width: 100%;
   overflow: hidden;
   @media (max-width: 800px) {
-    width: calc(100% - 100px);
+    width: calc(90%);
     left: 270px;
   }
 `;
@@ -333,6 +333,11 @@ export const MessageInputContainer = styled.div<MessageInputContainerProps>`
   gap: 20px;
   align-items: ${({ isMultiLine }) => (isMultiLine ? 'top' : 'center')};
   position: relative;
+
+  @media (max-width: 767px) {
+       gap: 10px;
+       padding: 12px 24px;
+    }
 `;
 
 export const MessagePanelFooter = styled.footer`
@@ -791,6 +796,7 @@ export const GroupRecipientsSidebarStyle = styled.aside`
   border-left: 1px solid gray;
   @media (max-width: 768px) {
     position: fixed;
+    width: 230px;
   }
 `;
 
@@ -1094,6 +1100,7 @@ export const DropdownStyle = styled.div`
 
   & span {
     padding: 10px;
+    /* color: ${({ theme }) => theme.text.secondary}; */
   }
 `
 export const DropdownContentStyle = styled.div`

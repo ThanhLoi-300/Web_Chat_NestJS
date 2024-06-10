@@ -132,6 +132,16 @@ export const MessagePanel: FC<Props> = ({
         await createMessage(routeId!, data);
     }
 
+    const handleOpenStickerOrEmoji = (type: string) => {
+        if (type === 'emoji') {
+            setIsStickerVisible(false)
+            setIsPickerVisible(!isPickerVisible)
+        } else {
+            setIsPickerVisible(false)
+            setIsStickerVisible(!isStickerVisible)
+        }
+    }
+
     return (
         <>
             <MessagePanelStyle>
@@ -174,8 +184,8 @@ export const MessagePanel: FC<Props> = ({
                                 sendMessage={sendMessage}
                             />
                         </form>
-                        <TbSticker2 className={styles.icon} size={ICON_SIZE} onClick={() => setIsStickerVisible(!isStickerVisible)} />
-                        <FaceVeryHappy className={styles.icon} size={ICON_SIZE} onClick={() => setIsPickerVisible(!isPickerVisible)} />
+                        <TbSticker2 className={styles.icon} size={ICON_SIZE} onClick={() => handleOpenStickerOrEmoji('sticker')} />
+                        <FaceVeryHappy className={styles.icon} size={ICON_SIZE} onClick={() => handleOpenStickerOrEmoji('emoji')} />
                     </MessageInputContainer>
                     <MessageTypingStatus>
                         {isRecipientTyping && textTyping}

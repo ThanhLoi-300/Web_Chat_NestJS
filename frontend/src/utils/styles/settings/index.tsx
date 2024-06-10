@@ -9,6 +9,9 @@ export const SettingsSidebarStyle = styled.aside`
   width: 300px;
   background-color: #111111;
   flex: 0 0 auto;
+  @media (max-width: 767px) {
+       width: 80px;
+    }
 `;
 
 export const SettingsSidebarHeader = styled.header`
@@ -18,13 +21,19 @@ export const SettingsSidebarHeader = styled.header`
   box-sizing: border-box;
   & span {
     font-size: 20px;
+    @media (max-width: 767px) {
+       font-size: 15px;
+    }
   }
+  @media (max-width: 767px) {
+      padding: 35px 15px;
+    }
 `;
 
 export const SettingsSidebarItemContainer = styled.div``;
 
 export const SettingsSidebarItemStyle = styled.div<SettingsSidebarItemProps>`
-  padding: 10px 24px;
+  padding: 10px 20px;
   cursor: pointer;
   & .settingItem {
     display: flex;
@@ -36,14 +45,21 @@ export const SettingsSidebarItemStyle = styled.div<SettingsSidebarItemProps>`
     background-color: ${({ isActive }) => isActive && '#070707'};
     & span {
       font-weight: 500;
+      @media (max-width: 767px) {
+       display: none;
+      }
     }
+
+    @media (max-width: 767px) {
+       padding: 1px;
+      }
   }
 `;
 
 export const UserAvatarContainer = styled.div<{ url?: string }>`
   height: 150px;
   width: 150px;
-  border-radius: 100%;
+  border-radius: 50%;
   border: 4px solid #afafaf;
   ${({ url }) =>
     url
@@ -66,7 +82,7 @@ export const UserAvatarContainer = styled.div<{ url?: string }>`
     background-color: none;
     content: 'Change Avatar';
     width: 100%;
-    height: 150px;
+    height: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -79,6 +95,11 @@ export const UserAvatarContainer = styled.div<{ url?: string }>`
   &:hover:before {
     opacity: 1;
   }
+
+  @media (max-width: 767px) {
+       height: 100px;
+        width: 100px;
+    }
 `;
 
 export const SettingsProfileBanner = styled.div<UserBannerProps>`
@@ -128,13 +149,6 @@ export const SettingsProfileUserDetails = styled.div`
   position: relative;
   align-items: center;
   transform: translateY(-50%);
-  & .avatar {
-    height: 150px;
-    width: 150px;
-    border-radius: 50%;
-    border: 4px solid #292929;
-    background-color: #2a2a2a;
-  }
 
   & span {
     font-size: 24px;
@@ -142,11 +156,24 @@ export const SettingsProfileUserDetails = styled.div`
     position: absolute;
     bottom: 20px;
     left: 190px;
+    @media (max-width: 767px) {
+       left: 125px;
+       font-size: 18px;
+    }
   }
+
+  @media (max-width: 767px) {
+       flex-wrap: wrap;
+       transform: translateY(-30%);
+       gap: 10px;
+    }
 `;
 
 export const ProfileSection = styled.div`
   padding: 0 48px;
+  @media (max-width: 767px) {
+       padding: 0 20px;
+    }
 `;
 
 export const ProfileDescriptionField = styled.textarea`
@@ -175,9 +202,10 @@ export const ProfileDescriptionField = styled.textarea`
 
 export const ProfileEditActionBar = styled.div`
   background-color: #0e0e0e;
-  width: 750px;
+  width: 50%;
   display: flex;
-  padding: 14px 24px;
+  padding: 14px 20px;
+  margin: auto;
   justify-content: space-between;
   align-items: center;
   color: #fff;
@@ -192,5 +220,6 @@ export const ProfileEditActionBar = styled.div`
   & .buttons {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
   }
 `;
