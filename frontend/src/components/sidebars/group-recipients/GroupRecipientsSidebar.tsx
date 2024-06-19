@@ -15,7 +15,6 @@ import {
     setSelectedUser,
     toggleContextMenu,
 } from '../../../store/groupRecipientsSidebarSlice';
-import { SelectedParticipantContextMenu } from '../../context-menus/SelectedParticipantContextMenu';
 import { OnlineGroupRecipients } from './OnlineGroupRecipients';
 
 export const GroupRecipientsSidebar = () => {
@@ -29,9 +28,7 @@ export const GroupRecipientsSidebar = () => {
     const conversation = useSelector((state: RootState) =>
         selectConversationById(state, groupId!)
     );
-    const groupSidebarState = useSelector(
-        (state: RootState) => state.groupSidebar
-    );
+
 
     useEffect(() => {
         const handleClick = () => dispatch(toggleContextMenu(false));
