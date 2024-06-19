@@ -1,4 +1,4 @@
-import { FC, useContext } from 'react';
+import { Dispatch, FC, SetStateAction, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../store';
@@ -19,9 +19,11 @@ import { SocketContext } from '../../utils/context/SocketContext';
 import {
     toggleContextMenu,
 } from '../../store/groupRecipientsSidebarSlice';
+import { IoIosCloseCircle } from "react-icons/io";
 
 type Props = {
     points: { x: number; y: number };
+    setShowModalProfile: Dispatch<SetStateAction<boolean>>;
 };
 
 type CustomIconProps = {
@@ -33,7 +35,7 @@ export const CustomIcon: FC<CustomIconProps> = ({ type }) => {
     return <MyIcon size={20} color={color} />;
 };
 
-export const SelectedParticipantContextMenu: FC<Props> = ({ points }) => {
+export const SelectedParticipantContextMenu: FC<Props> = ({ points, setShowModalProfile }) => {
     const { id } = useParams();
     const { user } = useContext(AuthContext);
     const dispatch = useDispatch<AppDispatch>();
@@ -74,7 +76,13 @@ export const SelectedParticipantContextMenu: FC<Props> = ({ points }) => {
 
     return (
         <ContextMenu top={points.y} left={points.x}>
-            <ContextMenuItem>
+            <ContextMenuItem onClick={() => dispatch(toggleContextMenu(false))}>
+                <IoIosCloseCircle size={20}  style={{ float: 'inline-end' }} />
+            </ContextMenuItem>
+            <ContextMenuItem onClick={() => {
+                setShowModalProfile(true)
+                dispatch(toggleContextMenu(false))
+            }}>
                 <Person size={20} color="#7c7c7c" />
                 <span style={{ color: '#7c7c7c' }}>Profile</span>
             </ContextMenuItem>

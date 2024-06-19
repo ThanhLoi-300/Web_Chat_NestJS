@@ -1,121 +1,121 @@
-import { useRef, useState } from 'react';
-import {
-    FileInput,
-    OnboardingAboutField,
-    OnboardingInputField,
-    SubmitOnboardingFormButton,
-    UploadAvatarButton,
-    UploadedAvatar,
-    UploadedAvatarContainer,
-} from '../../utils/styles/inputs/Textarea';
-import { FiFileMinus } from 'react-icons/fi';
-import styles from './index.module.scss';
-import { completeUserProfile } from '../../utils/api';
+import { Dispatch, createRef, useEffect, FC, useState, useContext } from 'react';
+import { MdClose } from 'react-icons/md';
+import { OverlayStyle } from '../../utils/styles';
+import { Conversation, User } from '../../utils/types';
+import { ModalContainer, ModalContentBody } from '../modals';
+import { UserAvatar } from '../users/UserAvatar';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store';
+import { CreateFriendRequestModal } from '../modals/CreateFriendRequestModal';
+import { AuthContext } from '../../utils/context/AuthContext';
+import { createConversationThunk } from '../../store/conversationsSlice';
+import { checkConversationOrCreate } from '../../utils/api';
+import { useNavigate } from 'react-router-dom';
 
-export const OnboardingForm = () => {
-    const [file, setFile] = useState<File>();
-    const [source, setSource] = useState('');
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const imageContainerRef = useRef<HTMLDivElement>(null);
-    const labelRef = useRef<HTMLLabelElement>(null);
-    const [username, setUsername] = useState('');
-    const [about, setAbout] = useState('');
+type Props = {
+    showModalProfile: boolean;
+    setShowModalProfile: Dispatch<React.SetStateAction<boolean>>;
+    user: User;
+};
 
-    const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { files } = e.target;
-        if (files && files.length) {
-            const file = files.item(0);
-            if (file) {
-                setSource(URL.createObjectURL(file));
-                setFile(file);
-            }
+export const OnboardingForm: FC<Props> = ({
+    showModalProfile,
+    setShowModalProfile,
+    user
+}) => {
+    const ref = createRef<HTMLDivElement>();
+    const [showModal, setShowModal] = useState(false);
+    const me = useContext(AuthContext).user!;
+    const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
+    
+    const friends = useSelector(
+        (state: RootState) => state.friends.friends
+    );
+
+    const isFriend = () => {
+        if(me._id === user._id) return false
+        return friends.some((u) => u._id === user._id)
+    }
+
+    const isMessage = me._id === user?._id
+
+    useEffect(() => {
+        const handleKeydown = (e: KeyboardEvent) =>
+            e.key === 'Escape' && setShowModalProfile(false);
+        window.addEventListener('keydown', handleKeydown);
+        return () => window.removeEventListener('keydown', handleKeydown);
+    }, []);
+
+    const handleOverlayClick = (
+        e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    ) => {
+        const { current } = ref;
+        if (current === e.target) {
+            console.log('Close Modal');
+            setShowModalProfile(false);
         }
     };
 
-    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (
-            e.target === imageContainerRef.current ||
-            e.target === labelRef.current
-        ) {
-            fileInputRef.current?.click();
-        }
+    const buttonStyle = {
+        padding: '4px 8px',
+        borderRadius: '5px',
+        fontSize: '20px',
+        cursor: 'pointer',
+        width: '100%'
     };
 
-    const reset = () => {
-        setFile(undefined);
-        setSource('');
+    const sendMessage = () => {
+            checkConversationOrCreate(user._id)
+                .then(({ data }) => {
+                    console.log(data);
+                    navigate(`/conversations/${data._id}`);
+                })
+                .catch(() => {
+                    const conversation: Conversation = {
+                        type: 'private',
+                        member: [user, me]
+                    }
+
+                    return dispatch(
+                        createConversationThunk(conversation!)
+                    )
+                        .unwrap()
+                        .then(({ data }) => {
+                            navigate(`/conversations/${data._id}`);
+                        })
+                        .catch((err) => console.log(err));
+                });
     };
 
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        console.log(username, about);
-        console.log(file);
-        console.log(source);
-        if (file) {
-            const data = new FormData();
-            data.append('file', file);
-            data.append('username', username);
-            data.append('about', about);
-            console.log(data);
-            return completeUserProfile(data)
-                .then((response) => console.log(response))
-                .catch((err) => console.log(err));
-        }
-    };
 
     return (
-        <form className={styles.onboardingForm} onSubmit={onSubmit}>
-            <div>
-                <label className={styles.onboardingLabel} htmlFor="username">
-                    Username
-                </label>
-            </div>
-            <OnboardingInputField
-                id="username"
-                type="text"
-                placeholder="@yourusername"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-            />
-            <div onClick={handleClick}>
-                <label className={styles.onboardingLabel} htmlFor="about">
-                    About Yourself
-                </label>
-            </div>
-            <OnboardingAboutField
-                id="about"
-                maxLength={200}
-                value={about}
-                onChange={(e) => setAbout(e.target.value)}
-            />
-            {source && (
-                <UploadedAvatarContainer>
-                    <div className="side">
-                        <UploadedAvatar src={source} alt="avatar" />
-                        <div className="fileName">
-                            asdjhasduiashdjisadgsayhudgaudasdjhasduiashdjisadgsayhudgaud
-                        </div>
-                        <FiFileMinus size={40} color="#ff0000" onClick={reset} />
+        <OverlayStyle ref={ref} onClick={handleOverlayClick}>
+            <ModalContainer showModal={showModalProfile}>
+                <ModalContentBody>
+                    Profile
+                    <MdClose
+                        cursor="pointer"
+                        size={32}
+                        style={{ margin: "10px", float: "right", marginTop: "-10px" }}
+                        onClick={() => setShowModalProfile(false)}
+                    />
+                    <img
+                        src={user.banner ? user.banner : "https://tse1.mm.bing.net/th?id=OIP.qISjQuz0VsrKxe81_sA7twHaHa&pid=Api&P=0&h=220"} style={{
+                            width: "100%", height: "200px"
+                        }}
+                    />
+                    <div style={{ marginLeft: "10px", marginTop: '-50px', display: "flex", gap: "20px" }}>
+                        <UserAvatar size={90} user={user} />
+                        <p style={{ fontSize: "20px", marginTop: "50px" }}>{user.name}</p>
                     </div>
-                </UploadedAvatarContainer>
-            )}
-            <UploadAvatarButton onClick={handleClick} ref={imageContainerRef}>
-                <label
-                    ref={labelRef}
-                    htmlFor="file"
-                    onClick={(e) => e.preventDefault()}
-                >
-                    Upload Avatar
-                </label>
-                <FileInput
-                    id="file"
-                    type="file"
-                    accept="image/jpg, image/jpeg, image/png"
-                    ref={fileInputRef}
-                    onChange={onFileChange}
-                />
-            </UploadAvatarButton>
-            <SubmitOnboardingFormButton>Submit</SubmitOnboardingFormButton>
-        </form>
+                    <div style={{ display: 'flex', gap: "10px", justifyContent: 'center', marginTop: "20px", width: '100%' }}>
+                        {!isFriend && (<button style={buttonStyle} onClick={() => setShowModal(true)}>Add friend</button>)}
+                        {!isMessage && (<button style={buttonStyle} onClick={() => sendMessage()}>Message</button>)}
+                    </div>
+                </ModalContentBody>
+            </ModalContainer>
+            {showModal && <CreateFriendRequestModal setShowModal={setShowModal} friend={user} />}
+        </OverlayStyle>
     );
 };

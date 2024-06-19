@@ -1,17 +1,20 @@
 import { useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { getRecipientFromConversation } from '../../utils/helpers';
-import {
-    ConversationSidebarItemDetails,
-    ConversationSidebarItemStyle,
-} from '../../utils/styles';
 import { Conversation } from '../../utils/types';
 import defaultAvatar from '../../__assets__/default_avatar.jpg';
 
 import styles from './index.module.scss';
 import { toggleCloseSidebar } from '../../store/groupRecipientsSidebarSlice';
+import {
+    IconCountNewMessages, Time, ConversationSidebarItemDetails,
+    ConversationSidebarItemStyle,
+} from '../../utils/styles';//TagName
+import { formatDistanceToNow } from 'date-fns';
+import { RootState } from '../../store';
+import { selectConversationMessage } from '../../store/Messages/messageSlice';
 
 type Props = {
     conversation: Conversation;
@@ -25,6 +28,10 @@ export const ConversationSidebarItem: React.FC<Props> = ({ conversation }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const recipient = getRecipientFromConversation(conversation, user)!;
+
+    const conversationMessages = useSelector((state: RootState) =>
+        selectConversationMessage(state, conversation?._id!)
+    );
 
     const getTransformedTitle = () => {
         return recipient.name.length > MAX_NAME_LENGTH
@@ -54,6 +61,25 @@ export const ConversationSidebarItem: React.FC<Props> = ({ conversation }) => {
         return null;
     };
 
+    const countNewMessages = () => {
+        const lastMessages = conversationMessages?.messages?.slice(0, 6);
+        let count = 0
+
+        lastMessages && lastMessages.forEach((message: any) => {
+            if (!message.seen.some((u: any) => u._id === user!._id)) count++
+        })
+
+        return count
+    }
+
+    const timeHandler = () => {
+        const { lastMessageId } = conversation;
+        const time = lastMessageId?.createdAt
+        if (time)
+            return formatDistanceToNow(new Date(time), { addSuffix: true })
+        return null
+    }
+
     return (
         <>
             <ConversationSidebarItemStyle
@@ -78,6 +104,14 @@ export const ConversationSidebarItem: React.FC<Props> = ({ conversation }) => {
                         {lastMessageContent()}
                     </span>
                 </ConversationSidebarItemDetails>
+                <div>
+                    <Time>{timeHandler()}</Time>
+                    {countNewMessages() > 0 && (
+                        <span className="title" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}><IconCountNewMessages>{countNewMessages() > 5 ? '5+' : countNewMessages()}</IconCountNewMessages></span>
+                    )}
+
+                    {/* <TagName> @ </TagName> */}
+                </div>
             </ConversationSidebarItemStyle>
         </>
     );

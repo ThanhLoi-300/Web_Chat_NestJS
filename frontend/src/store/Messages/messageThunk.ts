@@ -4,7 +4,8 @@ import {
   editMessage as editMessageAPI,
   // createMessage as createMessageAPI,
   getConversationMessages,
-} from '../../utils/api';
+  fetchMessage,
+} from "../../utils/api";
 import {
   DeleteMessageParams,
   EditMessagePayload,
@@ -15,6 +16,13 @@ export const fetchMessagesThunk = createAsyncThunk(
   (id: string) => {
     console.log("data mess: " + JSON.stringify(getConversationMessages(id)));
     return getConversationMessages(id);
+  }
+);
+
+export const fetchMessagesAll: any = createAsyncThunk(
+  "messages/fetchAll",
+  () => {
+    return fetchMessage();
   }
 );
 
@@ -31,15 +39,3 @@ export const editMessageThunk = createAsyncThunk(
     return editMessageAPI(params);
   }
 );
-
-// export const createMessageThunk = createAsyncThunk(
-//   'messages/create',
-//   async (params: CreateMessageParams, thunkAPI) => {
-//     try {
-//       const response = await createMessageAPI(params.id, params);
-//       return thunkAPI.fulfillWithValue(response);
-//     } catch (error) {
-//       return thunkAPI.rejectWithValue(error);
-//     }
-//   }
-// );

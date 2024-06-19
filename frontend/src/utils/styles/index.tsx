@@ -121,8 +121,8 @@ export const ConversationSidebarContainer = styled.div`
 export const ConversationSidebarItemStyle = styled.div<ConversationSidebarItemProps>`
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 20px 32px;
+  gap: 10px;
+  padding: 15px;
   box-sizing: border-box;
   width: 100%;
   background-color: ${({ selected, theme }) =>
@@ -408,6 +408,7 @@ export const MessageItemContent = styled.div<MessageItemContentProps>`
   width: fit-content;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
   float: ${({ owner }) => (owner ? 'right' : 'left')};
   margin-left: ${({ ml }) => (ml ? '0' : '70px')};
   color: ${({ theme }) => theme.messagePanel.body.content.color};
@@ -601,9 +602,13 @@ export const SidebarContainerItemContent = styled.div`
   }
 `;
 
-export const RecipientResultContainerStyle = styled.div`
+type Background = {
+  background: string;
+};
+
+export const RecipientResultContainerStyle = styled.div<Background>`
   position: absolute;
-  background-color: #161616;
+  background-color: ${(props) => props.background === 'black' ? '#161616': '#0f0f0f'};
   right: 0;
   left: 0;
   margin: 4px 24px;
@@ -778,6 +783,34 @@ export const IconBadge = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+export const IconCountNewMessages = styled.div`
+  background-color: #ff3535;
+  height: 20px;
+  width: 20px;
+  border-radius: 8px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const TagName = styled.span`
+  color: #256dc0;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const Time = styled.span`
+  color: grey;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5px;
 `;
 
 export const ConversationCreateButton = styled.div`

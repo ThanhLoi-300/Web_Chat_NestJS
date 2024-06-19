@@ -1,4 +1,4 @@
-import { FC, useState, useContext, useEffect } from 'react';
+import { FC, useState, useContext, useEffect, Dispatch, SetStateAction } from 'react';
 import { PeopleGroup } from 'akar-icons';
 import {
     DropdownStyle,
@@ -31,9 +31,10 @@ import { OverlayStyle } from '../../utils/styles';
 type Props = {
     text: string;
     listGroup?: Conversation[];
+    setShowModalProfile: Dispatch<SetStateAction<boolean>>;
 };
 
-export const DropdownMenu: FC<Props> = ({ text, listGroup }) => {
+export const DropdownMenu: FC<Props> = ({ text, listGroup, setShowModalProfile }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { id } = useParams();
 
@@ -136,14 +137,6 @@ export const DropdownMenu: FC<Props> = ({ text, listGroup }) => {
                     {
                         text === "Members: " && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}> 
-                                {/* {
-                                    conversation?.member.map((u) => (
-                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                            <img src={u.avatar ? u.avatar : defaultAvatar} style={{ width: '35px', height: '35px', borderRadius: '50%' }} />
-                                            <div>{u.name}</div>
-                                        </div>
-                                    ))
-                                } */}
                                 <div>
                                     <span>Online Users</span> {onlineUsers?.length} / {conversation?.member.length}
                                     <OnlineGroupRecipients
@@ -162,7 +155,7 @@ export const DropdownMenu: FC<Props> = ({ text, listGroup }) => {
                                     />
                                 </div>
                                 {groupSidebarState.showUserContextMenu && (
-                                    <SelectedParticipantContextMenu points={groupSidebarState.points} />
+                                    <SelectedParticipantContextMenu points={groupSidebarState.points} setShowModalProfile={setShowModalProfile} />
                                 )}
                             </div>
                         )

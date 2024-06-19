@@ -15,5 +15,6 @@ export interface IConversationsService {
   checkConversationExists(recipientId: string, userId: string);
   addMemberToConversation(id: string, recipentIds: string[]);
   leaveGroup(id: string, userId: string);
-  updateGroup(params: UpdateGroup)
+  updateGroup(params: UpdateGroup);
+  getConversationsOfUser(userId: string)
 }

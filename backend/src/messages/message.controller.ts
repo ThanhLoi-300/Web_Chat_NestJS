@@ -62,6 +62,6 @@ export class MessageController {
     @Req() req: AuthenticatedRequest,
     @Body() params: UpdateSeenMessageDto,
   ) {
-    this.messageService.updateSeenMessage(req.userId, params.messageId);
+    await this.messageService.updateSeenMessage(req.userId, params.messageId);
   }
 }

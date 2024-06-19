@@ -10,14 +10,16 @@ import { UserAvatar } from '../users/UserAvatar';
 type Props = {
     userResults: User[];
     handleUserSelect: (user: User) => void;
+    background: string
 };
 
 export const RecipientResultContainer: FC<Props> = ({
     userResults,
     handleUserSelect,
+    background
 }) => {
     return (
-        <RecipientResultContainerStyle>
+        <RecipientResultContainerStyle background={background}>
             <RecipientScrollableItemContainer>
                 {userResults.map((user) => (
                     <RecipientResultItem
@@ -25,7 +27,9 @@ export const RecipientResultContainer: FC<Props> = ({
                         onClick={() => handleUserSelect(user)}
                     >
                         <UserAvatar user={user} />
-                        <span>{user.email}</span>
+                        {
+                            background === 'white' ? (<span>{user.name}</span>) : (<span>{user.email}</span>)
+                        }
                     </RecipientResultItem>
                 ))}
             </RecipientScrollableItemContainer>

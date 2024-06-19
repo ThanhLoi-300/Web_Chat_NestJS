@@ -4,8 +4,14 @@ import {
   ConversationMessage,
   MessageEventPayload,
   UpdateMessageSeen,
+  MessageType,
 } from "../../utils/types";
-import { deleteMessageThunk, editMessageThunk, fetchMessagesThunk } from './messageThunk';
+import {
+  deleteMessageThunk,
+  editMessageThunk,
+  fetchMessagesThunk,
+  fetchMessagesAll,
+} from "./messageThunk";
 
 export interface MessagesState {
   messages: ConversationMessage[];
@@ -23,7 +29,7 @@ export const messagesSlice = createSlice({
   reducers: {
     addMessage: (state, action: PayloadAction<MessageEventPayload>) => {
       console.log(state);
-      console.log(action);
+      console.log("test action: "+JSON.stringify(action.payload));
       const { conversation, message } = action.payload;
       const conversationMessage = state.messages.find(
         (cm) => cm._id === conversation._id
@@ -52,10 +58,23 @@ export const messagesSlice = createSlice({
         (cm) => cm._id === action.payload.conversationId
       );
       if (!conversationMessage) return;
+      const lastMessages = conversationMessage.messages.slice(0, 6)
+
+      lastMessages.map((m: MessageType) => {
+        if (!m.seen.some((u) => u._id !== action.payload.user._id)) {
+          m.seen.push(action.payload.user);
+          console.log("uopdate")
+        }
+      })
       const messageIndex = conversationMessage.messages.findIndex(
         (m) => m._id === action.payload.messageId
       );
-      if (conversationMessage.messages[messageIndex].seen.filter((u) => u._id === action.payload.user._id).length === 0)
+      // console.log("index"+ messageIndex)
+      if (
+        conversationMessage.messages[messageIndex].seen.filter(
+          (u) => u._id === action.payload.user._id
+        ).length === 0
+      )
         conversationMessage.messages[messageIndex].seen.push(
           action.payload.user
         );
@@ -98,6 +117,10 @@ export const messagesSlice = createSlice({
         console.log(messageIndex);
         conversationMessage.messages[messageIndex] = message;
         console.log("Updated Message");
+      })
+      .addCase(fetchMessagesAll.fulfilled, (state, action) => {
+        // console.log("data mess: " + JSON.stringify(action.payload.data));
+        state.messages = action.payload.data;
       });
   },
 });

@@ -17,9 +17,10 @@ import { DropdownMenu } from '../context-menus/DropdownMenu';
 type Props = {
     conversation: Conversation;
     setShowInfor: Dispatch<SetStateAction<boolean>>;
+    setShowModalProfile: Dispatch<SetStateAction<boolean>>;
 };
 
-export const ConversationInfor: FC<Props> = ({ conversation, setShowInfor }) => {
+export const ConversationInfor: FC<Props> = ({ conversation, setShowInfor, setShowModalProfile }) => {
     const [commonGroup, setCommonGroup] = useState<Conversation[]>([]);
     const user = useContext(AuthContext).user!;
     const { conversations } = useSelector((state: RootState) => state.conversation);
@@ -85,11 +86,11 @@ export const ConversationInfor: FC<Props> = ({ conversation, setShowInfor }) => 
                 }
             </UserContactInforStyle>
             {
-                conversation?.type === 'private' && <DropdownMenu text={"Common groups: " + totalGroupTogether} listGroup={commonGroup}/>
+                conversation?.type === 'private' && <DropdownMenu text={"Common groups: " + totalGroupTogether} listGroup={commonGroup} setShowModalProfile={setShowModalProfile} />
             }
-            <DropdownMenu text={"Images"} />
+            <DropdownMenu text={"Images"} setShowModalProfile={setShowModalProfile} />
             {
-                conversation?.type === 'group' && <DropdownMenu text={"Members: "} />
+                conversation?.type === 'group' && <DropdownMenu text={"Members: "} setShowModalProfile={setShowModalProfile}/>
             }
 
         </GroupRecipientsSidebarStyle>

@@ -23,6 +23,7 @@ import {
 } from "./types";
 
 const API_URL = "https://web-chat-nestjs-1.onrender.com/api";
+// const API_URL = "http://localhost:3001/api";
 const token = localStorage.getItem("accessToken");
 
 let config = {
@@ -67,6 +68,9 @@ export const getConversationMessages = (conversationId: string) =>
     `/conversations/${conversationId}/messages`,
     config
   );
+
+export const fetchMessage = () =>
+  axiosClient.get<FetchMessagePayload[]>(`/fetchMessage`, config);
 
 export const createMessage = (id: string, data: CreateMessageParams) => {
   return axiosClient.post(`/conversations/${id}/messages`, data, config);

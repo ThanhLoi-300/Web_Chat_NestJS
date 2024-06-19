@@ -1,29 +1,38 @@
 import { MessageTextarea } from '../../utils/styles/inputs/Textarea';
-import { FC, Dispatch, SetStateAction, useRef } from 'react';
-import { ClipboardEvent, DragEvent } from '../../utils/types';
+import { FC, Dispatch, SetStateAction, useRef, useContext } from 'react';
+import { ClipboardEvent, DragEvent, User, Conversation } from '../../utils/types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     addAttachment,
     incrementAttachmentCounter,
 } from '../../store/message-panel/messagePanelSlice';
 import { RootState } from '../../store';
-// import { useToast } from '../../utils/hooks/useToast';
 import { toast } from 'react-toastify';
+import React from 'react';
+import { AuthContext } from '../../utils/context/AuthContext';
 
 type Props = {
-    message: string;
+    setContentInput: Dispatch<SetStateAction<string>>;
     setMessage: Dispatch<SetStateAction<string>>;
     setIsMultiLine: Dispatch<SetStateAction<boolean>>;
     sendTypingStatus: () => void;
     sendMessage: () => void;
+    conversation: Conversation;
+    setSearchResults: Dispatch<SetStateAction<any[]>>;
+    contentInput: string;
+    content: string
 };
 
 export const MessageTextField: FC<Props> = ({
-    message,
+    setContentInput,
     setMessage,
     setIsMultiLine,
     sendTypingStatus,
     sendMessage,
+    conversation,
+    setSearchResults,
+    contentInput,
+    content
 }) => {
     const DEFAULT_TEXTAREA_HEIGHT = 21;
     const ref = useRef<HTMLTextAreaElement>(null);
@@ -31,10 +40,36 @@ export const MessageTextField: FC<Props> = ({
     const { attachments, attachmentCounter } = useSelector(
         (state: RootState) => state.messagePanel
     );
+    const user = useContext(AuthContext).user!;
 
     const onMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         e.preventDefault();
-        setMessage(e.target.value);
+        setMessage(content + e.target.value.slice(-1));
+        setContentInput(e.target.value)
+        console.log("e.target.value: " + content)
+        var text = e.target.value
+
+        // Tìm vị trí cuối cùng của dấu '@'
+        const lastAtIndex = text.lastIndexOf('@');
+
+        if (lastAtIndex !== -1 && lastAtIndex === text.length - 1) {
+            // Trích xuất từ khóa tìm kiếm
+            const mentionText = text.slice(lastAtIndex + 1);
+
+            // Gọi hàm search tên member
+            const members: User[] = searchMembers(mentionText);
+            const all = {
+                name: 'All',
+                avatar: 'https://tse1.mm.bing.net/th?id=OIP.Bngo6ojjIjs_TsJWpPzUCQHaEK&pid=Api&P=0&h=220',
+                _id: 'All'
+            }
+            if (mentionText.startsWith("a") || mentionText.startsWith("A") || mentionText === '')
+                setSearchResults([all, ...members]);
+            else setSearchResults(members);
+        } else {
+            setSearchResults([]);
+        }
+
         const { current } = ref;
         if (current) {
             const height = parseInt(current.style.height);
@@ -44,6 +79,12 @@ export const MessageTextField: FC<Props> = ({
                 ? setIsMultiLine(true)
                 : setIsMultiLine(false);
         }
+    };
+
+    const searchMembers = (keyword: string) => {
+        // Thực hiện việc tìm kiếm tên member và trả về kết quả
+        // Ví dụ:
+        return conversation.member.filter((u) => u.name.toLowerCase().includes(keyword.toLowerCase()) && u._id !== user._id);
     };
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -86,7 +127,7 @@ export const MessageTextField: FC<Props> = ({
     return (
         <MessageTextarea
             ref={ref}
-            value={message}
+            value={contentInput}
             onChange={onMessageChange}
             placeholder="Send a Message"
             onKeyDown={onKeyDown}

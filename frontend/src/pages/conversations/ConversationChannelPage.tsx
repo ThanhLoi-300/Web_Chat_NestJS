@@ -13,6 +13,7 @@ import { UpdateMessageSeen } from '../../utils/types';
 import { deleteMessage, updateMessageSeen } from '../../store/Messages/messageSlice'
 import { toggleCloseSidebar } from '../../store/groupRecipientsSidebarSlice';
 import { ConversationInfor } from '../../components/conversations/ConversationInfor';
+import { OnboardingForm } from '../../components/forms/OnboardingForm';
 
 export const ConversationChannelPage = () => {
   const { id } = useParams();
@@ -24,6 +25,11 @@ export const ConversationChannelPage = () => {
   const [showInfor, setShowInfor] = useState(true);
   const [isRecipientTyping, setIsRecipientTyping] = useState(false);
   const [textTyping, setTextTyping] = useState('');
+
+  const [showModalProfile, setShowModalProfile] = useState(false);
+  const selectedUser = useSelector(
+    (state: RootState) => state.groupSidebar.selectedUser
+  );
 
   // const showSidebar = useSelector(
   //   (state: RootState) => state.groupSidebar.showSidebar
@@ -41,6 +47,9 @@ export const ConversationChannelPage = () => {
   useEffect(() => {
     const conversationId = id!;
     socket.emit('onConversationJoin', { conversationId });
+
+    // if(conversation) socket.emit("updateSeenMessage", { conversationId: conversation._id, messageId: conversation.lastMessageId?._id, user: user });
+    
     socket.on('onTypingStart', (payload) => {
       console.log('onTypingStart: User has started typing...');
       if (payload.userId !== user?._id) {
@@ -109,18 +118,20 @@ export const ConversationChannelPage = () => {
 
   return (
     <>
-      {/* {showEditGroupModal && <EditGroupModal />} */}
       <ConversationChannelPageStyle>
+        {
+          showModalProfile && (<OnboardingForm showModalProfile={showModalProfile} setShowModalProfile={setShowModalProfile} user={selectedUser!} />)
+        }
         <MessagePanel
           sendTypingStatus={sendTypingStatus}
           isRecipientTyping={isRecipientTyping}
           textTyping={textTyping}
           setShowInfor={setShowInfor}
           showInfor={showInfor}
+          setShowModalProfile={setShowModalProfile}
         ></MessagePanel>
       </ConversationChannelPageStyle>
-      {/* {showSidebar && <GroupRecipientsSidebar />} */}
-      {showInfor && <ConversationInfor conversation={conversation!} setShowInfor={setShowInfor} />}
+      {showInfor && <ConversationInfor conversation={conversation!} setShowInfor={setShowInfor} setShowModalProfile={setShowModalProfile} />}
     </>
   );
 };

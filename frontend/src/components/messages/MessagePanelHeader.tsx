@@ -20,9 +20,9 @@ export const MessagePanelHeader: FC<Props> = ({ type, setShowInfor, showInfor })
 
     const showCallPanel = isCalling || isCallInProgress;
     const isRouteActive = activeConversationId === routeId!;
-    console.log(isRouteActive);
-    console.log(callType === 'video');
-    console.log(callType);
+    // console.log(isRouteActive);
+    // console.log(callType === 'video');
+    // console.log(callType);
     if (!showCallPanel)
         return type === 'private' ? (
             <MessagePanelConversationHeader setShowInfor={setShowInfor} showInfor={showInfor} />

@@ -257,4 +257,8 @@ export class ConversationsService implements IConversationsService {
         },
       });
   }
+
+  async getConversationsOfUser(userId: string) {
+    return await this.conversationModel.find({ member: { $in: [userId] } });
+  }
 }

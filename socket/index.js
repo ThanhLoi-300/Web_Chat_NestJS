@@ -70,7 +70,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("message.create", (payload) => {
-    io.to(payload.conversation._id).emit("onMessage", payload);
+    const member = payload.conversation.member
+    member.forEach((u) => {
+      const user = getUser(u._id)
+      user && socket.to(user.socketId).emit("onMessage", payload);
+    })
   });
 
   socket.on("onConversationLeave", (payload) => {

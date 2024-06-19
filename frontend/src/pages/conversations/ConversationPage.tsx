@@ -45,9 +45,8 @@ export const ConversationPage = () => {
             console.log('connected');
         });
         socket.on('onMessage', (payload: MessageEventPayload) => {
-            console.log('Message Received');
+            console.log('Message Received ' + JSON.stringify(payload.message));
             const { conversation, message } = payload;
-            console.log(conversation, message);
             dispatch(addMessage(payload));
             dispatch(updateConversation(conversation));
         });

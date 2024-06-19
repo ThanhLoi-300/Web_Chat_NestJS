@@ -23,7 +23,7 @@ import { MessagePanelHeader } from './MessagePanelHeader';
 import { MessageAttachmentContainer } from './attachments/MessageAttachmentContainer';
 import { MessageContainer } from './MessageContainer';
 import { uploadFiles } from '../../utils/uploadFile';
-import { CreateMessageParams } from '../../utils/types';
+import { CreateMessageParams, User } from '../../utils/types';
 import { FaceVeryHappy } from 'akar-icons';
 import { MessageTextField } from '../inputs/MessageTextField';
 import { MessageAttachmentActionIcon } from './MessageAttachmentActionIcon';
@@ -31,6 +31,7 @@ import Picker, { EmojiStyle, PickerProps } from 'emoji-picker-react';
 import { FaTimes } from 'react-icons/fa';
 import { PickerComponent } from 'stipop-react-sdk'
 import { TbSticker2 } from "react-icons/tb";
+import { RecipientResultContainer } from '../recipients/RecipientResultContainer';
 
 type Props = {
     sendTypingStatus: () => void;
@@ -38,6 +39,7 @@ type Props = {
     textTyping: string;
     setShowInfor: Dispatch<SetStateAction<boolean>>;
     showInfor: boolean;
+    setShowModalProfile: Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const MessagePanel: FC<Props> = ({
@@ -45,15 +47,18 @@ export const MessagePanel: FC<Props> = ({
     isRecipientTyping,
     textTyping,
     setShowInfor,
-    showInfor
+    showInfor,
+    setShowModalProfile
 }) => {
     const dispatch = useDispatch();
     const { messageCounter } = useSelector(
         (state: RootState) => state.systemMessages
     );
     const [content, setContent] = useState('');
+    const [contentInput, setContentInput] = useState('');
     const { id: routeId } = useParams();
     const { user } = useContext(AuthContext);
+    const [searchResults, setSearchResults] = useState<any[]>([]);
 
     const ICON_SIZE = 36;
     const [isMultiLine, setIsMultiLine] = useState(false);
@@ -84,6 +89,7 @@ export const MessagePanel: FC<Props> = ({
         console.log("data: " + JSON.stringify(data))
         try {
             setContent('');
+            setContentInput('');
             dispatch(removeAllAttachments());
             dispatch(clearAllMessages());
             await createMessage(routeId, data);
@@ -119,6 +125,7 @@ export const MessagePanel: FC<Props> = ({
 
     const handleEmojiClick: PickerProps['onEmojiClick'] = (emojiData) => {
         setContent((preText) => preText + emojiData.emoji)
+        setContentInput((preText) => preText + emojiData.emoji)
     };
 
     const handleSticker = async (url: string) => {
@@ -142,12 +149,30 @@ export const MessagePanel: FC<Props> = ({
         }
     }
 
+    const handleUserSelect = (user: User) => {
+        const lastAtIndex = content.lastIndexOf('@');
+        if (lastAtIndex !== -1) {
+            const text = content.substring(0, lastAtIndex) + `@${user.name}_${user._id} `;
+            let textInput
+            if (contentInput.substring(0, lastAtIndex))
+                textInput = contentInput.substring(0, lastAtIndex) + `${user.name} `;
+            else textInput = contentInput.substring(0, lastAtIndex) + `@${user.name} `;
+            console.log("content: " + text)
+            setContent(text);
+            setContentInput(textInput);
+        } else {
+            setContent(content);
+            setContentInput(contentInput);
+        }
+        setSearchResults([]);
+    };
+
     return (
         <>
             <MessagePanelStyle>
                 <MessagePanelHeader type={conversation?.type!} setShowInfor={setShowInfor} showInfor={showInfor} />
                 <MessagePanelBody>
-                    <MessageContainer />
+                    <MessageContainer setShowModalProfile={setShowModalProfile} />
                 </MessagePanelBody>
 
                 <div style={{ position: 'fixed', top: '50px', right: '30px' }}>
@@ -171,17 +196,32 @@ export const MessagePanel: FC<Props> = ({
                         </>
                     )}
                 </div>
+                
                 <MessagePanelFooter>
                     {attachments.length > 0 && <MessageAttachmentContainer />}
+                    {
+                        searchResults.length > 0 && (
+                            <div style={{ position: 'relative', top: '-210px', right: '20px' }}>
+                                <RecipientResultContainer
+                                    userResults={searchResults}
+                                    handleUserSelect={handleUserSelect}
+                                    background='white'
+                                />
+                            </div>)
+                    }
                     <MessageInputContainer isMultiLine={isMultiLine}>
                         <MessageAttachmentActionIcon />
                         <form onSubmit={sendMessage} className={styles.form}>
                             <MessageTextField
-                                message={content}
+                                setContentInput={setContentInput}
                                 setMessage={setContent}
                                 setIsMultiLine={setIsMultiLine}
                                 sendTypingStatus={sendTypingStatus}
                                 sendMessage={sendMessage}
+                                conversation={conversation!}
+                                setSearchResults={setSearchResults}
+                                contentInput={contentInput}
+                                content={content}
                             />
                         </form>
                         <TbSticker2 className={styles.icon} size={ICON_SIZE} onClick={() => handleOpenStickerOrEmoji('sticker')} />

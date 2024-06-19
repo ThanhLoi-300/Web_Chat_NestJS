@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Dispatch, FC, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../store';
@@ -26,7 +26,11 @@ import { AuthContext } from '../../utils/context/AuthContext';
 // import { SystemMessage } from './system/SystemMessage';
 // import { SystemMessageList } from './system/SystemMessageList';
 
-export const MessageContainer = () => {
+type Props = {
+    setShowModalProfile: Dispatch<React.SetStateAction<boolean>>;
+};
+
+export const MessageContainer: FC<Props> = ({ setShowModalProfile }) => {
     const { id } = useParams();
     const { user } = useContext(AuthContext);
     const dispatch = useDispatch<AppDispatch>();
@@ -87,6 +91,7 @@ export const MessageContainer = () => {
                             owner={owner}
                             ml={true}
                             isLast={isLast}
+                            setShowModalProfile={setShowModalProfile}
                         />
                     </MessageItemDetails>
                 ) : (
@@ -96,6 +101,7 @@ export const MessageContainer = () => {
                         owner={owner}
                         ml={false}
                         isLast={isLast}
+                        setShowModalProfile={setShowModalProfile}
                     />
                 )}
             </MessageItemContainer>

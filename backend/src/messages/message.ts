@@ -9,4 +9,5 @@ export interface IMessageService {
   deleteMessage(params: DeleteMessageParams): Promise<Message>;
   // editMessage(params: EditMessageParams): Promise<Message>;
   updateSeenMessage(userId: string, messageId: string);
+  fetchMessages(userId: string)
 }

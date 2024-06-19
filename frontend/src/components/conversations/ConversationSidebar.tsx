@@ -23,6 +23,7 @@ import { CreateConversationModal } from '../modals/CreateConversationModal';
 import { CreateGroupModal } from '../modals/CreateGroupModal';
 import { searchConversations } from '../../utils/api';
 import { useDebounce } from '../../utils/hooks/useDebounce';
+import { fetchMessagesAll } from '../../store/Messages/messageThunk';
 
 const ConversationSidebar = () => {
     const [showModal, setShowModal] = useState(false);
@@ -36,7 +37,6 @@ const ConversationSidebar = () => {
         (state: RootState) => state.conversation.conversations
     );
     console.log(searching)
-
     useEffect(() => {
         if (debouncedQuery) {
             setSearching(true);
@@ -80,6 +80,10 @@ const ConversationSidebar = () => {
         const handleClick = () => dispatch(toggleContextMenu(false));
         window.addEventListener('click', handleClick);
         return () => window.removeEventListener('click', handleClick);
+    }, []);
+
+    useEffect(() => {
+        dispatch(fetchMessagesAll())
     }, []);
     return (
         <>

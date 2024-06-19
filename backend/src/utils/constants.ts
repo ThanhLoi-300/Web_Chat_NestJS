@@ -9,6 +9,7 @@ export enum Routes {
   FRIEND_REQUESTS = 'friends/requests',
   USER_PRESENCE = 'users/presence',
   SEARCHCONVERSATION = 'searchConversation',
+  FETCHMESSAGE = 'fetchMessage'
 }
 
 export enum Services {
