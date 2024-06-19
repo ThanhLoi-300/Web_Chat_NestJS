@@ -87,6 +87,7 @@ export const SendFriendRequestForm: FC<Props> = ({ setShowModal, friend }) => {
                 <RecipientResultContainer
                     userResults={userResults}
                     handleUserSelect={handleUserSelect}
+                    background={"black"}
                 />
             )}
             <Button>Send</Button>

@@ -89,6 +89,7 @@ export const CreateGroupForm: FC<Props> = ({ setShowModal }) => {
                 <RecipientResultContainer
                     userResults={results}
                     handleUserSelect={handleUserSelect}
+                    background={"black"}
                 />
             )}
             <section className={styles.message}>

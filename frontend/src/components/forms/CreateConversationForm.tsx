@@ -78,6 +78,7 @@ export const CreateConversationForm: FC<Props> = ({ setShowModal }) => {
                 <RecipientResultContainer
                     userResults={userResults}
                     handleUserSelect={handleUserSelect}
+                    background={"black"}
                 />
             )}
             <Button>Create Conversation</Button>

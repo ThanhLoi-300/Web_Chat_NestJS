@@ -78,6 +78,7 @@ export const GroupRecipientAddForm = () => {
                 <RecipientResultContainer
                     userResults={userResults}
                     handleUserSelect={handleUserSelect}
+                    background={"black"}
                 />
             )}
             <Button style={{ margin: '10px 0' }} disabled={selectedUsers.length > 0 ? false:true}>
