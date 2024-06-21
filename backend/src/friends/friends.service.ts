@@ -29,7 +29,7 @@ export class FriendsService implements IFriendsService {
     const friends = await this.friendModel
       .findOne({ user: id })
       .populate('user')
-      .populate('listFriend')
+      .populate('listFriend');
     return friends ? friends.listFriend.map((f) => f as unknown as User) : [];
   }
 
@@ -86,8 +86,9 @@ export class FriendsService implements IFriendsService {
   }
 
   async cancel({ id, userId }: CancelFriendRequestParams) {
-    const friendRequestDeleted = await this.friendRequestModel.findByIdAndDelete(id);
-    return { _id: friendRequestDeleted._id};
+    const friendRequestDeleted =
+      await this.friendRequestModel.findByIdAndDelete(id);
+    return { _id: friendRequestDeleted._id };
   }
 
   async create({ user: sender, id }: CreateFriendParams) {
@@ -107,7 +108,7 @@ export class FriendsService implements IFriendsService {
       console.log('Friend Already Exists');
       throw new HttpException('Friend Already Exists', HttpStatus.CONFLICT);
     }
-      
+
     const friend = new this.friendRequestModel({
       sender: sender._id,
       receiver: receiver._id,
@@ -121,30 +122,39 @@ export class FriendsService implements IFriendsService {
   }
 
   async accept({ id, userId }: FriendRequestParams) {
-    const friendRequest = await this.friendRequestModel.findById(id);
-    if (!friendRequest)
-      throw new HttpException(
-        'Friend Request not found',
-        HttpStatus.BAD_REQUEST,
-      );
-    if (friendRequest.status === 'accepted')
-      throw new HttpException(
-        'Friend Request Already Accepted',
-        HttpStatus.BAD_REQUEST,
-      );
-    if (friendRequest.receiver !== userId)
-      throw new HttpException(
-        'Friend Request Exception',
-        HttpStatus.BAD_REQUEST,
-      );
-    friendRequest.status = 'accepted';
-    await friendRequest.save();
-    await this.addFriend(userId, friendRequest.sender);
-    await this.addFriend(friendRequest.sender, userId);
+    try {
+      const friendRequest = await this.friendRequestModel.findById(id);
+      if (!friendRequest)
+        throw new HttpException(
+          'Friend Request not found',
+          HttpStatus.BAD_REQUEST,
+        );
+      if (friendRequest.status === 'accepted')
+        throw new HttpException(
+          'Friend Request Already Accepted',
+          HttpStatus.BAD_REQUEST,
+        );
+      // if (friendRequest.receiver !== userId)
+      //   throw new HttpException(
+      //     'Friend Request Exception',
+      //     HttpStatus.BAD_REQUEST,
+      //   );
 
-    const friendOfUser = (await this.friendModel.findOne({user: userId}).populate('user')).populated('listFriend')
+      friendRequest.status = 'accepted';
+      await friendRequest.save();
+      await this.addFriend(friendRequest.receiver, friendRequest.sender);
+      await this.addFriend(friendRequest.sender, friendRequest.receiver);
 
-    return { friend: friendOfUser!, friendRequest: friendRequest };
+      const friendOfUser = (
+        await this.friendModel
+          .findOne({ user: friendRequest.receiver })
+          .populate('user')
+      ).populated('listFriend');
+
+      return { friend: friendOfUser!, friendRequest: friendRequest };
+    } catch (e: any) {
+      console.log(e);
+    }
   }
 
   async addFriend(userId: string, friendId: string) {
@@ -164,7 +174,7 @@ export class FriendsService implements IFriendsService {
       const saved = await friendOfUser.save();
       newFriend = await this.friendModel.findById(saved._id);
     }
-    await newFriend.save()
+    await newFriend.save();
   }
 
   async reject({ id, userId }: CancelFriendRequestParams) {
@@ -179,11 +189,11 @@ export class FriendsService implements IFriendsService {
         'Friend Request Already Accepted',
         HttpStatus.BAD_REQUEST,
       );
-    if (friendRequest.receiver !== userId)
-      throw new HttpException(
-        'Friend Request Exception',
-        HttpStatus.BAD_REQUEST,
-      );
+    // if (friendRequest.receiver !== userId)
+    //   throw new HttpException(
+    //     'Friend Request Exception',
+    //     HttpStatus.BAD_REQUEST,
+    //   );
     friendRequest.status = 'rejected';
     return friendRequest.save();
   }
@@ -226,8 +236,10 @@ export class FriendsService implements IFriendsService {
   }
 
   async searchFriends(userId: string, query: string) {
-    const result = await this.friendModel.findOne({ user: userId })
-    let users: User[] = await this.userService.searchUsers(query, { id: userId })
+    const result = await this.friendModel.findOne({ user: userId });
+    let users: User[] = await this.userService.searchUsers(query, {
+      id: userId,
+    });
     return users.filter((user) => result.listFriend.includes(user._id));
   }
 }

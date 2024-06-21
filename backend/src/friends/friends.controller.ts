@@ -95,7 +95,6 @@ export class FriendsController {
       id,
       userId: req.userId,
     });
-    console.log(response);
     return response;
   }
 
@@ -108,7 +107,6 @@ export class FriendsController {
       id,
       userId: req.userId,
     });
-    console.log(response);
     return response;
   }
 }
