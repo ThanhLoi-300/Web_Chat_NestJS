@@ -4,6 +4,7 @@ import styles from './index.module.scss'
 import { Link, useNavigate } from 'react-router-dom'
 import { postLoginUser } from '../../utils/api'
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+import { toast } from 'react-toastify';
 
 const LoginForm = () => {
     const navigate = useNavigate();
@@ -26,6 +27,7 @@ const LoginForm = () => {
             localStorage.setItem('accessToken', response.data.access_token);
             navigate('/conversations');
         } catch (err) {
+            toast.error("Account is wrong")
             console.log(err);
         }
     }
