@@ -10,7 +10,7 @@ export const AuthenticatedRoute: FC<React.PropsWithChildren> = ({
     const { loading, user } = useAuth();
 
     if (loading) {
-        return <div>loading</div>;
+        return <div>Server is starting, can take 1m - 2m </div>;
     }
     if (user) return <>{children}</>;
     else {
