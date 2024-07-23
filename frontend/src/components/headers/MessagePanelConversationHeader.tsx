@@ -1,11 +1,11 @@
 import { useContext, useState, useEffect, Dispatch, FC, SetStateAction } from 'react';
-import { FaPhoneAlt, FaVideo, FaToggleOn, FaToggleOff } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import { FaToggleOn, FaToggleOff } from 'react-icons/fa';//FaPhoneAlt, FaVideo,
+import { useSelector } from 'react-redux';//useDispatch
 import { useParams } from 'react-router-dom';
 import { RootState } from '../../store';
-import { initiateCallState } from '../../store/call/callSlice';
+// import { initiateCallState } from '../../store/call/callSlice';
 import { selectConversationById } from '../../store/conversationsSlice';
-import { SenderEvents } from '../../utils/constants';
+// import { SenderEvents } from '../../utils/constants';
 import { AuthContext } from '../../utils/context/AuthContext';
 import { SocketContext } from '../../utils/context/SocketContext';
 import { getRecipientFromConversation } from '../../utils/helpers';
@@ -14,7 +14,7 @@ import {
     MessagePanelHeaderStyle,
     UserAvatarAndName,
 } from '../../utils/styles';
-import { CallInitiatePayload, CallType } from '../../utils/types';
+// import { CallInitiatePayload, CallType } from '../../utils/types';
 import { UserAvatar } from '../users/UserAvatar';
 import { UpdatePresenceStatusModal } from '../modals/UpdatePresenceStatusModal';
 import { CreateFriendRequestModal } from '../modals/CreateFriendRequestModal';
@@ -32,7 +32,7 @@ export const MessagePanelConversationHeader: FC<Props> = ({ setShowInfor, showIn
     const [showModal, setShowModal] = useState(false);
     const [showModalPresence, setShowModalPresence] = useState(false);
 
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
     const conversation = useSelector((state: RootState) =>
         selectConversationById(state, id!)
     );
@@ -61,44 +61,44 @@ export const MessagePanelConversationHeader: FC<Props> = ({ setShowInfor, showIn
         };
     }, [conversation]);
 
-    const buildCallPayloadParams = (
-        stream: MediaStream,
-        type: CallType
-    ): CallInitiatePayload | undefined =>
-        conversation && {
-            localStream: stream,
-            caller: user!,
-            receiver: recipient!,
-            isCalling: true,
-            activeConversationId: conversation._id!,
-            callType: type,
-        };
+    // const buildCallPayloadParams = (
+    //     stream: MediaStream,
+    //     type: CallType
+    // ): CallInitiatePayload | undefined =>
+    //     conversation && {
+    //         localStream: stream,
+    //         caller: user!,
+    //         receiver: recipient!,
+    //         isCalling: true,
+    //         activeConversationId: conversation._id!,
+    //         callType: type,
+    //     };
 
-    const videoCallUser = async () => {
-        if (!recipient) return console.log('Recipient undefined');
-        socket.emit('onVideoCallInitiate', {
-            conversationId: conversation!._id,
-            recipientId: recipient._id,
-        });
-        const constraints = { video: true, audio: true };
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        const payload = buildCallPayloadParams(stream, 'video');
-        if (!payload) throw new Error('Video Call Payload is undefined.');
-        dispatch(initiateCallState(payload));
-    };
+    // const videoCallUser = async () => {
+    //     if (!recipient) return console.log('Recipient undefined');
+    //     socket.emit('onVideoCallInitiate', {
+    //         conversationId: conversation!._id,
+    //         recipientId: recipient._id,
+    //     });
+    //     const constraints = { video: true, audio: true };
+    //     const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    //     const payload = buildCallPayloadParams(stream, 'video');
+    //     if (!payload) throw new Error('Video Call Payload is undefined.');
+    //     dispatch(initiateCallState(payload));
+    // };
 
-    const voiceCallUser = async () => {
-        if (!recipient) return console.log('Recipient undefined');
-        socket.emit(SenderEvents.VOICE_CALL_INITIATE, {
-            conversationId: conversation!._id,
-            recipientId: recipient._id,
-        });
-        const constraints = { video: false, audio: true };
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        const payload = buildCallPayloadParams(stream, 'audio');
-        if (!payload) throw new Error('Voice Call Payload is undefined.');
-        dispatch(initiateCallState(payload));
-    };
+    // const voiceCallUser = async () => {
+    //     if (!recipient) return console.log('Recipient undefined');
+    //     socket.emit(SenderEvents.VOICE_CALL_INITIATE, {
+    //         conversationId: conversation!._id,
+    //         recipientId: recipient._id,
+    //     });
+    //     const constraints = { video: false, audio: true };
+    //     const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    //     const payload = buildCallPayloadParams(stream, 'audio');
+    //     if (!payload) throw new Error('Voice Call Payload is undefined.');
+    //     dispatch(initiateCallState(payload));
+    // };
 
     return (
         <MessagePanelHeaderStyle>
@@ -116,8 +116,8 @@ export const MessagePanelConversationHeader: FC<Props> = ({ setShowInfor, showIn
             </UserAvatarAndName>
             <MessagePanelHeaderIcons>
                 {!isFriend && (<button style={{ padding: '4px 8px', borderRadius: '10px', cursor: 'pointer' }} onClick={() => setShowModal(true)}>Add friend</button>)}
-                <FaPhoneAlt size={24} cursor="pointer" onClick={voiceCallUser} />
-                <FaVideo size={24} cursor="pointer" onClick={videoCallUser} />
+                {/* <FaPhoneAlt size={24} cursor="pointer" onClick={voiceCallUser} />
+                <FaVideo size={24} cursor="pointer" onClick={videoCallUser} /> */}
                 {
                     showInfor ? <FaToggleOn cursor="pointer" size={24} onClick={() => setShowInfor(false) } />
                         : <FaToggleOff cursor="pointer" size={24} onClick={() => setShowInfor(true)} />
